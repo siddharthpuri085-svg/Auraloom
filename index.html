@@ -571,6 +571,28 @@
                   <input id="auth-password" type="password" minlength="6" required placeholder="Password (at least 6 characters)" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
                   <button id="auth-submit-btn" type="submit" class="w-full h-11 rounded-xl text-sm font-semibold btn-cta">Sign Up for Auraloom</button>
                 </form>
+
+                <!-- 6-Digit Email OTP Verification -->
+                <form id="otp-verify-box" class="hidden space-y-3 pt-1 fade-in">
+                  <div class="p-3 rounded-xl subtle-box">
+                    <p class="text-xs font-bold" style="color: var(--text-primary);">Enter 6-digit verification code</p>
+                    <p id="otp-email-label" class="text-[11px] mt-0.5 truncate" style="color: var(--text-secondary);"></p>
+                  </div>
+                  <input
+                    id="otp-code-input"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="6"
+                    placeholder="000000"
+                    class="w-full h-12 rounded-xl px-4 text-center text-lg font-extrabold tracking-[0.35em] input-field"
+                  />
+                  <button id="otp-verify-btn" type="submit" class="w-full h-11 rounded-xl text-sm font-semibold btn-cta">Verify & Sign In</button>
+                  <div class="flex items-center justify-between text-xs px-1">
+                    <button id="otp-resend-btn" type="button" class="font-semibold" style="color: var(--accent-primary);">Resend code</button>
+                    <button id="otp-back-btn" type="button" class="font-medium" style="color: var(--text-secondary);">Back to Sign Up</button>
+                  </div>
+                </form>
               </div>
 
               <div id="auth-logged-in" class="hidden space-y-3">
@@ -3251,6 +3273,71 @@
     tabSignupBtn.addEventListener('click', () => setAuthTab('signup'));
     tabLoginBtn.addEventListener('click', () => setAuthTab('login'));
 
+    const otpVerifyBox = document.getElementById('otp-verify-box');
+    const otpEmailLabel = document.getElementById('otp-email-label');
+    const otpCodeInput = document.getElementById('otp-code-input');
+    const otpResendBtn = document.getElementById('otp-resend-btn');
+    const otpBackBtn = document.getElementById('otp-back-btn');
+    let pendingOtpEmail = '';
+
+    function showOtpStep(email) {
+      pendingOtpEmail = email;
+      otpEmailLabel.textContent = `Sent to ${email}`;
+      otpCodeInput.value = '';
+      authForm.classList.add('hidden');
+      otpVerifyBox.classList.remove('hidden');
+      otpCodeInput.focus();
+    }
+
+    function hideOtpStep() {
+      otpVerifyBox.classList.add('hidden');
+      authForm.classList.remove('hidden');
+    }
+
+    otpBackBtn.addEventListener('click', () => {
+      hideOtpStep();
+      setCloudNotice('');
+    });
+
+    otpResendBtn.addEventListener('click', async () => {
+      if (!sbClient || !pendingOtpEmail) return;
+      setCloudNotice('Resending verification code...', 'info');
+      try {
+        const { error } = await sbClient.auth.resend({ type: 'signup', email: pendingOtpEmail });
+        if (error) throw error;
+        setCloudNotice(`New 6-digit code sent to ${pendingOtpEmail}.`, 'success');
+      } catch (err) {
+        setCloudNotice(err.message || 'Could not resend code.', 'error');
+      }
+    });
+
+    otpVerifyBox.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!sbClient || !pendingOtpEmail) return;
+      const token = otpCodeInput.value.replace(/\D/g, '').trim();
+      if (token.length < 6) {
+        setCloudNotice('Enter the full 6-digit code from your email.', 'error');
+        return;
+      }
+      setCloudNotice('Verifying code...', 'info');
+      try {
+        const { data, error } = await sbClient.auth.verifyOtp({
+          email: pendingOtpEmail,
+          token,
+          type: 'signup'
+        });
+        if (error) throw error;
+        currentUser = data.user || (data.session && data.session.user);
+        hideOtpStep();
+        updateAuthUi();
+        await loadLiveCloudData();
+        subscribeToLiveRealtime();
+        setCloudNotice('Email verified! Welcome to Auraloom — open My Vibe to add photos and publish your card.', 'success');
+      } catch (err) {
+        setCloudNotice(err.message || 'Invalid or expired code. Tap Resend code to try again.', 'error');
+      }
+    });
+
     authForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!sbClient) { setCloudNotice('Connect your Supabase project first.', 'error'); return; }
@@ -3259,21 +3346,31 @@
       setCloudNotice('Working...', 'info');
       try {
         if (authMode === 'signup') {
-          const { data, error } = await sbClient.auth.signUp({ email, password });
+          const redirectUrl = window.location.protocol.startsWith('http')
+            ? `${window.location.origin}${window.location.pathname}`
+            : 'https://siddharthpuri085-svg.github.io/Auraloom/';
+          const { data, error } = await sbClient.auth.signUp({
+            email,
+            password,
+            options: { emailRedirectTo: redirectUrl }
+          });
           if (error) throw error;
           if (data.session) {
             currentUser = data.session.user;
+            hideOtpStep();
             updateAuthUi();
             await loadLiveCloudData();
             subscribeToLiveRealtime();
             setCloudNotice('Account created and signed in! Open My Vibe to add photos and publish your card.', 'success');
           } else {
-            setCloudNotice('Account created! Check your email to confirm, then log in.', 'info');
+            showOtpStep(email);
+            setCloudNotice('We sent a 6-digit verification code to your email. Enter it below.', 'info');
           }
         } else {
           const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
           if (error) throw error;
           currentUser = data.user;
+          hideOtpStep();
           updateAuthUi();
           await loadLiveCloudData();
           subscribeToLiveRealtime();
