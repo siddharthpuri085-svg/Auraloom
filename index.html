@@ -174,8 +174,18 @@
     <aside class="hidden md:flex md:flex-col md:w-64 md:shrink-0 md:sticky md:top-0 md:h-screen px-4 py-6 border-r" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
       <!-- Brand -->
       <div class="flex items-center gap-3 px-2 mb-7">
-        <div class="w-9 h-9 rounded-xl btn-cta flex items-center justify-center shrink-0">
-          <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background: #231130;">
+          <svg viewBox="0 0 36 36" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="alGradD" x1="4" y1="6" x2="32" y2="30" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#F2637E"/>
+                <stop offset="55%" stop-color="#E94776"/>
+                <stop offset="100%" stop-color="#A64AE5"/>
+              </linearGradient>
+            </defs>
+            <path d="M18 30.5C18 30.5 6.5 22.8 6.5 14.2C6.5 9.8 9.9 6.8 13.8 6.8C16.2 6.8 18 8.2 18 8.2C18 8.2 19.8 6.8 22.2 6.8C26.1 6.8 29.5 9.8 29.5 14.2C29.5 22.8 18 30.5 18 30.5Z" stroke="url(#alGradD)" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.4 13.8C11.2 10.6 15.2 12.2 18 15.2C20.8 18.2 24.8 19.6 28.4 15.4" stroke="url(#alGradD)" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
         </div>
         <div class="min-w-0">
           <p class="text-base font-bold tracking-tight leading-none" style="color: var(--text-primary);">Auraloom</p>
@@ -220,8 +230,18 @@
       <!-- MOBILE TOP HEADER (< md) -->
       <header class="md:hidden sticky top-0 z-30 header-glass px-3.5 h-14 flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 shrink-0">
-          <div class="w-8 h-8 rounded-lg btn-cta flex items-center justify-center shrink-0">
-            <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm" style="background: #231130;">
+            <svg viewBox="0 0 36 36" class="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="alGradM" x1="4" y1="6" x2="32" y2="30" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#F2637E"/>
+                  <stop offset="55%" stop-color="#E94776"/>
+                  <stop offset="100%" stop-color="#A64AE5"/>
+                </linearGradient>
+              </defs>
+              <path d="M18 30.5C18 30.5 6.5 22.8 6.5 14.2C6.5 9.8 9.9 6.8 13.8 6.8C16.2 6.8 18 8.2 18 8.2C18 8.2 19.8 6.8 22.2 6.8C26.1 6.8 29.5 9.8 29.5 14.2C29.5 22.8 18 30.5 18 30.5Z" stroke="url(#alGradM)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8.4 13.8C11.2 10.6 15.2 12.2 18 15.2C20.8 18.2 24.8 19.6 28.4 15.4" stroke="url(#alGradM)" stroke-width="2.7" stroke-linecap="round"/>
+            </svg>
           </div>
           <h1 class="text-[15px] font-bold tracking-tight whitespace-nowrap" style="color: var(--text-primary);">Auraloom</h1>
         </div>
@@ -232,7 +252,7 @@
             type="button"
             class="h-8 px-2 rounded-lg text-[11px] font-semibold flex items-center gap-1 btn-secondary max-w-[82px]"
           >
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
             <span id="my-vibe-label" class="truncate">My Vibe</span>
           </button>
 
@@ -313,7 +333,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label for="vibe-city-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">City & Country</label>
-                <input id="vibe-city-input" type="text" maxlength="40" placeholder="e.g. Ludhiana, India" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+                <input id="vibe-city-input" type="text" maxlength="40" placeholder="e.g., Ludhiana, India" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
               <div>
                 <label for="vibe-region-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Region</label>
@@ -330,11 +350,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label for="vibe-languages-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Languages</label>
-                <input id="vibe-languages-input" type="text" maxlength="60" placeholder="e.g. English · Hindi · Punjabi" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+                <input id="vibe-languages-input" type="text" maxlength="60" placeholder="e.g., English · Hindi · Punjabi" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
               <div>
                 <label for="vibe-tag-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Vibe Tag</label>
-                <input id="vibe-tag-input" type="text" maxlength="28" placeholder="e.g. Midnight Stargazer" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+                <input id="vibe-tag-input" type="text" maxlength="28" placeholder="e.g., Midnight Stargazer" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
             </div>
 
@@ -349,7 +369,7 @@
               <label for="vibe-ritual-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">
                 Sunday Ritual (expandable reveal)
               </label>
-              <input id="vibe-ritual-input" type="text" maxlength="140" placeholder="e.g. Slow coffee, long walk, and an old playlist" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+              <input id="vibe-ritual-input" type="text" maxlength="140" placeholder="e.g., Slow coffee, a long walk, and an old playlist" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
             </div>
 
             <div>
@@ -415,7 +435,7 @@
                 class="w-full text-left text-xs px-3 py-2 rounded-xl subtle-box hover:opacity-90 flex items-center justify-between gap-2 transition-opacity"
               >
                 <span class="flex items-center gap-2 truncate font-medium" style="color: var(--text-primary);">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+                  <i data-lucide="message-circle-heart" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
                   Insert a Deep Question icebreaker
                 </span>
                 <span class="font-semibold shrink-0" style="color: var(--accent-primary);">Use</span>
@@ -466,7 +486,7 @@
 
                 <form id="auth-form" class="space-y-3">
                   <input id="auth-email" type="email" required placeholder="Email address" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
-                  <input id="auth-password" type="password" minlength="6" required placeholder="Password (min 6 characters)" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+                  <input id="auth-password" type="password" minlength="6" required placeholder="Password (at least 6 characters)" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
                   <button id="auth-submit-btn" type="submit" class="w-full h-11 rounded-xl text-sm font-semibold btn-cta">
                     Sign Up for Auraloom
                   </button>
@@ -648,7 +668,7 @@
         promptAnswer: 'How music shapes our memories, hidden neighborhood bakeries, and why good architecture changes your mood.',
         sundayRitual: 'Catching the ocean breeze near Alfama with a camera and trying a new pastry spot.',
         values: ['Empathy', 'Adventure', 'Warmth'],
-        autoReply: 'Hey! Sending warm hello from Lisbon. Are you more of a spontaneous traveler or a slow explorer?'
+        autoReply: 'Hey! Sending a warm hello from Lisbon. Are you more of a spontaneous traveler or a slow explorer?'
       },
       {
         id: 'p4',
@@ -700,7 +720,7 @@
         avatarBg: AVATAR_GRADIENTS[0],
         promptQuestion: 'How do you recharge after a busy week?',
         promptAnswer: 'Cooking a huge dinner for people I care about, putting on vinyl records, and turning off notifications.',
-        sundayRitual: 'Early coastal drive, flat white from a tiny laneway roaster, and a long afternoon read.',
+        sundayRitual: 'An early coastal drive, a flat white from a tiny laneway roaster, and a long afternoon read.',
         values: ['Slow Mornings', 'Warmth', 'Humor'],
         autoReply: 'G’day from Melbourne! Always awesome meeting someone new on Auraloom. What is your go-to comfort meal?'
       }
@@ -708,7 +728,7 @@
 
     const NAV_ITEMS = [
       { id: 'discover', label: 'Discover', icon: 'compass' },
-      { id: 'vibe', label: 'My Vibe', icon: 'sparkles' },
+      { id: 'vibe', label: 'My Vibe', icon: 'sliders-horizontal' },
       { id: 'sparks', label: 'Sparks', icon: 'heart' },
       { id: 'chats', label: 'Chats', icon: 'message-circle' },
       { id: 'profile', label: 'Profile', icon: 'user' }
@@ -1331,7 +1351,7 @@
                 ${escapeHtml(p.vibeTag)}
               </span>
               <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold badge-success">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i>
                 ${resonance}% Resonance
               </span>
             </div>
@@ -1416,7 +1436,7 @@
                   type="button"
                   class="min-h-[48px] px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 btn-cta"
                 >
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <i data-lucide="flame" class="w-4 h-4"></i>
                   <span>Send a Spark</span>
                 </button>
               </div>
