@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auraloom — Global Vibe-First Soulmate App</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #fbf9f7;
+      background-image:
+        radial-gradient(circle at 10% 8%, rgba(251, 113, 133, 0.16), transparent 40%),
+        radial-gradient(circle at 92% 88%, rgba(251, 191, 36, 0.16), transparent 44%),
+        radial-gradient(circle at 85% 15%, rgba(167, 139, 250, 0.12), transparent 38%);
+      min-height: 100vh;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-5px) scale(1.04); }
+    }
+
+    .orb-float {
+      animation: floatOrb 5s ease-in-out infinite;
+    }
+
+    .card-enter {
+      animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .surface-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 18px 42px -16px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(244, 63, 94, 0.06);
+    }
+
+    .pill-light {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(15, 23, 42, 0.09);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="text-slate-900 antialiased selection:bg-rose-200">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col px-4 py-5">
+
+    <!-- Top Navigation Bar -->
+    <header class="flex items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 via-pink-500 to-amber-400 flex items-center justify-center shadow-md shadow-rose-500/25 shrink-0">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <div class="min-w-0">
+          <h1 class="text-base sm:text-lg font-bold tracking-tight leading-none text-slate-900 truncate">Auraloom</h1>
+          <p class="text-[11px] text-slate-500 mt-0.5 truncate">Global connections</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <button
+          id="open-vibe-btn"
+          type="button"
+          class="pill-light hover:bg-white transition-colors rounded-full px-2.5 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 text-xs font-semibold text-slate-700 max-w-[108px]"
+        >
+          <i data-lucide="user" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
+          <span id="my-vibe-label" class="truncate">My Vibe</span>
+        </button>
+
+        <button
+          id="open-sparks-btn"
+          type="button"
+          class="pill-light hover:bg-white transition-colors rounded-full px-2.5 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 text-xs font-semibold text-slate-800 shrink-0"
+        >
+          <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
+          <span>Sparks</span>
+          <span
+            id="sparks-count"
+            class="bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none"
+          >0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Global Region Filter Bar -->
+    <nav aria-label="Global regions" class="mb-3">
+      <div id="region-filter-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+    </nav>
+
+    <!-- Progress & Live Cloud Status Row -->
+    <div id="progress-row" class="flex items-center justify-between gap-2 text-xs text-slate-500 mb-3 px-1">
+      <span id="profile-counter" class="font-medium">Profile 1 of 6</span>
+      <button
+        id="open-cloud-btn"
+        type="button"
+        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors shadow-sm"
+      >
+        <span id="cloud-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span id="circle-label">Connect Cloud</span>
+      </button>
+    </div>
+
+    <!-- Main Profile Card Area -->
+    <main class="flex-1 flex flex-col justify-center">
+      <div id="card-container" class="w-full"></div>
+    </main>
+
+    <!-- Subtle Toast Notification -->
+    <div
+      id="toast"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 transition-all duration-300 z-40"
+    >
+      <div
+        id="toast-text"
+        class="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-xl whitespace-nowrap"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Sparks & Live Chat Modal -->
+  <div
+    id="sparks-modal"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-4"
+  >
+    <div class="surface-card bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl h-[80vh] max-h-[620px] flex flex-col">
+
+      <!-- View A: Sparks List -->
+      <div id="sparks-list-view" class="flex flex-col h-full">
+        <div class="flex items-center justify-between mb-4 shrink-0">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Your Sparks & Chats</h2>
+            <p class="text-xs text-slate-500">Tap any connection to start talking</p>
+          </div>
+          <button
+            id="close-sparks-btn"
+            type="button"
+            aria-label="Close Sparks"
+            class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div id="sparks-list" class="space-y-3 overflow-y-auto pr-1 flex-1"></div>
+      </div>
+
+      <!-- View B: Interactive Chat Room -->
+      <div id="chat-view" class="hidden flex-col h-full">
+        <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100 shrink-0">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <button
+              id="chat-back-btn"
+              type="button"
+              aria-label="Back to Sparks"
+              class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 shrink-0"
+            >
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </button>
+            <div id="chat-partner-avatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"></div>
+            <div class="min-w-0">
+              <p id="chat-partner-name" class="text-sm font-bold text-slate-900 truncate"></p>
+              <p id="chat-partner-meta" class="text-xs text-slate-500 truncate"></p>
+            </div>
+          </div>
+          <button
+            id="close-chat-modal-btn"
+            type="button"
+            aria-label="Close Chat"
+            class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 shrink-0"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-3"></div>
+
+        <!-- Quick Deep Question Icebreaker -->
+        <div class="mb-2.5 shrink-0">
+          <button
+            id="chat-icebreaker-btn"
+            type="button"
+            class="w-full text-left text-xs px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100/80 border border-rose-200/70 text-rose-700 flex items-center justify-between gap-2 transition-colors"
+          >
+            <span class="flex items-center gap-1.5 truncate font-medium">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0 text-rose-500"></i>
+              Drop a Deep Question icebreaker
+            </span>
+            <span class="text-rose-600 font-semibold shrink-0">Use</span>
+          </button>
+        </div>
+
+        <form id="chat-form" class="flex items-center gap-2 shrink-0">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="Write a thoughtful message..."
+            autocomplete="off"
+            class="flex-1 bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400"
+          />
+          <button
+            type="submit"
+            class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/20 hover:opacity-95 transition-opacity shrink-0"
+          >
+            Send
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Vibe Profile Modal -->
+  <div
+    id="vibe-modal"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-4"
+  >
+    <div class="surface-card bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">Your Global Vibe</h2>
+          <p class="text-xs text-slate-500">Saved locally—and synced to Supabase when signed in</p>
+        </div>
+        <button
+          id="close-vibe-btn"
+          type="button"
+          aria-label="Close My Vibe"
+          class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
+        >
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="vibe-form" class="space-y-3.5">
+        <div class="grid grid-cols-3 gap-2.5">
+          <div class="col-span-2">
+            <label for="vibe-name-input" class="block text-xs font-semibold text-slate-700 mb-1">Your Name</label>
+            <input
+              id="vibe-name-input"
+              type="text"
+              maxlength="30"
+              placeholder="e.g. Rohan"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400"
+            />
+          </div>
+          <div>
+            <label for="vibe-age-input" class="block text-xs font-semibold text-slate-700 mb-1">Age</label>
+            <input
+              id="vibe-age-input"
+              type="number"
+              min="18"
+              max="99"
+              placeholder="24"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label for="vibe-city-input" class="block text-xs font-semibold text-slate-700 mb-1">City & Country</label>
+            <input
+              id="vibe-city-input"
+              type="text"
+              maxlength="40"
+              placeholder="Ludhiana, India"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400"
+            />
+          </div>
+          <div>
+            <label for="vibe-region-input" class="block text-xs font-semibold text-slate-700 mb-1">Region</label>
+            <select
+              id="vibe-region-input"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3 py-2 text-sm text-slate-900"
+            >
+              <option value="Asia">Asia</option>
+              <option value="Europe">Europe</option>
+              <option value="Americas">Americas</option>
+              <option value="Africa & Oceania">Africa & Oceania</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="vibe-answer-input" class="block text-xs font-semibold text-slate-700 mb-1">What quiet moment makes you feel alive?</label>
+          <textarea
+            id="vibe-answer-input"
+            rows="2"
+            maxlength="180"
+            placeholder="Late-night drives, rain on the window, good music..."
+            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 resize-none"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="vibe-ritual-input" class="block text-xs font-semibold text-slate-700 mb-1">Your Sunday Ritual (slow-reveal secret)</label>
+          <input
+            id="vibe-ritual-input"
+            type="text"
+            maxlength="140"
+            placeholder="e.g. Slow coffee, long walk, and a good playlist"
+            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400"
+          />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-700">Your 3 Core Values</span>
+            <span id="values-selected-count" class="text-xs font-semibold text-rose-600">3 / 3 selected</span>
+          </div>
+          <div id="vibe-values-grid" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <button
+          id="vibe-save-btn"
+          type="submit"
+          class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/25 hover:opacity-95 transition-opacity"
+        >
+          Save My Vibe & Recalculate Matches
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase Cloud Connect & Auth Modal -->
+  <div
+    id="cloud-modal"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-4"
+  >
+    <div class="surface-card bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">Auraloom Cloud (Supabase)</h2>
+          <p class="text-xs text-slate-500">Connect your database for real global users & live chat</p>
+        </div>
+        <button
+          id="close-cloud-btn"
+          type="button"
+          aria-label="Close Cloud Settings"
+          class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
+        >
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="cloud-status-msg" class="hidden mb-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium"></div>
+
+      <!-- Step A: Supabase Keys -->
+      <form id="cloud-config-form" class="space-y-3 mb-4">
+        <div>
+          <label for="sb-url-input" class="block text-xs font-semibold text-slate-700 mb-1">Supabase Project URL</label>
+          <input
+            id="sb-url-input"
+            type="url"
+            placeholder="https://your-project.supabase.co"
+            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400"
+          />
+        </div>
+        <div>
+          <label for="sb-key-input" class="block text-xs font-semibold text-slate-700 mb-1">Public anon / publishable Key</label>
+          <input
+            id="sb-key-input"
+            type="text"
+            placeholder="Paste your public anon/publishable key..."
+            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400"
+          />
+        </div>
+        <div class="flex gap-2">
+          <button
+            id="sb-connect-btn"
+            type="submit"
+            class="flex-1 py-2.5 px-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
+          >
+            Connect Project
+          </button>
+          <button
+            id="sb-disconnect-btn"
+            type="button"
+            class="py-2.5 px-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
+          >
+            Demo Mode
+          </button>
+        </div>
+      </form>
+
+      <!-- Step B: Real Sign Up / Log In (shown once project is connected) -->
+      <div id="auth-section" class="hidden pt-4 border-t border-slate-100">
+        <div id="auth-logged-out">
+          <div class="flex items-center gap-2 mb-3">
+            <button id="tab-signup-btn" type="button" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200">Create Account</button>
+            <button id="tab-login-btn" type="button" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600">Log In</button>
+          </div>
+          <form id="auth-form" class="space-y-3">
+            <input
+              id="auth-email"
+              type="email"
+              required
+              placeholder="Email address"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400"
+            />
+            <input
+              id="auth-password"
+              type="password"
+              minlength="6"
+              required
+              placeholder="Password (min 6 characters)"
+              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400"
+            />
+            <button
+              id="auth-submit-btn"
+              type="submit"
+              class="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/20 hover:opacity-95 transition-opacity"
+            >
+              Sign Up for Auraloom
+            </button>
+          </form>
+        </div>
+
+        <div id="auth-logged-in" class="hidden space-y-3">
+          <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-emerald-800">Live Cloud Active</p>
+              <p id="auth-user-email" class="text-xs text-emerald-700 truncate"></p>
+            </div>
+            <button
+              id="auth-signout-btn"
+              type="button"
+              class="px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shrink-0"
+            >
+              Sign Out
+            </button>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">
+            Your <strong>My Vibe</strong> profile, Sparks, and chat messages now sync live with your Supabase database. Open <strong>My Vibe</strong> to publish your card so other users can discover you!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // OPTIONAL FOR PUBLISHING: Paste your Supabase Project URL & Public Key here
+    // once you are ready to publish Auraloom online for everyone!
+    // =========================================================================
+    const DEFAULT_SUPABASE_URL = 'https://kpmkxsqvktsgyqcyluac.supabase.co';
+    const DEFAULT_SUPABASE_ANON_KEY = '';
+
+    // 1. GLOBAL DEMO DATA (used until you connect & sign into Supabase)
+    const ALL_VALUES = [
+      'Curiosity', 'Deep Talks', 'Slow Mornings', 'Kindness',
+      'Creativity', 'Loyalty', 'Ambition', 'Humor',
+      'Honesty', 'Empathy', 'Adventure', 'Warmth'
+    ];
+
+    const REGIONS = ['All Global', 'Asia', 'Europe', 'Americas', 'Africa & Oceania'];
+
+    const ICEBREAKERS = [
+      'What is one place in your city you wish you could show someone at sunset?',
+      'If we had a 10-minute coffee call right now, what would you ask me first?',
+      'What song or album feels like home to you?',
+      'What is a tradition from your culture you love sharing?'
+    ];
+
+    const AURA_THEMES = [
+      { auraGradient: 'from-violet-500 via-fuchsia-500 to-rose-400', bannerBg: 'from-violet-50 via-fuchsia-50 to-rose-50' },
+      { auraGradient: 'from-amber-400 via-orange-500 to-rose-500', bannerBg: 'from-amber-50 via-orange-50 to-rose-50' },
+      { auraGradient: 'from-rose-500 via-pink-500 to-amber-400', bannerBg: 'from-rose-50 via-pink-50 to-amber-50' },
+      { auraGradient: 'from-emerald-500 via-teal-500 to-cyan-500', bannerBg: 'from-emerald-50 via-teal-50 to-cyan-50' },
+      { auraGradient: 'from-sky-500 via-indigo-500 to-violet-500', bannerBg: 'from-sky-50 via-indigo-50 to-violet-50' }
+    ];
+
+    const DEMO_PROFILES = [
+      {
+        id: 'p1',
+        name: 'Aarav',
+        age: 26,
+        city: 'Chandigarh, India',
+        region: 'Asia',
+        languages: 'English · Hindi · Punjabi',
+        timezone: 'UTC+5:30',
+        initials: 'AM',
+        vibeTag: 'Midnight Stargazer',
+        baseResonance: 82,
+        auraGradient: 'from-violet-500 via-fuchsia-500 to-rose-400',
+        bannerBg: 'from-violet-50 via-fuchsia-50 to-rose-50',
+        promptQuestion: 'What quiet moment always makes you feel alive?',
+        promptAnswer: 'Driving with the windows down after a late rainstorm, a thermos of masala chai, and an old playlist on low volume.',
+        sundayRitual: 'Sketching at a quiet corner cafe, followed by a long evening walk with no phone.',
+        values: ['Curiosity', 'Deep Talks', 'Slow Mornings'],
+        autoReply: 'Love that you reached out! I am always up for a late-night conversation—what is your favorite rainy-day ritual?'
+      },
+      {
+        id: 'p2',
+        name: 'Hana',
+        age: 25,
+        city: 'Kyoto, Japan',
+        region: 'Asia',
+        languages: 'Japanese · English',
+        timezone: 'UTC+9',
+        initials: 'HT',
+        vibeTag: 'Warm Bookshop',
+        baseResonance: 80,
+        auraGradient: 'from-amber-400 via-orange-500 to-rose-500',
+        bannerBg: 'from-amber-50 via-orange-50 to-rose-50',
+        promptQuestion: 'What is something small that instantly wins your heart?',
+        promptAnswer: 'When someone remembers a tiny detail I mentioned weeks ago—like my favorite tea or a film I wanted to watch.',
+        sundayRitual: 'Browsing secondhand bookstores along the river and making slow-brewed matcha at home.',
+        values: ['Kindness', 'Creativity', 'Loyalty'],
+        autoReply: 'Hi from Kyoto! It is so nice to connect across time zones. What is something small that made your week better?'
+      },
+      {
+        id: 'p3',
+        name: 'Lucas',
+        age: 28,
+        city: 'Lisbon, Portugal',
+        region: 'Europe',
+        languages: 'Portuguese · English · Spanish',
+        timezone: 'UTC+0',
+        initials: 'LM',
+        vibeTag: 'Golden Tramway',
+        baseResonance: 79,
+        auraGradient: 'from-rose-500 via-pink-500 to-amber-400',
+        bannerBg: 'from-rose-50 via-pink-50 to-amber-50',
+        promptQuestion: 'What topic could you talk about for hours?',
+        promptAnswer: 'How music shapes our memories, hidden neighborhood bakeries, and why good architecture changes your mood.',
+        sundayRitual: 'Catching the ocean breeze near Alfama with a camera and trying a new pastry spot.',
+        values: ['Empathy', 'Adventure', 'Warmth'],
+        autoReply: 'Hey! Sending warm hello from Lisbon. Are you more of a spontaneous traveler or a slow explorer?'
+      },
+      {
+        id: 'p4',
+        name: 'Camille',
+        age: 27,
+        city: 'Montreal, Canada',
+        region: 'Americas',
+        languages: 'French · English',
+        timezone: 'UTC-5',
+        initials: 'CD',
+        vibeTag: 'Acoustic Sunrise',
+        baseResonance: 81,
+        auraGradient: 'from-emerald-500 via-teal-500 to-cyan-500',
+        bannerBg: 'from-emerald-50 via-teal-50 to-cyan-50',
+        promptQuestion: 'What does a great partnership feel like to you?',
+        promptAnswer: 'Being able to laugh over burnt toast on a Tuesday and still push each other to chase our wildest goals.',
+        sundayRitual: 'Morning walk up Mount Royal, fresh bagels, and tinkering with a creative side project.',
+        values: ['Ambition', 'Humor', 'Honesty'],
+        autoReply: 'So glad we sparked! Even from across the globe, good energy is easy to spot. What are you excited about lately?'
+      },
+      {
+        id: 'p5',
+        name: 'Amara',
+        age: 26,
+        city: 'Nairobi, Kenya',
+        region: 'Africa & Oceania',
+        languages: 'English · Swahili',
+        timezone: 'UTC+3',
+        initials: 'AO',
+        vibeTag: 'Velvet Horizon',
+        baseResonance: 83,
+        auraGradient: 'from-fuchsia-500 via-rose-500 to-amber-400',
+        bannerBg: 'from-fuchsia-50 via-rose-50 to-amber-50',
+        promptQuestion: 'What kind of conversation makes you lose track of time?',
+        promptAnswer: 'Swapping childhood stories, big dreams for the next five years, and the books that quietly changed how we think.',
+        sundayRitual: 'Live acoustic brunch with friends followed by journaling on the balcony at sunset.',
+        values: ['Curiosity', 'Empathy', 'Ambition'],
+        autoReply: 'Hello from Nairobi! I loved seeing your Spark pop up. What is a dream project you would love to build one day?'
+      },
+      {
+        id: 'p6',
+        name: 'Liam',
+        age: 29,
+        city: 'Melbourne, Australia',
+        region: 'Africa & Oceania',
+        languages: 'English',
+        timezone: 'UTC+11',
+        initials: 'LW',
+        vibeTag: 'Laneway Espresso',
+        baseResonance: 78,
+        auraGradient: 'from-sky-500 via-indigo-500 to-violet-500',
+        bannerBg: 'from-sky-50 via-indigo-50 to-violet-50',
+        promptQuestion: 'How do you recharge after a busy week?',
+        promptAnswer: 'Cooking a huge dinner for people I care about, putting on vinyl records, and turning off notifications.',
+        sundayRitual: 'Early coastal drive, flat white from a tiny laneway roaster, and a long afternoon read.',
+        values: ['Slow Mornings', 'Warmth', 'Humor'],
+        autoReply: 'G’day from Melbourne! Always awesome meeting someone new on Auraloom. What is your go-to comfort meal?'
+      }
+    ];
+
+    // 2. STATE & STORAGE HELPERS
+    function loadSaved(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function saveState(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    let sbConfig = loadSaved('auraloom_sb_config', {
+      url: DEFAULT_SUPABASE_URL,
+      key: DEFAULT_SUPABASE_ANON_KEY
+    });
+
+    let sbClient = null;
+    let currentUser = null;
+    let liveChannel = null;
+    let authMode = 'signup';
+
+    let profiles = [...DEMO_PROFILES];
+    let myProfile = loadSaved('auraloom_my_profile', {
+      name: '',
+      age: 24,
+      city: '',
+      region: 'Asia',
+      promptAnswer: '',
+      sundayRitual: '',
+      values: ['Curiosity', 'Deep Talks', 'Warmth']
+    });
+
+    let sparks = loadSaved('auraloom_sparks', []);
+    let conversations = loadSaved('auraloom_conversations', {});
+    let selectedRegion = 'All Global';
+    let currentIndex = 0;
+    let isRitualRevealed = false;
+    let activeChatId = null;
+    let draftValues = [...myProfile.values];
+    let toastTimer = null;
+    let replyTimer = null;
+
+    // 3. DOM ELEMENTS
+    const cardContainer = document.getElementById('card-container');
+    const profileCounter = document.getElementById('profile-counter');
+    const progressRow = document.getElementById('progress-row');
+    const circleLabel = document.getElementById('circle-label');
+    const cloudDot = document.getElementById('cloud-dot');
+    const openCloudBtn = document.getElementById('open-cloud-btn');
+    const cloudModal = document.getElementById('cloud-modal');
+    const closeCloudBtn = document.getElementById('close-cloud-btn');
+    const cloudStatusMsg = document.getElementById('cloud-status-msg');
+    const cloudConfigForm = document.getElementById('cloud-config-form');
+    const sbUrlInput = document.getElementById('sb-url-input');
+    const sbKeyInput = document.getElementById('sb-key-input');
+    const sbDisconnectBtn = document.getElementById('sb-disconnect-btn');
+    const authSection = document.getElementById('auth-section');
+    const authLoggedOut = document.getElementById('auth-logged-out');
+    const authLoggedIn = document.getElementById('auth-logged-in');
+    const authUserEmail = document.getElementById('auth-user-email');
+    const authSignoutBtn = document.getElementById('auth-signout-btn');
+    const tabSignupBtn = document.getElementById('tab-signup-btn');
+    const tabLoginBtn = document.getElementById('tab-login-btn');
+    const authForm = document.getElementById('auth-form');
+    const authEmail = document.getElementById('auth-email');
+    const authPassword = document.getElementById('auth-password');
+    const authSubmitBtn = document.getElementById('auth-submit-btn');
+
+    const sparksCount = document.getElementById('sparks-count');
+    const sparksModal = document.getElementById('sparks-modal');
+    const sparksListView = document.getElementById('sparks-list-view');
+    const sparksList = document.getElementById('sparks-list');
+    const chatView = document.getElementById('chat-view');
+    const chatPartnerAvatar = document.getElementById('chat-partner-avatar');
+    const chatPartnerName = document.getElementById('chat-partner-name');
+    const chatPartnerMeta = document.getElementById('chat-partner-meta');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatBackBtn = document.getElementById('chat-back-btn');
+    const chatIcebreakerBtn = document.getElementById('chat-icebreaker-btn');
+    const openSparksBtn = document.getElementById('open-sparks-btn');
+    const closeSparksBtn = document.getElementById('close-sparks-btn');
+    const closeChatModalBtn = document.getElementById('close-chat-modal-btn');
+    const openVibeBtn = document.getElementById('open-vibe-btn');
+    const myVibeLabel = document.getElementById('my-vibe-label');
+    const vibeModal = document.getElementById('vibe-modal');
+    const closeVibeBtn = document.getElementById('close-vibe-btn');
+    const vibeForm = document.getElementById('vibe-form');
+    const vibeNameInput = document.getElementById('vibe-name-input');
+    const vibeAgeInput = document.getElementById('vibe-age-input');
+    const vibeCityInput = document.getElementById('vibe-city-input');
+    const vibeRegionInput = document.getElementById('vibe-region-input');
+    const vibeAnswerInput = document.getElementById('vibe-answer-input');
+    const vibeRitualInput = document.getElementById('vibe-ritual-input');
+    const vibeValuesGrid = document.getElementById('vibe-values-grid');
+    const valuesSelectedCount = document.getElementById('values-selected-count');
+    const regionFilterBar = document.getElementById('region-filter-bar');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+
+    // Helpers
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(message) {
+      toastText.textContent = message;
+      toast.classList.remove('opacity-0', 'translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-2');
+      }, 2400);
+    }
+
+    function setCloudNotice(text, type = 'info') {
+      if (!text) {
+        cloudStatusMsg.classList.add('hidden');
+        return;
+      }
+      cloudStatusMsg.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200', 'bg-amber-50', 'text-amber-800', 'border-amber-200');
+      cloudStatusMsg.classList.add('border');
+      if (type === 'error') {
+        cloudStatusMsg.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+      } else if (type === 'success') {
+        cloudStatusMsg.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+      } else {
+        cloudStatusMsg.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-200');
+      }
+      cloudStatusMsg.textContent = text;
+    }
+
+    function mapDbProfile(row, index) {
+      const theme = AURA_THEMES[index % AURA_THEMES.length];
+      const cleanName = row.name || 'Auraloom Member';
+      const parts = cleanName.trim().split(/\s+/);
+      const initials = (parts[0][0] + (parts[1] ? parts[1][0] : (parts[0][1] || ''))).toUpperCase();
+      return {
+        id: row.id,
+        name: cleanName,
+        age: row.age || 25,
+        city: row.city || 'Global Citizen',
+        region: row.region || 'Asia',
+        languages: row.languages || 'English',
+        timezone: 'Live Member',
+        initials,
+        vibeTag: row.vibe_tag || 'Live Aura',
+        baseResonance: 80,
+        auraGradient: theme.auraGradient,
+        bannerBg: theme.bannerBg,
+        promptQuestion: row.prompt_question || 'What quiet moment always makes you feel alive?',
+        promptAnswer: row.prompt_answer || 'Looking for genuine conversations across the world.',
+        sundayRitual: row.sunday_ritual || 'Slow mornings, good music, and meaningful talks.',
+        values: Array.isArray(row.values) && row.values.length ? row.values : ['Curiosity', 'Kindness'],
+        isLive: true
+      };
+    }
+
+    function isLiveMode() {
+      return Boolean(sbClient && currentUser);
+    }
+
+    function updateCloudBadge() {
+      if (isLiveMode()) {
+        cloudDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        circleLabel.textContent = 'Live Cloud';
+        openCloudBtn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors shadow-sm';
+      } else if (sbClient) {
+        cloudDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        circleLabel.textContent = 'Sign In (Cloud)';
+        openCloudBtn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white border border-amber-300 text-amber-700 hover:bg-amber-50 transition-colors shadow-sm';
+      } else {
+        cloudDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        circleLabel.textContent = 'Connect Cloud';
+        openCloudBtn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors shadow-sm';
+      }
+    }
+
+    // 4. SUPABASE CONNECTION & LIVE DATA SYNC
+    async function initSupabase(url, key, silent = false) {
+      if (!url || !key || !window.supabase) return false;
+      try {
+        sbClient = window.supabase.createClient(url.trim(), key.trim());
+        sbConfig = { url: url.trim(), key: key.trim() };
+        saveState('auraloom_sb_config', sbConfig);
+
+        const { data, error } = await sbClient.auth.getSession();
+        if (error) throw error;
+        currentUser = data.session ? data.session.user : null;
+
+        authSection.classList.remove('hidden');
+        updateAuthUi();
+        updateCloudBadge();
+
+        if (currentUser) {
+          await loadLiveCloudData();
+          subscribeToLiveMessages();
+        }
+        if (!silent) setCloudNotice('Connected to your Supabase project! Sign up or log in below.', 'success');
+        return true;
+      } catch (err) {
+        sbClient = null;
+        currentUser = null;
+        updateCloudBadge();
+        if (!silent) setCloudNotice(`Could not connect: ${err.message || 'Check your Project URL and public key.'}`, 'error');
+        return false;
+      }
+    }
+
+    function updateAuthUi() {
+      if (currentUser) {
+        authLoggedOut.classList.add('hidden');
+        authLoggedIn.classList.remove('hidden');
+        authUserEmail.textContent = currentUser.email || 'Signed in';
+      } else {
+        authLoggedOut.classList.remove('hidden');
+        authLoggedIn.classList.add('hidden');
+      }
+    }
+
+    async function loadLiveCloudData() {
+      if (!isLiveMode()) return;
+      try {
+        // 1. Fetch all profiles
+        const { data: rows, error: pErr } = await sbClient
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (pErr) throw pErr;
+
+        const mine = (rows || []).find(r => r.id === currentUser.id);
+        if (mine) {
+          myProfile = {
+            name: mine.name || '',
+            age: mine.age || 24,
+            city: mine.city || '',
+            region: mine.region || 'Asia',
+            promptAnswer: mine.prompt_answer || '',
+            sundayRitual: mine.sunday_ritual || '',
+            values: Array.isArray(mine.values) && mine.values.length ? mine.values : ['Curiosity', 'Deep Talks', 'Warmth']
+          };
+          saveState('auraloom_my_profile', myProfile);
+        }
+
+        const others = (rows || []).filter(r => r.id !== currentUser.id).map((r, i) => mapDbProfile(r, i));
+        profiles = others.length > 0 ? others : [...DEMO_PROFILES];
+
+        // 2. Fetch user's sparks
+        const { data: sparkRows, error: sErr } = await sbClient
+          .from('sparks')
+          .select('*')
+          .eq('from_user', currentUser.id);
+        if (!sErr && sparkRows) {
+          const sparkedIds = new Set(sparkRows.map(s => s.to_user));
+          sparks = others.filter(p => sparkedIds.has(p.id));
+        }
+
+        // 3. Fetch user's messages
+        const { data: msgRows, error: mErr } = await sbClient
+          .from('messages')
+          .select('*')
+          .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+          .order('created_at', { ascending: true });
+        if (!mErr && msgRows) {
+          conversations = {};
+          msgRows.forEach(m => {
+            const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+            if (!conversations[partnerId]) conversations[partnerId] = [];
+            conversations[partnerId].push({
+              sender: m.sender_id === currentUser.id ? 'me' : 'them',
+              text: m.body,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+          });
+        }
+
+        currentIndex = 0;
+        renderCurrentCard();
+      } catch (err) {
+        showToast('Sync error: check Supabase tables');
+      }
+    }
+
+    function subscribeToLiveMessages() {
+      if (!isLiveMode()) return;
+      if (liveChannel) {
+        sbClient.removeChannel(liveChannel);
+        liveChannel = null;
+      }
+      liveChannel = sbClient
+        .channel('auraloom-live-chat')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+          const m = payload.new;
+          if (!m || !currentUser) return;
+          if (m.sender_id !== currentUser.id && m.receiver_id !== currentUser.id) return;
+          if (m.sender_id === currentUser.id) return; // Already rendered optimistically
+
+          const partnerId = m.sender_id;
+          if (!conversations[partnerId]) conversations[partnerId] = [];
+          conversations[partnerId].push({
+            sender: 'them',
+            text: m.body,
+            time: new Date(m.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+          if (activeChatId === partnerId) {
+            renderChatMessages();
+          } else {
+            showToast('New live message received!');
+          }
+        })
+        .subscribe();
+    }
+
+    // 5. FILTERING & RESONANCE
+    function getFilteredProfiles() {
+      if (selectedRegion === 'All Global') return profiles;
+      return profiles.filter(p => p.region === selectedRegion);
+    }
+
+    function computeResonance(profile) {
+      const shared = profile.values.filter(v => myProfile.values.includes(v)).length;
+      return Math.min(99, profile.baseResonance + shared * 6);
+    }
+
+    function nowTimeLabel() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // 6. RENDER REGION BAR & MAIN CARD
+    function renderRegionBar() {
+      regionFilterBar.innerHTML = REGIONS.map(region => {
+        const active = region === selectedRegion;
+        return `
+          <button
+            type="button"
+            data-region="${region}"
+            class="region-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              active
+                ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white shadow-md shadow-rose-500/20'
+                : 'pill-light text-slate-600 hover:text-slate-900 hover:bg-white'
+            }"
+          >
+            ${region}
+          </button>
+        `;
+      }).join('');
+
+      regionFilterBar.querySelectorAll('.region-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedRegion = btn.getAttribute('data-region');
+          currentIndex = 0;
+          isRitualRevealed = false;
+          renderRegionBar();
+          renderCurrentCard();
+        });
+      });
+    }
+
+    function renderCurrentCard() {
+      sparksCount.textContent = sparks.length;
+      myVibeLabel.textContent = myProfile.name ? myProfile.name : 'My Vibe';
+      updateCloudBadge();
+
+      const list = getFilteredProfiles();
+
+      if (currentIndex >= list.length) {
+        profileCounter.textContent = `0 remaining`;
+        cardContainer.innerHTML = `
+          <div class="surface-card rounded-3xl p-8 text-center card-enter">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-rose-100 to-amber-100 border border-rose-200 flex items-center justify-center">
+              <i data-lucide="globe" class="w-8 h-8 text-rose-500"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 mb-2">You've explored ${escapeHtml(selectedRegion)}</h2>
+            <p class="text-sm text-slate-500 mb-6 leading-relaxed">
+              Try another region above, message your Sparks, or explore this circle again.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button
+                id="empty-view-sparks"
+                type="button"
+                class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/25 hover:opacity-95 transition-opacity"
+              >
+                Open Sparks & Chats (${sparks.length})
+              </button>
+              <button
+                id="reset-circle-btn"
+                type="button"
+                class="flex-1 py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors"
+              >
+                Explore Again
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('empty-view-sparks').addEventListener('click', openSparksModal);
+        document.getElementById('reset-circle-btn').addEventListener('click', resetCircle);
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      profileCounter.textContent = `Profile ${currentIndex + 1} of ${list.length}`;
+
+      const p = list[currentIndex];
+      const resonance = computeResonance(p);
+      const valuesHtml = p.values
+        .map(v => {
+          const isMatch = myProfile.values.includes(v);
+          return `<span class="px-3 py-1 rounded-full text-xs font-semibold ${
+            isMatch
+              ? 'bg-rose-50 border border-rose-200 text-rose-700'
+              : 'bg-slate-100 border border-slate-200/70 text-slate-700'
+          }">${isMatch ? '✦ ' : ''}${escapeHtml(v)}</span>`;
+        })
+        .join('');
+
+      cardContainer.innerHTML = `
+        <article class="surface-card rounded-3xl overflow-hidden card-enter">
+          <div class="relative p-5 pb-4 bg-gradient-to-br ${p.bannerBg} border-b border-slate-100">
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/90 border border-slate-200/70 text-slate-700 shadow-sm">
+                <i data-lucide="waves" class="w-3.5 h-3.5 text-rose-500"></i>
+                ${escapeHtml(p.vibeTag)}
+              </span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700">
+                ${resonance}% Resonance
+              </span>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${p.auraGradient} flex items-center justify-center text-xl font-extrabold text-white shadow-lg shadow-rose-500/20 orb-float shrink-0">
+                ${escapeHtml(p.initials)}
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</h2>
+                <p class="text-xs font-medium text-slate-600 flex items-center gap-1 mt-1 truncate">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
+                  ${escapeHtml(p.city)} · ${escapeHtml(p.timezone)}
+                </p>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">${escapeHtml(p.languages)}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 space-y-4 bg-white">
+            <div class="bg-slate-50/90 border border-slate-100 rounded-2xl p-4">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-rose-500 mb-1.5">
+                ${escapeHtml(p.promptQuestion)}
+              </p>
+              <p class="text-sm text-slate-800 leading-relaxed font-medium">
+                “${escapeHtml(p.promptAnswer)}”
+              </p>
+            </div>
+
+            <div>
+              <button
+                id="reveal-ritual-btn"
+                type="button"
+                class="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-amber-50/70 hover:bg-amber-50 border border-amber-200/70 text-sm text-slate-800 transition-colors"
+              >
+                <span class="flex items-center gap-2 font-semibold">
+                  <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
+                  ${isRitualRevealed ? 'Hide Sunday Ritual' : 'Peek at their Sunday Ritual'}
+                </span>
+                <i data-lucide="${isRitualRevealed ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-amber-600"></i>
+              </button>
+              <div id="ritual-box" class="${isRitualRevealed ? 'mt-2 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200/80 text-sm text-amber-950 leading-relaxed' : 'hidden'}">
+                ${escapeHtml(p.sundayRitual)}
+              </div>
+            </div>
+
+            <div>
+              <p class="text-xs font-medium text-slate-500 mb-2">Core Values <span class="text-rose-500 font-semibold">(✦ matches your vibe)</span></p>
+              <div class="flex flex-wrap gap-2">
+                ${valuesHtml}
+              </div>
+            </div>
+
+            <div>
+              <input
+                id="spark-note-input"
+                type="text"
+                maxlength="140"
+                placeholder="Optional: add a quick opening note with your Spark..."
+                class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <button
+                id="pass-btn"
+                type="button"
+                class="py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
+              >
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                Pass Gently
+              </button>
+              <button
+                id="spark-btn"
+                type="button"
+                class="py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-500/25 transition-opacity"
+              >
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                Send a Spark
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+
+      document.getElementById('reveal-ritual-btn').addEventListener('click', toggleRitual);
+      document.getElementById('pass-btn').addEventListener('click', handlePass);
+      document.getElementById('spark-btn').addEventListener('click', handleSpark);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 7. CORE ACTIONS (supports both Demo Mode & Live Supabase Mode)
+    function toggleRitual() {
+      isRitualRevealed = !isRitualRevealed;
+      renderCurrentCard();
+    }
+
+    function handlePass() {
+      isRitualRevealed = false;
+      currentIndex += 1;
+      renderCurrentCard();
+    }
+
+    async function handleSpark() {
+      const list = getFilteredProfiles();
+      const profile = list[currentIndex];
+      if (!profile) return;
+
+      const noteInput = document.getElementById('spark-note-input');
+      const note = noteInput ? noteInput.value.trim() : '';
+
+      if (!sparks.some(item => item.id === profile.id)) {
+        sparks.push(profile);
+        if (!profile.isLive) saveState('auraloom_sparks', sparks);
+      }
+
+      if (!conversations[profile.id]) conversations[profile.id] = [];
+
+      if (isLiveMode() && profile.isLive) {
+        try {
+          await sbClient.from('sparks').upsert({ from_user: currentUser.id, to_user: profile.id }, { onConflict: 'from_user,to_user' });
+          if (note) {
+            await sbClient.from('messages').insert({ sender_id: currentUser.id, receiver_id: profile.id, body: note });
+            conversations[profile.id].push({ sender: 'me', text: note, time: nowTimeLabel() });
+          }
+          showToast(note ? `Live Spark & note sent to ${profile.name}` : `Live Spark sent to ${profile.name}`);
+        } catch (err) {
+          showToast('Could not save Spark to cloud');
+        }
+      } else {
+        if (note) {
+          conversations[profile.id].push({ sender: 'me', text: note, time: nowTimeLabel() });
+          conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', time: nowTimeLabel() });
+          saveState('auraloom_conversations', conversations);
+          showToast(`Spark & note sent to ${profile.name}`);
+        } else {
+          if (conversations[profile.id].length === 0) {
+            conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', time: nowTimeLabel() });
+            saveState('auraloom_conversations', conversations);
+          }
+          showToast(`Spark sent to ${profile.name} — tap Sparks to chat`);
+        }
+      }
+
+      isRitualRevealed = false;
+      currentIndex += 1;
+      renderCurrentCard();
+    }
+
+    function resetCircle() {
+      currentIndex = 0;
+      isRitualRevealed = false;
+      renderCurrentCard();
+    }
+
+    // 8. SPARKS & LIVE CHAT DRAWER
+    function showSparksListView() {
+      activeChatId = null;
+      chatView.classList.add('hidden');
+      chatView.classList.remove('flex');
+      sparksListView.classList.remove('hidden');
+      sparksListView.classList.add('flex');
+      renderSparksList();
+    }
+
+    function renderSparksList() {
+      if (sparks.length === 0) {
+        sparksList.innerHTML = `
+          <div class="text-center py-10 px-4">
+            <p class="text-sm text-slate-800 font-semibold mb-1">No Sparks yet</p>
+            <p class="text-xs text-slate-500">Tap "Send a Spark" on someone worldwide to unlock chat with them.</p>
+          </div>
+        `;
+        return;
+      }
+
+      sparksList.innerHTML = sparks
+        .map(p => {
+          const msgs = conversations[p.id] || [];
+          const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1].text : `${p.vibeTag} · ${p.city}`;
+          return `
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${p.auraGradient} flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-sm">
+                    ${escapeHtml(p.initials)}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-bold text-slate-900 truncate">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
+                    <p class="text-xs text-slate-500 truncate">${escapeHtml(p.city)}</p>
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-emerald-600 shrink-0">${computeResonance(p)}%</span>
+              </div>
+              <p class="text-xs text-slate-600 truncate bg-white border border-slate-100 rounded-xl px-3 py-2">
+                ${escapeHtml(lastMsg)}
+              </p>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  data-chat-id="${escapeHtml(p.id)}"
+                  class="open-chat-btn flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-xs hover:opacity-95 transition-opacity"
+                >
+                  Message
+                </button>
+                <button
+                  type="button"
+                  data-remove-id="${escapeHtml(p.id)}"
+                  class="remove-spark-btn text-xs text-slate-500 hover:text-rose-600 px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-rose-200 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      sparksList.querySelectorAll('.open-chat-btn').forEach(btn => {
+        btn.addEventListener('click', () => openChatRoom(btn.getAttribute('data-chat-id')));
+      });
+
+      sparksList.querySelectorAll('.remove-spark-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-remove-id');
+          const target = sparks.find(item => item.id === id);
+          sparks = sparks.filter(item => item.id !== id);
+          if (isLiveMode() && target && target.isLive) {
+            try {
+              await sbClient.from('sparks').delete().eq('from_user', currentUser.id).eq('to_user', id);
+            } catch (e) {}
+          } else {
+            saveState('auraloom_sparks', sparks);
+          }
+          sparksCount.textContent = sparks.length;
+          renderSparksList();
+          if (currentIndex >= getFilteredProfiles().length) renderCurrentCard();
+        });
+      });
+    }
+
+    function openChatRoom(profileId) {
+      const partner = sparks.find(p => p.id === profileId) || profiles.find(p => p.id === profileId);
+      if (!partner) return;
+
+      activeChatId = profileId;
+      sparksListView.classList.add('hidden');
+      sparksListView.classList.remove('flex');
+      chatView.classList.remove('hidden');
+      chatView.classList.add('flex');
+
+      chatPartnerAvatar.className = `w-9 h-9 rounded-xl bg-gradient-to-br ${partner.auraGradient} flex items-center justify-center text-xs font-bold text-white shrink-0`;
+      chatPartnerAvatar.textContent = partner.initials;
+      chatPartnerName.textContent = `${partner.name}, ${partner.age}`;
+      chatPartnerMeta.textContent = `${partner.city} · ${partner.timezone}`;
+
+      renderChatMessages();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderChatMessages() {
+      const msgs = conversations[activeChatId] || [];
+      if (msgs.length === 0) {
+        chatMessages.innerHTML = `
+          <div class="text-center py-8 text-xs text-slate-500">
+            Say hello or drop a Deep Question below to start the conversation.
+          </div>
+        `;
+        return;
+      }
+
+      chatMessages.innerHTML = msgs
+        .map(m => {
+          const isMe = m.sender === 'me';
+          return `
+            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+              <div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                isMe
+                  ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-medium rounded-br-md shadow-sm'
+                  : 'bg-slate-100 text-slate-800 rounded-bl-md'
+              }">
+                ${escapeHtml(m.text)}
+              </div>
+              <span class="text-[10px] text-slate-400 mt-1 px-1">${escapeHtml(m.time)}</span>
+            </div>
+          `;
+        })
+        .join('');
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeChatId) return;
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      const partner = sparks.find(p => p.id === activeChatId) || profiles.find(p => p.id === activeChatId);
+      if (!conversations[activeChatId]) conversations[activeChatId] = [];
+      conversations[activeChatId].push({ sender: 'me', text, time: nowTimeLabel() });
+      chatInput.value = '';
+      renderChatMessages();
+
+      if (isLiveMode() && partner && partner.isLive) {
+        try {
+          const { error } = await sbClient.from('messages').insert({
+            sender_id: currentUser.id,
+            receiver_id: partner.id,
+            body: text
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast('Message failed to send');
+        }
+        return;
+      }
+
+      saveState('auraloom_conversations', conversations);
+      const currentPartnerId = activeChatId;
+      if (replyTimer) clearTimeout(replyTimer);
+      replyTimer = setTimeout(() => {
+        if (!partner) return;
+        const replies = [
+          `That really resonates with me! Here in ${partner.city.split(',')[0]}, I was just thinking about the exact same thing.`,
+          `I love how thoughtful your answer is. Tell me more—what inspired that?`,
+          `This is already way better than small talk. What is your favorite part of your week usually?`
+        ];
+        const nextReply = replies[conversations[currentPartnerId].length % replies.length];
+        conversations[currentPartnerId].push({ sender: 'them', text: nextReply, time: nowTimeLabel() });
+        saveState('auraloom_conversations', conversations);
+        if (activeChatId === currentPartnerId) renderChatMessages();
+      }, 650);
+    });
+
+    chatIcebreakerBtn.addEventListener('click', () => {
+      const randomPrompt = ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)];
+      chatInput.value = randomPrompt;
+      chatInput.focus();
+    });
+
+    function openSparksModal() {
+      showSparksListView();
+      sparksModal.classList.remove('hidden');
+      sparksModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeSparksModal() {
+      sparksModal.classList.add('hidden');
+      sparksModal.classList.remove('flex');
+    }
+
+    // 9. MY VIBE PROFILE MODAL
+    function renderValuePicker() {
+      valuesSelectedCount.textContent = `${draftValues.length} / 3 selected`;
+      vibeValuesGrid.innerHTML = ALL_VALUES.map(val => {
+        const selected = draftValues.includes(val);
+        return `
+          <button
+            type="button"
+            data-val="${val}"
+            class="vibe-val-chip px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+              selected
+                ? 'bg-rose-500 text-white shadow-sm'
+                : 'bg-slate-100 border border-slate-200/70 text-slate-700 hover:bg-slate-200/70'
+            }"
+          >
+            ${selected ? '✦ ' : ''}${val}
+          </button>
+        `;
+      }).join('');
+
+      vibeValuesGrid.querySelectorAll('.vibe-val-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-val');
+          if (draftValues.includes(val)) {
+            draftValues = draftValues.filter(v => v !== val);
+          } else if (draftValues.length < 3) {
+            draftValues.push(val);
+          } else {
+            showToast('Pick up to 3 core values');
+            return;
+          }
+          renderValuePicker();
+        });
+      });
+    }
+
+    function openVibeModal() {
+      vibeNameInput.value = myProfile.name || '';
+      vibeAgeInput.value = myProfile.age || 24;
+      vibeCityInput.value = myProfile.city || '';
+      vibeRegionInput.value = myProfile.region || 'Asia';
+      vibeAnswerInput.value = myProfile.promptAnswer || '';
+      vibeRitualInput.value = myProfile.sundayRitual || '';
+      draftValues = [...myProfile.values];
+      renderValuePicker();
+      vibeModal.classList.remove('hidden');
+      vibeModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeVibeModal() {
+      vibeModal.classList.add('hidden');
+      vibeModal.classList.remove('flex');
+    }
+
+    vibeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (draftValues.length === 0) {
+        showToast('Pick at least 1 core value');
+        return;
+      }
+      myProfile = {
+        name: vibeNameInput.value.trim(),
+        age: parseInt(vibeAgeInput.value, 10) || 24,
+        city: vibeCityInput.value.trim(),
+        region: vibeRegionInput.value || 'Asia',
+        promptAnswer: vibeAnswerInput.value.trim(),
+        sundayRitual: vibeRitualInput.value.trim(),
+        values: [...draftValues]
+      };
+      saveState('auraloom_my_profile', myProfile);
+
+      if (isLiveMode()) {
+        try {
+          const { error } = await sbClient.from('profiles').upsert({
+            id: currentUser.id,
+            name: myProfile.name || 'Auraloom Member',
+            age: myProfile.age,
+            city: myProfile.city || 'Global Citizen',
+            region: myProfile.region,
+            languages: 'English',
+            vibe_tag: 'Live Aura',
+            prompt_question: 'What quiet moment always makes you feel alive?',
+            prompt_answer: myProfile.promptAnswer || 'Excited to meet thoughtful people worldwide.',
+            sunday_ritual: myProfile.sundayRitual || 'Slow mornings and good music.',
+            values: myProfile.values
+          });
+          if (error) throw error;
+          showToast('Profile published live to Auraloom!');
+        } catch (err) {
+          showToast('Saved locally (cloud sync failed)');
+        }
+      } else {
+        showToast('Your Vibe saved — Resonance updated!');
+      }
+
+      closeVibeModal();
+      renderCurrentCard();
+    });
+
+    // 10. CLOUD MODAL CONTROLS
+    function openCloudModal() {
+      sbUrlInput.value = sbConfig.url || '';
+      sbKeyInput.value = sbConfig.key || '';
+      setCloudNotice('');
+      if (sbClient) authSection.classList.remove('hidden');
+      updateAuthUi();
+      cloudModal.classList.remove('hidden');
+      cloudModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeCloudModal() {
+      cloudModal.classList.add('hidden');
+      cloudModal.classList.remove('flex');
+    }
+
+    cloudConfigForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await initSupabase(sbUrlInput.value, sbKeyInput.value, false);
+    });
+
+    sbDisconnectBtn.addEventListener('click', async () => {
+      if (sbClient && currentUser) {
+        try { await sbClient.auth.signOut(); } catch (e) {}
+      }
+      sbClient = null;
+      currentUser = null;
+      sbConfig = { url: '', key: '' };
+      saveState('auraloom_sb_config', sbConfig);
+      profiles = [...DEMO_PROFILES];
+      sparks = loadSaved('auraloom_sparks', []);
+      conversations = loadSaved('auraloom_conversations', {});
+      authSection.classList.add('hidden');
+      setCloudNotice('Switched back to Demo Mode.', 'info');
+      currentIndex = 0;
+      renderCurrentCard();
+    });
+
+    function setAuthTab(mode) {
+      authMode = mode;
+      if (mode === 'signup') {
+        tabSignupBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200';
+        tabLoginBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600';
+        authSubmitBtn.textContent = 'Sign Up for Auraloom';
+      } else {
+        tabLoginBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200';
+        tabSignupBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600';
+        authSubmitBtn.textContent = 'Log In to Auraloom';
+      }
+    }
+
+    tabSignupBtn.addEventListener('click', () => setAuthTab('signup'));
+    tabLoginBtn.addEventListener('click', () => setAuthTab('login'));
+
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!sbClient) {
+        setCloudNotice('Connect your Supabase project first.', 'error');
+        return;
+      }
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+      setCloudNotice('Working...', 'info');
+
+      try {
+        if (authMode === 'signup') {
+          const { data, error } = await sbClient.auth.signUp({ email, password });
+          if (error) throw error;
+          if (data.session) {
+            currentUser = data.session.user;
+            updateAuthUi();
+            updateCloudBadge();
+            await loadLiveCloudData();
+            subscribeToLiveMessages();
+            setCloudNotice('Account created and signed in! Open My Vibe to publish your card.', 'success');
+          } else {
+            setCloudNotice('Account created! Check your email to confirm (or turn off Confirm Email in Supabase → Authentication → Providers → Email for instant testing).', 'info');
+          }
+        } else {
+          const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          currentUser = data.user;
+          updateAuthUi();
+          updateCloudBadge();
+          await loadLiveCloudData();
+          subscribeToLiveMessages();
+          setCloudNotice('Welcome back! Synced with your live Supabase database.', 'success');
+        }
+      } catch (err) {
+        setCloudNotice(err.message || 'Authentication failed.', 'error');
+      }
+    });
+
+    authSignoutBtn.addEventListener('click', async () => {
+      if (sbClient) {
+        try { await sbClient.auth.signOut(); } catch (e) {}
+      }
+      currentUser = null;
+      profiles = [...DEMO_PROFILES];
+      updateAuthUi();
+      updateCloudBadge();
+      setCloudNotice('Signed out. Viewing Demo Circle.', 'info');
+      renderCurrentCard();
+    });
+
+    // Wire up modal controls
+    openSparksBtn.addEventListener('click', openSparksModal);
+    closeSparksBtn.addEventListener('click', closeSparksModal);
+    closeChatModalBtn.addEventListener('click', closeSparksModal);
+    chatBackBtn.addEventListener('click', showSparksListView);
+    sparksModal.addEventListener('click', (e) => {
+      if (e.target === sparksModal) closeSparksModal();
+    });
+
+    openVibeBtn.addEventListener('click', openVibeModal);
+    closeVibeBtn.addEventListener('click', closeVibeModal);
+    vibeModal.addEventListener('click', (e) => {
+      if (e.target === vibeModal) closeVibeModal();
+    });
+
+    openCloudBtn.addEventListener('click', openCloudModal);
+    closeCloudBtn.addEventListener('click', closeCloudModal);
+    cloudModal.addEventListener('click', (e) => {
+      if (e.target === cloudModal) closeCloudModal();
+    });
+
+    // Start the app!
+    renderRegionBar();
+    renderCurrentCard();
+    if (sbConfig.url && sbConfig.key) {
+      initSupabase(sbConfig.url, sbConfig.key, true);
+    }
+  </script>
+</body>
+</html>
