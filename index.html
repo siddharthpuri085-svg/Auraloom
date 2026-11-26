@@ -1,482 +1,584 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auraloom — Global Vibe-First Soulmate App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#E94776" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Auraloom" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Auraloom — Global Social Discovery</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #fbf9f7;
-      background-image:
-        radial-gradient(circle at 10% 8%, rgba(251, 113, 133, 0.16), transparent 40%),
-        radial-gradient(circle at 92% 88%, rgba(251, 191, 36, 0.16), transparent 44%),
-        radial-gradient(circle at 85% 15%, rgba(167, 139, 250, 0.12), transparent 38%);
-      min-height: 100vh;
+    :root {
+      --bg-canvas: #F8F7F5;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F2F1EE;
+      --bg-hover: #ECEAE5;
+      --text-primary: #20232D;
+      --text-secondary: #737783;
+      --accent-primary: #E94776;
+      --accent-secondary: #A64AE5;
+      --border-subtle: #EAE9ED;
+      --success: #16866A;
+      --success-bg: rgba(22, 134, 106, 0.10);
+      --accent-soft: rgba(233, 71, 118, 0.09);
+      --accent-soft-border: rgba(233, 71, 118, 0.24);
+      --shadow-card: 0 1px 2px rgba(32, 35, 45, 0.04), 0 10px 30px -12px rgba(32, 35, 45, 0.08);
+      --shadow-nav: 0 -4px 20px rgba(32, 35, 45, 0.04);
+      --nav-bg: rgba(255, 255, 255, 0.92);
     }
 
-    @keyframes floatOrb {
-      0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-5px) scale(1.04); }
+    [data-theme="dark"] {
+      --bg-canvas: #0F1117;
+      --bg-surface: #171A23;
+      --bg-subtle: #1F2330;
+      --bg-hover: #272C3B;
+      --text-primary: #F3F4F7;
+      --text-secondary: #9499A8;
+      --accent-primary: #F05A86;
+      --accent-secondary: #B462EE;
+      --border-subtle: #262A38;
+      --success: #24AD8A;
+      --success-bg: rgba(36, 173, 138, 0.14);
+      --accent-soft: rgba(240, 90, 134, 0.14);
+      --accent-soft-border: rgba(240, 90, 134, 0.32);
+      --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.25), 0 12px 32px -12px rgba(0, 0, 0, 0.45);
+      --shadow-nav: 0 -4px 20px rgba(0, 0, 0, 0.35);
+      --nav-bg: rgba(23, 26, 35, 0.92);
     }
 
-    .orb-float {
-      animation: floatOrb 5s ease-in-out infinite;
-    }
+    * { box-sizing: border-box; }
 
-    .card-enter {
-      animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes cardFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(14px) scale(0.98);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     .surface-card {
-      background: rgba(255, 255, 255, 0.94);
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+
+    .subtle-box {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-cta {
+      background: linear-gradient(135deg, #E94776 0%, #A64AE5 100%);
+      color: #FFFFFF;
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-cta:hover {
+      opacity: 0.94;
+      box-shadow: 0 6px 20px -6px rgba(233, 71, 118, 0.5);
+    }
+    .btn-cta:active { transform: scale(0.985); }
+
+    .btn-secondary {
+      background-color: var(--bg-subtle);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      transition: background-color 0.15s ease, transform 0.15s ease;
+    }
+    .btn-secondary:hover { background-color: var(--bg-hover); }
+    .btn-secondary:active { transform: scale(0.985); }
+
+    .input-field {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .input-field::placeholder { color: var(--text-secondary); }
+    .input-field:focus {
+      outline: none;
+      background-color: var(--bg-surface);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .badge-success {
+      background-color: var(--success-bg);
+      color: var(--success);
+    }
+
+    .tag-matched {
+      background-color: var(--accent-soft);
+      border: 1px solid var(--accent-soft-border);
+      color: var(--accent-primary);
+    }
+
+    .tag-neutral {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    .fade-in {
+      animation: fadeSlide 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+      0% { opacity: 0.55; }
+      50% { opacity: 0.9; }
+      100% { opacity: 0.55; }
+    }
+    .skeleton {
+      background-color: var(--bg-subtle);
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .nav-bar-glass {
+      background-color: var(--nav-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      box-shadow: 0 18px 42px -16px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(244, 63, 94, 0.06);
+      border-top: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-nav);
     }
 
-    .pill-light {
-      background: rgba(255, 255, 255, 0.88);
-      border: 1px solid rgba(15, 23, 42, 0.09);
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .header-glass {
+      background-color: var(--nav-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
     }
   </style>
 </head>
-<body class="text-slate-900 antialiased selection:bg-rose-200">
-  <div class="max-w-md mx-auto min-h-screen flex flex-col px-4 py-5">
+<body class="min-h-screen">
 
-    <!-- Top Navigation Bar -->
-    <header class="flex items-center justify-between gap-3 mb-4">
-      <div class="flex items-center gap-2.5 min-w-0 flex-1">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 via-pink-500 to-amber-400 flex items-center justify-center shadow-md shadow-rose-500/25 shrink-0">
-          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+  <div class="min-h-screen flex flex-col md:flex-row max-w-6xl mx-auto">
+
+    <!-- DESKTOP LEFT SIDEBAR (md+) -->
+    <aside class="hidden md:flex md:flex-col md:w-64 md:shrink-0 md:sticky md:top-0 md:h-screen px-4 py-6 border-r" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
+      <!-- Brand -->
+      <div class="flex items-center gap-3 px-2 mb-7">
+        <div class="w-9 h-9 rounded-xl btn-cta flex items-center justify-center shrink-0">
+          <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
         </div>
         <div class="min-w-0">
-          <h1 class="text-base sm:text-lg font-bold tracking-tight leading-none text-slate-900 truncate">Auraloom</h1>
-          <p class="text-[11px] text-slate-500 mt-0.5 truncate">Global connections</p>
+          <p class="text-base font-bold tracking-tight leading-none" style="color: var(--text-primary);">Auraloom</p>
+          <p class="text-xs mt-1 truncate" style="color: var(--text-secondary);">Global social discovery</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <!-- Desktop Nav Links -->
+      <nav aria-label="Primary navigation" class="space-y-1 flex-1" id="desktop-nav"></nav>
+
+      <!-- Bottom Sidebar Utilities -->
+      <div class="pt-4 border-t space-y-2" style="border-color: var(--border-subtle);">
         <button
-          id="open-vibe-btn"
+          id="desktop-theme-btn"
           type="button"
-          class="pill-light hover:bg-white transition-colors rounded-full px-2.5 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 text-xs font-semibold text-slate-700 max-w-[108px]"
+          class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors btn-secondary"
         >
-          <i data-lucide="user" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
-          <span id="my-vibe-label" class="truncate">My Vibe</span>
+          <span class="flex items-center gap-2">
+            <i data-lucide="moon" class="w-4 h-4"></i>
+            <span id="desktop-theme-label">Dark Mode</span>
+          </span>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-60"></i>
         </button>
 
         <button
-          id="open-sparks-btn"
+          id="desktop-cloud-btn"
           type="button"
-          class="pill-light hover:bg-white transition-colors rounded-full px-2.5 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 text-xs font-semibold text-slate-800 shrink-0"
+          class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold subtle-box hover:opacity-90 transition-opacity"
         >
-          <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
-          <span>Sparks</span>
-          <span
-            id="sparks-count"
-            class="bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none"
-          >0</span>
+          <span class="flex items-center gap-2 min-w-0">
+            <span id="desktop-cloud-dot" class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+            <span id="desktop-cloud-label" class="truncate" style="color: var(--text-primary);">Connect Cloud</span>
+          </span>
+          <i data-lucide="cloud" class="w-3.5 h-3.5 shrink-0" style="color: var(--text-secondary);"></i>
         </button>
       </div>
-    </header>
+    </aside>
 
-    <!-- Global Region Filter Bar -->
-    <nav aria-label="Global regions" class="mb-3">
-      <div id="region-filter-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
-    </nav>
+    <!-- MAIN COLUMN -->
+    <div class="flex-1 flex flex-col min-w-0">
 
-    <!-- Progress & Live Cloud Status Row -->
-    <div id="progress-row" class="flex items-center justify-between gap-2 text-xs text-slate-500 mb-3 px-1">
-      <span id="profile-counter" class="font-medium">Profile 1 of 6</span>
-      <button
-        id="open-cloud-btn"
-        type="button"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors shadow-sm"
-      >
-        <span id="cloud-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-        <span id="circle-label">Connect Cloud</span>
-      </button>
-    </div>
-
-    <!-- Main Profile Card Area -->
-    <main class="flex-1 flex flex-col justify-center">
-      <div id="card-container" class="w-full"></div>
-    </main>
-
-    <!-- Subtle Toast Notification -->
-    <div
-      id="toast"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 transition-all duration-300 z-40"
-    >
-      <div
-        id="toast-text"
-        class="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 rounded-full shadow-xl whitespace-nowrap"
-      ></div>
-    </div>
-  </div>
-
-  <!-- Sparks & Live Chat Modal -->
-  <div
-    id="sparks-modal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-4"
-  >
-    <div class="surface-card bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl h-[80vh] max-h-[620px] flex flex-col">
-
-      <!-- View A: Sparks List -->
-      <div id="sparks-list-view" class="flex flex-col h-full">
-        <div class="flex items-center justify-between mb-4 shrink-0">
-          <div>
-            <h2 class="text-lg font-bold text-slate-900">Your Sparks & Chats</h2>
-            <p class="text-xs text-slate-500">Tap any connection to start talking</p>
+      <!-- MOBILE TOP HEADER (< md) -->
+      <header class="md:hidden sticky top-0 z-30 header-glass px-4 h-14 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg btn-cta flex items-center justify-center shrink-0">
+            <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
           </div>
+          <h1 class="text-base font-bold tracking-tight truncate" style="color: var(--text-primary);">Auraloom</h1>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
           <button
-            id="close-sparks-btn"
+            id="open-vibe-btn"
             type="button"
-            aria-label="Close Sparks"
-            class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
+            class="h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 btn-secondary max-w-[104px]"
           >
-            <i data-lucide="x" class="w-4 h-4"></i>
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+            <span id="my-vibe-label" class="truncate">My Vibe</span>
+          </button>
+
+          <button
+            id="open-sparks-btn"
+            type="button"
+            class="h-8 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 btn-secondary"
+          >
+            <i data-lucide="heart" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+            <span>Sparks</span>
+            <span
+              id="sparks-count"
+              class="text-[11px] font-bold px-1.5 py-0.5 rounded-md leading-none text-white"
+              style="background-color: var(--accent-primary);"
+            >0</span>
+          </button>
+
+          <button
+            id="mobile-theme-btn"
+            type="button"
+            aria-label="Toggle light or dark theme"
+            class="w-8 h-8 rounded-lg flex items-center justify-center btn-secondary"
+          >
+            <i data-lucide="moon" class="w-3.5 h-3.5"></i>
           </button>
         </div>
+      </header>
 
-        <div id="sparks-list" class="space-y-3 overflow-y-auto pr-1 flex-1"></div>
-      </div>
+      <!-- MAIN CONTENT WORKSPACE -->
+      <main class="flex-1 w-full max-w-2xl mx-auto px-4 pt-4 pb-24 md:py-8 md:px-8">
 
-      <!-- View B: Interactive Chat Room -->
-      <div id="chat-view" class="hidden flex-col h-full">
-        <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100 shrink-0">
-          <div class="flex items-center gap-2.5 min-w-0">
+        <!-- VIEW 1: DISCOVER -->
+        <section id="view-discover" class="space-y-4">
+          <!-- Region Filter Pills -->
+          <nav aria-label="Global discovery filters">
+            <div id="region-filter-bar" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5"></div>
+          </nav>
+
+          <!-- Counter + Secondary Cloud Status -->
+          <div id="progress-row" class="flex items-center justify-between gap-2 text-xs px-0.5">
+            <span id="profile-counter" class="font-semibold" style="color: var(--text-secondary);">Profile 1 of 6</span>
             <button
-              id="chat-back-btn"
+              id="open-cloud-btn"
               type="button"
-              aria-label="Back to Sparks"
-              class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 shrink-0"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium subtle-box hover:opacity-90 transition-opacity"
+              style="color: var(--text-secondary);"
             >
-              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span id="cloud-dot" class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span id="circle-label">Connect Cloud</span>
             </button>
-            <div id="chat-partner-avatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"></div>
-            <div class="min-w-0">
-              <p id="chat-partner-name" class="text-sm font-bold text-slate-900 truncate"></p>
-              <p id="chat-partner-meta" class="text-xs text-slate-500 truncate"></p>
+          </div>
+
+          <!-- Profile Card / Loading Skeleton / Empty State -->
+          <div id="card-container" class="w-full"></div>
+        </section>
+
+        <!-- VIEW 2: MY VIBE -->
+        <section id="view-vibe" class="hidden space-y-5 fade-in">
+          <div>
+            <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">My Vibe</h2>
+            <p class="text-xs mt-1" style="color: var(--text-secondary);">
+              Shape how people around the world discover you and how Resonance % is calculated.
+            </p>
+          </div>
+
+          <form id="vibe-form" class="surface-card rounded-2xl p-5 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="sm:col-span-2">
+                <label for="vibe-name-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Name</label>
+                <input id="vibe-name-input" type="text" maxlength="30" placeholder="Your first name" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+              </div>
+              <div>
+                <label for="vibe-age-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Age</label>
+                <input id="vibe-age-input" type="number" min="18" max="99" placeholder="25" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+              </div>
             </div>
-          </div>
-          <button
-            id="close-chat-modal-btn"
-            type="button"
-            aria-label="Close Chat"
-            class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 shrink-0"
-          >
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
 
-        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-3"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="vibe-city-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">City & Country</label>
+                <input id="vibe-city-input" type="text" maxlength="40" placeholder="e.g. Ludhiana, India" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+              </div>
+              <div>
+                <label for="vibe-region-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Region</label>
+                <select id="vibe-region-input" class="w-full h-11 rounded-xl px-3.5 text-sm input-field">
+                  <option value="Asia">Asia</option>
+                  <option value="Europe">Europe</option>
+                  <option value="Americas">Americas</option>
+                  <option value="Africa">Africa</option>
+                  <option value="Oceania">Oceania</option>
+                </select>
+              </div>
+            </div>
 
-        <!-- Quick Deep Question Icebreaker -->
-        <div class="mb-2.5 shrink-0">
-          <button
-            id="chat-icebreaker-btn"
-            type="button"
-            class="w-full text-left text-xs px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100/80 border border-rose-200/70 text-rose-700 flex items-center justify-between gap-2 transition-colors"
-          >
-            <span class="flex items-center gap-1.5 truncate font-medium">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0 text-rose-500"></i>
-              Drop a Deep Question icebreaker
-            </span>
-            <span class="text-rose-600 font-semibold shrink-0">Use</span>
-          </button>
-        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="vibe-languages-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Languages</label>
+                <input id="vibe-languages-input" type="text" maxlength="60" placeholder="e.g. English · Hindi · Punjabi" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+              </div>
+              <div>
+                <label for="vibe-tag-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Vibe Tag</label>
+                <input id="vibe-tag-input" type="text" maxlength="28" placeholder="e.g. Midnight Stargazer" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+              </div>
+            </div>
 
-        <form id="chat-form" class="flex items-center gap-2 shrink-0">
-          <input
-            id="chat-input"
-            type="text"
-            placeholder="Write a thoughtful message..."
-            autocomplete="off"
-            class="flex-1 bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400"
-          />
-          <button
-            type="submit"
-            class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/20 hover:opacity-95 transition-opacity shrink-0"
-          >
-            Send
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
+            <div>
+              <label for="vibe-answer-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">
+                Personal Prompt: What quiet moment always makes you feel alive?
+              </label>
+              <textarea id="vibe-answer-input" rows="3" maxlength="200" placeholder="Share something real and conversational..." class="w-full rounded-xl p-3.5 text-sm input-field resize-none"></textarea>
+            </div>
 
-  <!-- My Vibe Profile Modal -->
-  <div
-    id="vibe-modal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-4"
-  >
-    <div class="surface-card bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">Your Global Vibe</h2>
-          <p class="text-xs text-slate-500">Saved locally—and synced to Supabase when signed in</p>
-        </div>
-        <button
-          id="close-vibe-btn"
-          type="button"
-          aria-label="Close My Vibe"
-          class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
-        >
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
+            <div>
+              <label for="vibe-ritual-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">
+                Sunday Ritual (expandable reveal)
+              </label>
+              <input id="vibe-ritual-input" type="text" maxlength="140" placeholder="e.g. Slow coffee, long walk, and an old playlist" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+            </div>
 
-      <form id="vibe-form" class="space-y-3.5">
-        <div class="grid grid-cols-3 gap-2.5">
-          <div class="col-span-2">
-            <label for="vibe-name-input" class="block text-xs font-semibold text-slate-700 mb-1">Your Name</label>
-            <input
-              id="vibe-name-input"
-              type="text"
-              maxlength="30"
-              placeholder="e.g. Rohan"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400"
-            />
-          </div>
-          <div>
-            <label for="vibe-age-input" class="block text-xs font-semibold text-slate-700 mb-1">Age</label>
-            <input
-              id="vibe-age-input"
-              type="number"
-              min="18"
-              max="99"
-              placeholder="24"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400"
-            />
-          </div>
-        </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold" style="color: var(--text-primary);">Core Values (choose up to 3)</span>
+                <span id="values-selected-count" class="text-xs font-semibold" style="color: var(--accent-primary);">3 / 3</span>
+              </div>
+              <div id="vibe-values-grid" class="flex flex-wrap gap-2"></div>
+            </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label for="vibe-city-input" class="block text-xs font-semibold text-slate-700 mb-1">City & Country</label>
-            <input
-              id="vibe-city-input"
-              type="text"
-              maxlength="40"
-              placeholder="Ludhiana, India"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3 py-2 text-sm text-slate-900 placeholder-slate-400"
-            />
-          </div>
-          <div>
-            <label for="vibe-region-input" class="block text-xs font-semibold text-slate-700 mb-1">Region</label>
-            <select
-              id="vibe-region-input"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3 py-2 text-sm text-slate-900"
-            >
-              <option value="Asia">Asia</option>
-              <option value="Europe">Europe</option>
-              <option value="Americas">Americas</option>
-              <option value="Africa & Oceania">Africa & Oceania</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label for="vibe-answer-input" class="block text-xs font-semibold text-slate-700 mb-1">What quiet moment makes you feel alive?</label>
-          <textarea
-            id="vibe-answer-input"
-            rows="2"
-            maxlength="180"
-            placeholder="Late-night drives, rain on the window, good music..."
-            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 resize-none"
-          ></textarea>
-        </div>
-
-        <div>
-          <label for="vibe-ritual-input" class="block text-xs font-semibold text-slate-700 mb-1">Your Sunday Ritual (slow-reveal secret)</label>
-          <input
-            id="vibe-ritual-input"
-            type="text"
-            maxlength="140"
-            placeholder="e.g. Slow coffee, long walk, and a good playlist"
-            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400"
-          />
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-slate-700">Your 3 Core Values</span>
-            <span id="values-selected-count" class="text-xs font-semibold text-rose-600">3 / 3 selected</span>
-          </div>
-          <div id="vibe-values-grid" class="flex flex-wrap gap-2"></div>
-        </div>
-
-        <button
-          id="vibe-save-btn"
-          type="submit"
-          class="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/25 hover:opacity-95 transition-opacity"
-        >
-          Save My Vibe & Recalculate Matches
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Supabase Cloud Connect & Auth Modal -->
-  <div
-    id="cloud-modal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-4"
-  >
-    <div class="surface-card bg-white w-full max-w-md rounded-3xl p-5 shadow-2xl max-h-[85vh] overflow-y-auto">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">Auraloom Cloud (Supabase)</h2>
-          <p class="text-xs text-slate-500">Connect your database for real global users & live chat</p>
-        </div>
-        <button
-          id="close-cloud-btn"
-          type="button"
-          aria-label="Close Cloud Settings"
-          class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors"
-        >
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <div id="cloud-status-msg" class="hidden mb-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium"></div>
-
-      <!-- Step A: Supabase Keys -->
-      <form id="cloud-config-form" class="space-y-3 mb-4">
-        <div>
-          <label for="sb-url-input" class="block text-xs font-semibold text-slate-700 mb-1">Supabase Project URL</label>
-          <input
-            id="sb-url-input"
-            type="url"
-            placeholder="https://your-project.supabase.co"
-            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400"
-          />
-        </div>
-        <div>
-          <label for="sb-key-input" class="block text-xs font-semibold text-slate-700 mb-1">Public anon / publishable Key</label>
-          <input
-            id="sb-key-input"
-            type="text"
-            placeholder="Paste your public anon/publishable key..."
-            class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400"
-          />
-        </div>
-        <div class="flex gap-2">
-          <button
-            id="sb-connect-btn"
-            type="submit"
-            class="flex-1 py-2.5 px-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
-          >
-            Connect Project
-          </button>
-          <button
-            id="sb-disconnect-btn"
-            type="button"
-            class="py-2.5 px-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
-          >
-            Demo Mode
-          </button>
-        </div>
-      </form>
-
-      <!-- Step B: Real Sign Up / Log In (shown once project is connected) -->
-      <div id="auth-section" class="hidden pt-4 border-t border-slate-100">
-        <div id="auth-logged-out">
-          <div class="flex items-center gap-2 mb-3">
-            <button id="tab-signup-btn" type="button" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200">Create Account</button>
-            <button id="tab-login-btn" type="button" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600">Log In</button>
-          </div>
-          <form id="auth-form" class="space-y-3">
-            <input
-              id="auth-email"
-              type="email"
-              required
-              placeholder="Email address"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400"
-            />
-            <input
-              id="auth-password"
-              type="password"
-              minlength="6"
-              required
-              placeholder="Password (min 6 characters)"
-              class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400"
-            />
-            <button
-              id="auth-submit-btn"
-              type="submit"
-              class="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/20 hover:opacity-95 transition-opacity"
-            >
-              Sign Up for Auraloom
+            <button id="vibe-save-btn" type="submit" class="w-full h-12 rounded-xl text-sm font-semibold btn-cta">
+              Save Vibe & Update Resonance
             </button>
           </form>
-        </div>
+        </section>
 
-        <div id="auth-logged-in" class="hidden space-y-3">
-          <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2">
-            <div class="min-w-0">
-              <p class="text-xs font-bold text-emerald-800">Live Cloud Active</p>
-              <p id="auth-user-email" class="text-xs text-emerald-700 truncate"></p>
+        <!-- VIEW 3: SPARKS -->
+        <section id="view-sparks" class="hidden space-y-4 fade-in">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Sparks</h2>
+              <p class="text-xs mt-1" style="color: var(--text-secondary);">People you've sparked with across the globe</p>
             </div>
-            <button
-              id="auth-signout-btn"
-              type="button"
-              class="px-3 py-1.5 rounded-xl bg-white border border-emerald-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shrink-0"
-            >
-              Sign Out
-            </button>
+            <span id="sparks-page-count" class="px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box" style="color: var(--text-secondary);">0 saved</span>
           </div>
-          <p class="text-xs text-slate-500 leading-relaxed">
-            Your <strong>My Vibe</strong> profile, Sparks, and chat messages now sync live with your Supabase database. Open <strong>My Vibe</strong> to publish your card so other users can discover you!
-          </p>
-        </div>
+
+          <div id="sparks-list" class="space-y-3"></div>
+        </section>
+
+        <!-- VIEW 4: CHATS -->
+        <section id="view-chats" class="hidden fade-in">
+          <!-- Conversation List -->
+          <div id="chats-list-panel" class="space-y-4">
+            <div>
+              <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Chats</h2>
+              <p class="text-xs mt-1" style="color: var(--text-secondary);">Meaningful conversations with your Sparks</p>
+            </div>
+            <div id="chats-thread-list" class="space-y-2.5"></div>
+          </div>
+
+          <!-- Active Chat Room -->
+          <div id="chat-view" class="hidden surface-card rounded-2xl overflow-hidden flex-col" style="height: calc(100vh - 180px); min-height: 440px; max-height: 660px;">
+            <div class="flex items-center justify-between gap-3 px-4 py-3 border-b shrink-0" style="border-color: var(--border-subtle);">
+              <div class="flex items-center gap-3 min-w-0">
+                <button id="chat-back-btn" type="button" aria-label="Back to conversations" class="w-9 h-9 rounded-xl btn-secondary flex items-center justify-center shrink-0">
+                  <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                </button>
+                <div id="chat-partner-avatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"></div>
+                <div class="min-w-0">
+                  <p id="chat-partner-name" class="text-sm font-bold truncate" style="color: var(--text-primary);"></p>
+                  <p id="chat-partner-meta" class="text-xs truncate" style="color: var(--text-secondary);"></p>
+                </div>
+              </div>
+              <span id="chat-partner-resonance" class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-success shrink-0"></span>
+            </div>
+
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+            <div class="p-3 border-t space-y-2 shrink-0" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
+              <button
+                id="chat-icebreaker-btn"
+                type="button"
+                class="w-full text-left text-xs px-3 py-2 rounded-xl subtle-box hover:opacity-90 flex items-center justify-between gap-2 transition-opacity"
+              >
+                <span class="flex items-center gap-2 truncate font-medium" style="color: var(--text-primary);">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+                  Insert a Deep Question icebreaker
+                </span>
+                <span class="font-semibold shrink-0" style="color: var(--accent-primary);">Use</span>
+              </button>
+
+              <form id="chat-form" class="flex items-center gap-2">
+                <input
+                  id="chat-input"
+                  type="text"
+                  placeholder="Write a message..."
+                  autocomplete="off"
+                  class="flex-1 h-11 rounded-xl px-3.5 text-sm input-field"
+                />
+                <button type="submit" class="h-11 px-4 rounded-xl text-sm font-semibold btn-cta shrink-0">
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 5: PROFILE, CLOUD & SETTINGS -->
+        <section id="view-profile" class="hidden space-y-4 fade-in">
+          <div>
+            <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Profile & Settings</h2>
+            <p class="text-xs mt-1" style="color: var(--text-secondary);">Account, Supabase cloud sync, and app preferences</p>
+          </div>
+
+          <!-- Cloud Status Banner -->
+          <div id="cloud-status-msg" class="hidden px-4 py-3 rounded-xl text-xs font-medium"></div>
+
+          <!-- Account Card (Supabase Auth) -->
+          <div class="surface-card rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-bold" style="color: var(--text-primary);">Auraloom Account</h3>
+                <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Sign in to sync your profile, Sparks, and live chats</p>
+              </div>
+              <span id="profile-cloud-pill" class="px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box" style="color: var(--text-secondary);">Demo Mode</span>
+            </div>
+
+            <div id="auth-section" class="hidden pt-1">
+              <div id="auth-logged-out" class="space-y-3">
+                <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl subtle-box">
+                  <button id="tab-signup-btn" type="button" class="h-9 rounded-lg text-xs font-semibold transition-colors">Create Account</button>
+                  <button id="tab-login-btn" type="button" class="h-9 rounded-lg text-xs font-semibold transition-colors">Log In</button>
+                </div>
+
+                <form id="auth-form" class="space-y-3">
+                  <input id="auth-email" type="email" required placeholder="Email address" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+                  <input id="auth-password" type="password" minlength="6" required placeholder="Password (min 6 characters)" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
+                  <button id="auth-submit-btn" type="submit" class="w-full h-11 rounded-xl text-sm font-semibold btn-cta">
+                    Sign Up for Auraloom
+                  </button>
+                </form>
+              </div>
+
+              <div id="auth-logged-in" class="hidden space-y-3">
+                <div class="p-3.5 rounded-xl flex items-center justify-between gap-3 badge-success">
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold">Live Cloud Active</p>
+                    <p id="auth-user-email" class="text-xs truncate opacity-90"></p>
+                  </div>
+                  <button id="auth-signout-btn" type="button" class="h-9 px-3 rounded-lg text-xs font-semibold btn-secondary shrink-0">
+                    Sign Out
+                  </button>
+                </div>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+                  Your <strong>My Vibe</strong> card, Sparks, and chat messages sync live with Supabase.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appearance & Preferences Card -->
+          <div class="surface-card rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm font-bold" style="color: var(--text-primary);">Appearance</h3>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold" style="color: var(--text-primary);">Theme</p>
+                <p class="text-xs" style="color: var(--text-secondary);">Switch between crisp light and low-glare dark mode</p>
+              </div>
+              <button id="settings-theme-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary flex items-center gap-2 shrink-0">
+                <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+                <span id="settings-theme-label">Light</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Supabase Connection Settings (Collapsible) -->
+          <div class="surface-card rounded-2xl p-5 space-y-3">
+            <button id="toggle-cloud-config-btn" type="button" class="w-full flex items-center justify-between text-left">
+              <div>
+                <h3 class="text-sm font-bold" style="color: var(--text-primary);">Cloud Connection (Supabase)</h3>
+                <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Manage your Project URL and public publishable key</p>
+              </div>
+              <i id="cloud-config-chevron" data-lucide="chevron-down" class="w-4 h-4" style="color: var(--text-secondary);"></i>
+            </button>
+
+            <form id="cloud-config-form" class="hidden pt-2 space-y-3 border-t" style="border-color: var(--border-subtle);">
+              <div>
+                <label for="sb-url-input" class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Project URL</label>
+                <input id="sb-url-input" type="url" placeholder="https://your-project.supabase.co" class="w-full h-10 rounded-xl px-3 text-xs input-field" />
+              </div>
+              <div>
+                <label for="sb-key-input" class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Public Publishable Key</label>
+                <input id="sb-key-input" type="text" placeholder="sb_publishable_..." class="w-full h-10 rounded-xl px-3 text-xs input-field" />
+              </div>
+              <div class="flex gap-2">
+                <button id="sb-connect-btn" type="submit" class="flex-1 h-10 rounded-xl text-xs font-semibold btn-cta">
+                  Save & Connect
+                </button>
+                <button id="sb-disconnect-btn" type="button" class="h-10 px-3.5 rounded-xl text-xs font-semibold btn-secondary">
+                  Demo Mode
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MOBILE FIXED BOTTOM NAVIGATION BAR (< md) -->
+  <nav aria-label="Mobile navigation" id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 z-30 nav-bar-glass px-2 pt-1.5 pb-2">
+    <div id="mobile-nav-grid" class="grid grid-cols-5 gap-1 max-w-md mx-auto"></div>
+  </nav>
+
+  <!-- IN-PAGE CONFIRMATION MODAL (for destructive actions) -->
+  <div id="confirm-modal" class="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="surface-card w-full max-w-sm rounded-2xl p-5 space-y-4 fade-in">
+      <div>
+        <h3 id="confirm-title" class="text-base font-bold" style="color: var(--text-primary);">Confirm action</h3>
+        <p id="confirm-body" class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);"></p>
+      </div>
+      <div class="flex items-center justify-end gap-2">
+        <button id="confirm-cancel-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-secondary">Cancel</button>
+        <button id="confirm-ok-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold text-white" style="background-color: #DC2626;">Remove</button>
       </div>
     </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 transition-all duration-200 z-50">
+    <div id="toast-text" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-lg whitespace-nowrap" style="background-color: #20232D;"></div>
   </div>
 
   <script>
     // =========================================================================
-    // OPTIONAL FOR PUBLISHING: Paste your Supabase Project URL & Public Key here
-    // once you are ready to publish Auraloom online for everyone!
+    // PRE-WIRED SUPABASE CONNECTION (Auraloom Live Cloud)
     // =========================================================================
     const DEFAULT_SUPABASE_URL = 'https://kpmkxsqvktsgyqcyluac.supabase.co';
-    const DEFAULT_SUPABASE_ANON_KEY = '';
+    const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_YaoQtXxzY65y9ZSVlAEshg_bBAtdFi_';
 
-    // 1. GLOBAL DEMO DATA (used until you connect & sign into Supabase)
+    // 1. CONSTANTS & CURATED DEMO DATA
     const ALL_VALUES = [
       'Curiosity', 'Deep Talks', 'Slow Mornings', 'Kindness',
       'Creativity', 'Loyalty', 'Ambition', 'Humor',
       'Honesty', 'Empathy', 'Adventure', 'Warmth'
     ];
 
-    const REGIONS = ['All Global', 'Asia', 'Europe', 'Americas', 'Africa & Oceania'];
+    const REGIONS = ['All Global', 'Asia', 'Europe', 'Americas', 'Africa'];
 
     const ICEBREAKERS = [
       'What is one place in your city you wish you could show someone at sunset?',
@@ -485,12 +587,12 @@
       'What is a tradition from your culture you love sharing?'
     ];
 
-    const AURA_THEMES = [
-      { auraGradient: 'from-violet-500 via-fuchsia-500 to-rose-400', bannerBg: 'from-violet-50 via-fuchsia-50 to-rose-50' },
-      { auraGradient: 'from-amber-400 via-orange-500 to-rose-500', bannerBg: 'from-amber-50 via-orange-50 to-rose-50' },
-      { auraGradient: 'from-rose-500 via-pink-500 to-amber-400', bannerBg: 'from-rose-50 via-pink-50 to-amber-50' },
-      { auraGradient: 'from-emerald-500 via-teal-500 to-cyan-500', bannerBg: 'from-emerald-50 via-teal-50 to-cyan-50' },
-      { auraGradient: 'from-sky-500 via-indigo-500 to-violet-500', bannerBg: 'from-sky-50 via-indigo-50 to-violet-50' }
+    const AVATAR_GRADIENTS = [
+      'linear-gradient(135deg, #6366F1 0%, #A64AE5 100%)',
+      'linear-gradient(135deg, #E94776 0%, #F59E0B 100%)',
+      'linear-gradient(135deg, #E94776 0%, #A64AE5 100%)',
+      'linear-gradient(135deg, #0D9488 0%, #2563EB 100%)',
+      'linear-gradient(135deg, #D946EF 0%, #E94776 100%)'
     ];
 
     const DEMO_PROFILES = [
@@ -505,8 +607,7 @@
         initials: 'AM',
         vibeTag: 'Midnight Stargazer',
         baseResonance: 82,
-        auraGradient: 'from-violet-500 via-fuchsia-500 to-rose-400',
-        bannerBg: 'from-violet-50 via-fuchsia-50 to-rose-50',
+        avatarBg: AVATAR_GRADIENTS[0],
         promptQuestion: 'What quiet moment always makes you feel alive?',
         promptAnswer: 'Driving with the windows down after a late rainstorm, a thermos of masala chai, and an old playlist on low volume.',
         sundayRitual: 'Sketching at a quiet corner cafe, followed by a long evening walk with no phone.',
@@ -524,8 +625,7 @@
         initials: 'HT',
         vibeTag: 'Warm Bookshop',
         baseResonance: 80,
-        auraGradient: 'from-amber-400 via-orange-500 to-rose-500',
-        bannerBg: 'from-amber-50 via-orange-50 to-rose-50',
+        avatarBg: AVATAR_GRADIENTS[1],
         promptQuestion: 'What is something small that instantly wins your heart?',
         promptAnswer: 'When someone remembers a tiny detail I mentioned weeks ago—like my favorite tea or a film I wanted to watch.',
         sundayRitual: 'Browsing secondhand bookstores along the river and making slow-brewed matcha at home.',
@@ -543,8 +643,7 @@
         initials: 'LM',
         vibeTag: 'Golden Tramway',
         baseResonance: 79,
-        auraGradient: 'from-rose-500 via-pink-500 to-amber-400',
-        bannerBg: 'from-rose-50 via-pink-50 to-amber-50',
+        avatarBg: AVATAR_GRADIENTS[2],
         promptQuestion: 'What topic could you talk about for hours?',
         promptAnswer: 'How music shapes our memories, hidden neighborhood bakeries, and why good architecture changes your mood.',
         sundayRitual: 'Catching the ocean breeze near Alfama with a camera and trying a new pastry spot.',
@@ -562,8 +661,7 @@
         initials: 'CD',
         vibeTag: 'Acoustic Sunrise',
         baseResonance: 81,
-        auraGradient: 'from-emerald-500 via-teal-500 to-cyan-500',
-        bannerBg: 'from-emerald-50 via-teal-50 to-cyan-50',
+        avatarBg: AVATAR_GRADIENTS[3],
         promptQuestion: 'What does a great partnership feel like to you?',
         promptAnswer: 'Being able to laugh over burnt toast on a Tuesday and still push each other to chase our wildest goals.',
         sundayRitual: 'Morning walk up Mount Royal, fresh bagels, and tinkering with a creative side project.',
@@ -575,14 +673,13 @@
         name: 'Amara',
         age: 26,
         city: 'Nairobi, Kenya',
-        region: 'Africa & Oceania',
+        region: 'Africa',
         languages: 'English · Swahili',
         timezone: 'UTC+3',
         initials: 'AO',
         vibeTag: 'Velvet Horizon',
         baseResonance: 83,
-        auraGradient: 'from-fuchsia-500 via-rose-500 to-amber-400',
-        bannerBg: 'from-fuchsia-50 via-rose-50 to-amber-50',
+        avatarBg: AVATAR_GRADIENTS[4],
         promptQuestion: 'What kind of conversation makes you lose track of time?',
         promptAnswer: 'Swapping childhood stories, big dreams for the next five years, and the books that quietly changed how we think.',
         sundayRitual: 'Live acoustic brunch with friends followed by journaling on the balcony at sunset.',
@@ -594,14 +691,13 @@
         name: 'Liam',
         age: 29,
         city: 'Melbourne, Australia',
-        region: 'Africa & Oceania',
+        region: 'All Global',
         languages: 'English',
         timezone: 'UTC+11',
         initials: 'LW',
         vibeTag: 'Laneway Espresso',
         baseResonance: 78,
-        auraGradient: 'from-sky-500 via-indigo-500 to-violet-500',
-        bannerBg: 'from-sky-50 via-indigo-50 to-violet-50',
+        avatarBg: AVATAR_GRADIENTS[0],
         promptQuestion: 'How do you recharge after a busy week?',
         promptAnswer: 'Cooking a huge dinner for people I care about, putting on vinyl records, and turning off notifications.',
         sundayRitual: 'Early coastal drive, flat white from a tiny laneway roaster, and a long afternoon read.',
@@ -610,7 +706,15 @@
       }
     ];
 
-    // 2. STATE & STORAGE HELPERS
+    const NAV_ITEMS = [
+      { id: 'discover', label: 'Discover', icon: 'compass' },
+      { id: 'vibe', label: 'My Vibe', icon: 'sparkles' },
+      { id: 'sparks', label: 'Sparks', icon: 'heart' },
+      { id: 'chats', label: 'Chats', icon: 'message-circle' },
+      { id: 'profile', label: 'Profile', icon: 'user' }
+    ];
+
+    // 2. SAFE STORAGE & STATE
     function loadSaved(key, fallback) {
       try {
         const raw = localStorage.getItem(key);
@@ -623,20 +727,24 @@
     function saveState(key, value) {
       try {
         localStorage.setItem(key, JSON.stringify(value));
-      } catch (e) {
-        // Ignore storage errors
-      }
+      } catch (e) {}
     }
 
+    let theme = loadSaved('auraloom_theme', 'light');
+    let activeTab = 'discover';
     let sbConfig = loadSaved('auraloom_sb_config', {
       url: DEFAULT_SUPABASE_URL,
       key: DEFAULT_SUPABASE_ANON_KEY
     });
 
+    if (!sbConfig.url && DEFAULT_SUPABASE_URL) sbConfig.url = DEFAULT_SUPABASE_URL;
+    if (!sbConfig.key && DEFAULT_SUPABASE_ANON_KEY) sbConfig.key = DEFAULT_SUPABASE_ANON_KEY;
+
     let sbClient = null;
     let currentUser = null;
     let liveChannel = null;
     let authMode = 'signup';
+    let isLoadingCloud = false;
 
     let profiles = [...DEMO_PROFILES];
     let myProfile = loadSaved('auraloom_my_profile', {
@@ -644,6 +752,8 @@
       age: 24,
       city: '',
       region: 'Asia',
+      languages: 'English',
+      vibeTag: 'Live Aura',
       promptAnswer: '',
       sundayRitual: '',
       values: ['Curiosity', 'Deep Talks', 'Warmth']
@@ -658,21 +768,64 @@
     let draftValues = [...myProfile.values];
     let toastTimer = null;
     let replyTimer = null;
+    let pendingConfirmAction = null;
 
-    // 3. DOM ELEMENTS
-    const cardContainer = document.getElementById('card-container');
+    // 3. DOM REFERENCES
+    const views = {
+      discover: document.getElementById('view-discover'),
+      vibe: document.getElementById('view-vibe'),
+      sparks: document.getElementById('view-sparks'),
+      chats: document.getElementById('view-chats'),
+      profile: document.getElementById('view-profile')
+    };
+
+    const desktopNav = document.getElementById('desktop-nav');
+    const mobileNavGrid = document.getElementById('mobile-nav-grid');
+    const regionFilterBar = document.getElementById('region-filter-bar');
     const profileCounter = document.getElementById('profile-counter');
-    const progressRow = document.getElementById('progress-row');
-    const circleLabel = document.getElementById('circle-label');
+    const cardContainer = document.getElementById('card-container');
+    const sparksCount = document.getElementById('sparks-count');
+    const sparksPageCount = document.getElementById('sparks-page-count');
+    const sparksList = document.getElementById('sparks-list');
+    const myVibeLabel = document.getElementById('my-vibe-label');
+
+    const chatsListPanel = document.getElementById('chats-list-panel');
+    const chatsThreadList = document.getElementById('chats-thread-list');
+    const chatView = document.getElementById('chat-view');
+    const chatBackBtn = document.getElementById('chat-back-btn');
+    const chatPartnerAvatar = document.getElementById('chat-partner-avatar');
+    const chatPartnerName = document.getElementById('chat-partner-name');
+    const chatPartnerMeta = document.getElementById('chat-partner-meta');
+    const chatPartnerResonance = document.getElementById('chat-partner-resonance');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatIcebreakerBtn = document.getElementById('chat-icebreaker-btn');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+
+    const vibeForm = document.getElementById('vibe-form');
+    const vibeNameInput = document.getElementById('vibe-name-input');
+    const vibeAgeInput = document.getElementById('vibe-age-input');
+    const vibeCityInput = document.getElementById('vibe-city-input');
+    const vibeRegionInput = document.getElementById('vibe-region-input');
+    const vibeLanguagesInput = document.getElementById('vibe-languages-input');
+    const vibeTagInput = document.getElementById('vibe-tag-input');
+    const vibeAnswerInput = document.getElementById('vibe-answer-input');
+    const vibeRitualInput = document.getElementById('vibe-ritual-input');
+    const vibeValuesGrid = document.getElementById('vibe-values-grid');
+    const valuesSelectedCount = document.getElementById('values-selected-count');
+
     const cloudDot = document.getElementById('cloud-dot');
-    const openCloudBtn = document.getElementById('open-cloud-btn');
-    const cloudModal = document.getElementById('cloud-modal');
-    const closeCloudBtn = document.getElementById('close-cloud-btn');
+    const circleLabel = document.getElementById('circle-label');
+    const desktopCloudDot = document.getElementById('desktop-cloud-dot');
+    const desktopCloudLabel = document.getElementById('desktop-cloud-label');
+    const profileCloudPill = document.getElementById('profile-cloud-pill');
     const cloudStatusMsg = document.getElementById('cloud-status-msg');
     const cloudConfigForm = document.getElementById('cloud-config-form');
+    const toggleCloudConfigBtn = document.getElementById('toggle-cloud-config-btn');
     const sbUrlInput = document.getElementById('sb-url-input');
     const sbKeyInput = document.getElementById('sb-key-input');
     const sbDisconnectBtn = document.getElementById('sb-disconnect-btn');
+
     const authSection = document.getElementById('auth-section');
     const authLoggedOut = document.getElementById('auth-logged-out');
     const authLoggedIn = document.getElementById('auth-logged-in');
@@ -685,40 +838,16 @@
     const authPassword = document.getElementById('auth-password');
     const authSubmitBtn = document.getElementById('auth-submit-btn');
 
-    const sparksCount = document.getElementById('sparks-count');
-    const sparksModal = document.getElementById('sparks-modal');
-    const sparksListView = document.getElementById('sparks-list-view');
-    const sparksList = document.getElementById('sparks-list');
-    const chatView = document.getElementById('chat-view');
-    const chatPartnerAvatar = document.getElementById('chat-partner-avatar');
-    const chatPartnerName = document.getElementById('chat-partner-name');
-    const chatPartnerMeta = document.getElementById('chat-partner-meta');
-    const chatMessages = document.getElementById('chat-messages');
-    const chatForm = document.getElementById('chat-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatBackBtn = document.getElementById('chat-back-btn');
-    const chatIcebreakerBtn = document.getElementById('chat-icebreaker-btn');
-    const openSparksBtn = document.getElementById('open-sparks-btn');
-    const closeSparksBtn = document.getElementById('close-sparks-btn');
-    const closeChatModalBtn = document.getElementById('close-chat-modal-btn');
-    const openVibeBtn = document.getElementById('open-vibe-btn');
-    const myVibeLabel = document.getElementById('my-vibe-label');
-    const vibeModal = document.getElementById('vibe-modal');
-    const closeVibeBtn = document.getElementById('close-vibe-btn');
-    const vibeForm = document.getElementById('vibe-form');
-    const vibeNameInput = document.getElementById('vibe-name-input');
-    const vibeAgeInput = document.getElementById('vibe-age-input');
-    const vibeCityInput = document.getElementById('vibe-city-input');
-    const vibeRegionInput = document.getElementById('vibe-region-input');
-    const vibeAnswerInput = document.getElementById('vibe-answer-input');
-    const vibeRitualInput = document.getElementById('vibe-ritual-input');
-    const vibeValuesGrid = document.getElementById('vibe-values-grid');
-    const valuesSelectedCount = document.getElementById('values-selected-count');
-    const regionFilterBar = document.getElementById('region-filter-bar');
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmTitle = document.getElementById('confirm-title');
+    const confirmBody = document.getElementById('confirm-body');
+    const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+    const confirmOkBtn = document.getElementById('confirm-ok-btn');
+
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toast-text');
 
-    // Helpers
+    // 4. UTILITIES
     function escapeHtml(str) {
       return String(str || '')
         .replace(/&/g, '&amp;')
@@ -739,25 +868,67 @@
       }, 2400);
     }
 
-    function setCloudNotice(text, type = 'info') {
-      if (!text) {
-        cloudStatusMsg.classList.add('hidden');
-        return;
-      }
-      cloudStatusMsg.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200', 'bg-amber-50', 'text-amber-800', 'border-amber-200');
-      cloudStatusMsg.classList.add('border');
-      if (type === 'error') {
-        cloudStatusMsg.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
-      } else if (type === 'success') {
-        cloudStatusMsg.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
-      } else {
-        cloudStatusMsg.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-200');
-      }
-      cloudStatusMsg.textContent = text;
+    function openConfirm(title, body, okLabel, onConfirm) {
+      confirmTitle.textContent = title;
+      confirmBody.textContent = body;
+      confirmOkBtn.textContent = okLabel || 'Confirm';
+      pendingConfirmAction = onConfirm;
+      confirmModal.classList.remove('hidden');
+      confirmModal.classList.add('flex');
+    }
+
+    function closeConfirm() {
+      pendingConfirmAction = null;
+      confirmModal.classList.add('hidden');
+      confirmModal.classList.remove('flex');
+    }
+
+    confirmCancelBtn.addEventListener('click', closeConfirm);
+    confirmOkBtn.addEventListener('click', () => {
+      const fn = pendingConfirmAction;
+      closeConfirm();
+      if (typeof fn === 'function') fn();
+    });
+    confirmModal.addEventListener('click', (e) => {
+      if (e.target === confirmModal) closeConfirm();
+    });
+
+    function applyTheme(nextTheme) {
+      theme = nextTheme;
+      document.documentElement.setAttribute('data-theme', theme);
+      saveState('auraloom_theme', theme);
+
+      const isDark = theme === 'dark';
+      const desktopLabel = document.getElementById('desktop-theme-label');
+      const settingsLabel = document.getElementById('settings-theme-label');
+      if (desktopLabel) desktopLabel.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+      if (settingsLabel) settingsLabel.textContent = isDark ? 'Dark' : 'Light';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      applyTheme(theme === 'dark' ? 'light' : 'dark');
+    }
+
+    function nowTimeLabel() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function isLiveMode() {
+      return Boolean(sbClient && currentUser);
+    }
+
+    function computeResonance(profile) {
+      const shared = (profile.values || []).filter(v => myProfile.values.includes(v)).length;
+      return Math.min(99, (profile.baseResonance || 80) + shared * 6);
+    }
+
+    function getFilteredProfiles() {
+      if (selectedRegion === 'All Global') return profiles;
+      return profiles.filter(p => p.region === selectedRegion);
     }
 
     function mapDbProfile(row, index) {
-      const theme = AURA_THEMES[index % AURA_THEMES.length];
       const cleanName = row.name || 'Auraloom Member';
       const parts = cleanName.trim().split(/\s+/);
       const initials = (parts[0][0] + (parts[1] ? parts[1][0] : (parts[0][1] || ''))).toUpperCase();
@@ -772,8 +943,7 @@
         initials,
         vibeTag: row.vibe_tag || 'Live Aura',
         baseResonance: 80,
-        auraGradient: theme.auraGradient,
-        bannerBg: theme.bannerBg,
+        avatarBg: AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length],
         promptQuestion: row.prompt_question || 'What quiet moment always makes you feel alive?',
         promptAnswer: row.prompt_answer || 'Looking for genuine conversations across the world.',
         sundayRitual: row.sunday_ritual || 'Slow mornings, good music, and meaningful talks.',
@@ -782,27 +952,147 @@
       };
     }
 
-    function isLiveMode() {
-      return Boolean(sbClient && currentUser);
+    // 5. NAVIGATION (5-TAB ARCHITECTURE)
+    function renderNavigation() {
+      desktopNav.innerHTML = NAV_ITEMS.map(item => {
+        const active = item.id === activeTab;
+        const showBadge = item.id === 'sparks' && sparks.length > 0;
+        return `
+          <button
+            type="button"
+            data-nav="${item.id}"
+            class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+            style="${active
+              ? 'background-color: var(--accent-soft); color: var(--accent-primary);'
+              : 'color: var(--text-secondary);'}"
+          >
+            <span class="flex items-center gap-3">
+              <i data-lucide="${item.icon}" class="w-4 h-4"></i>
+              <span>${item.label}</span>
+            </span>
+            ${showBadge ? `<span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md text-white" style="background-color: var(--accent-primary);">${sparks.length}</span>` : ''}
+          </button>
+        `;
+      }).join('');
+
+      mobileNavGrid.innerHTML = NAV_ITEMS.map(item => {
+        const active = item.id === activeTab;
+        const showBadge = item.id === 'sparks' && sparks.length > 0;
+        return `
+          <button
+            type="button"
+            data-nav="${item.id}"
+            class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition-colors"
+            style="color: ${active ? 'var(--accent-primary)' : 'var(--text-secondary)'};"
+          >
+            <span class="relative">
+              <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+              ${showBadge ? `<span class="absolute -top-1 -right-2 text-[9px] font-bold px-1 rounded-full text-white leading-tight" style="background-color: var(--accent-primary);">${sparks.length}</span>` : ''}
+            </span>
+            <span class="text-[10px] font-semibold mt-0.5">${item.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-nav')));
+      });
+
+      if (window.lucide) lucide.createIcons();
     }
 
-    function updateCloudBadge() {
-      if (isLiveMode()) {
-        cloudDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
-        circleLabel.textContent = 'Live Cloud';
-        openCloudBtn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors shadow-sm';
-      } else if (sbClient) {
-        cloudDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        circleLabel.textContent = 'Sign In (Cloud)';
-        openCloudBtn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white border border-amber-300 text-amber-700 hover:bg-amber-50 transition-colors shadow-sm';
+    function switchTab(tabId) {
+      if (!views[tabId]) return;
+      activeTab = tabId;
+      Object.entries(views).forEach(([id, el]) => {
+        if (id === tabId) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+
+      if (tabId === 'discover') {
+        renderRegionBar();
+        renderCurrentCard();
+      } else if (tabId === 'vibe') {
+        populateVibeForm();
+      } else if (tabId === 'sparks') {
+        renderSparksList();
+      } else if (tabId === 'chats') {
+        if (activeChatId) openChatRoom(activeChatId);
+        else showChatsList();
+      } else if (tabId === 'profile') {
+        sbUrlInput.value = sbConfig.url || '';
+        sbKeyInput.value = sbConfig.key || '';
+        updateAuthUi();
+      }
+
+      renderNavigation();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 6. CLOUD STATUS & SUPABASE SYNC
+    function setCloudNotice(text, type = 'info') {
+      if (!text) {
+        cloudStatusMsg.classList.add('hidden');
+        return;
+      }
+      cloudStatusMsg.classList.remove('hidden');
+      if (type === 'error') {
+        cloudStatusMsg.style.cssText = 'background: rgba(220,38,38,0.10); color: #DC2626; border: 1px solid rgba(220,38,38,0.25);';
+      } else if (type === 'success') {
+        cloudStatusMsg.style.cssText = 'background: var(--success-bg); color: var(--success); border: 1px solid rgba(22,134,106,0.28);';
       } else {
-        cloudDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        circleLabel.textContent = 'Connect Cloud';
-        openCloudBtn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors shadow-sm';
+        cloudStatusMsg.style.cssText = 'background: var(--bg-subtle); color: var(--text-primary); border: 1px solid var(--border-subtle);';
+      }
+      cloudStatusMsg.textContent = text;
+    }
+
+    function updateCloudIndicators() {
+      const live = isLiveMode();
+      const connected = Boolean(sbClient);
+      const label = live ? 'Live Cloud' : connected ? 'Sign In (Cloud)' : 'Connect Cloud';
+      const dotColor = live ? '#16866A' : '#F59E0B';
+
+      circleLabel.textContent = label;
+      cloudDot.style.backgroundColor = dotColor;
+      desktopCloudLabel.textContent = label;
+      desktopCloudDot.style.backgroundColor = dotColor;
+      profileCloudPill.textContent = live ? 'Live Cloud' : connected ? 'Connected' : 'Demo Mode';
+      profileCloudPill.className = live
+        ? 'px-2.5 py-1 rounded-lg text-xs font-semibold badge-success'
+        : 'px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box';
+    }
+
+    function updateAuthUi() {
+      if (sbClient) authSection.classList.remove('hidden');
+      else authSection.classList.add('hidden');
+
+      if (currentUser) {
+        authLoggedOut.classList.add('hidden');
+        authLoggedIn.classList.remove('hidden');
+        authUserEmail.textContent = currentUser.email || 'Signed in';
+      } else {
+        authLoggedOut.classList.remove('hidden');
+        authLoggedIn.classList.add('hidden');
+      }
+      setAuthTab(authMode);
+      updateCloudIndicators();
+    }
+
+    function setAuthTab(mode) {
+      authMode = mode;
+      const activeStyle = 'background-color: var(--bg-surface); color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.06);';
+      const idleStyle = 'background-color: transparent; color: var(--text-secondary);';
+      if (mode === 'signup') {
+        tabSignupBtn.style.cssText = activeStyle;
+        tabLoginBtn.style.cssText = idleStyle;
+        authSubmitBtn.textContent = 'Sign Up for Auraloom';
+      } else {
+        tabLoginBtn.style.cssText = activeStyle;
+        tabSignupBtn.style.cssText = idleStyle;
+        authSubmitBtn.textContent = 'Log In to Auraloom';
       }
     }
 
-    // 4. SUPABASE CONNECTION & LIVE DATA SYNC
     async function initSupabase(url, key, silent = false) {
       if (!url || !key || !window.supabase) return false;
       try {
@@ -814,40 +1104,28 @@
         if (error) throw error;
         currentUser = data.session ? data.session.user : null;
 
-        authSection.classList.remove('hidden');
         updateAuthUi();
-        updateCloudBadge();
 
         if (currentUser) {
           await loadLiveCloudData();
           subscribeToLiveMessages();
         }
-        if (!silent) setCloudNotice('Connected to your Supabase project! Sign up or log in below.', 'success');
+        if (!silent) setCloudNotice('Connected to Supabase. Sign up or log in below.', 'success');
         return true;
       } catch (err) {
         sbClient = null;
         currentUser = null;
-        updateCloudBadge();
-        if (!silent) setCloudNotice(`Could not connect: ${err.message || 'Check your Project URL and public key.'}`, 'error');
+        updateAuthUi();
+        if (!silent) setCloudNotice(`Could not connect: ${err.message || 'Check your Project URL and key.'}`, 'error');
         return false;
-      }
-    }
-
-    function updateAuthUi() {
-      if (currentUser) {
-        authLoggedOut.classList.add('hidden');
-        authLoggedIn.classList.remove('hidden');
-        authUserEmail.textContent = currentUser.email || 'Signed in';
-      } else {
-        authLoggedOut.classList.remove('hidden');
-        authLoggedIn.classList.add('hidden');
       }
     }
 
     async function loadLiveCloudData() {
       if (!isLiveMode()) return;
+      isLoadingCloud = true;
+      if (activeTab === 'discover') renderCurrentCard();
       try {
-        // 1. Fetch all profiles
         const { data: rows, error: pErr } = await sbClient
           .from('profiles')
           .select('*')
@@ -861,6 +1139,8 @@
             age: mine.age || 24,
             city: mine.city || '',
             region: mine.region || 'Asia',
+            languages: mine.languages || 'English',
+            vibeTag: mine.vibe_tag || 'Live Aura',
             promptAnswer: mine.prompt_answer || '',
             sundayRitual: mine.sunday_ritual || '',
             values: Array.isArray(mine.values) && mine.values.length ? mine.values : ['Curiosity', 'Deep Talks', 'Warmth']
@@ -871,7 +1151,6 @@
         const others = (rows || []).filter(r => r.id !== currentUser.id).map((r, i) => mapDbProfile(r, i));
         profiles = others.length > 0 ? others : [...DEMO_PROFILES];
 
-        // 2. Fetch user's sparks
         const { data: sparkRows, error: sErr } = await sbClient
           .from('sparks')
           .select('*')
@@ -881,7 +1160,6 @@
           sparks = others.filter(p => sparkedIds.has(p.id));
         }
 
-        // 3. Fetch user's messages
         const { data: msgRows, error: mErr } = await sbClient
           .from('messages')
           .select('*')
@@ -899,11 +1177,13 @@
             });
           });
         }
-
         currentIndex = 0;
-        renderCurrentCard();
       } catch (err) {
-        showToast('Sync error: check Supabase tables');
+        showToast('Could not sync cloud data');
+      } finally {
+        isLoadingCloud = false;
+        renderCurrentCard();
+        renderNavigation();
       }
     }
 
@@ -919,7 +1199,7 @@
           const m = payload.new;
           if (!m || !currentUser) return;
           if (m.sender_id !== currentUser.id && m.receiver_id !== currentUser.id) return;
-          if (m.sender_id === currentUser.id) return; // Already rendered optimistically
+          if (m.sender_id === currentUser.id) return;
 
           const partnerId = m.sender_id;
           if (!conversations[partnerId]) conversations[partnerId] = [];
@@ -928,31 +1208,18 @@
             text: m.body,
             time: new Date(m.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           });
-          if (activeChatId === partnerId) {
+
+          if (activeTab === 'chats' && activeChatId === partnerId) {
             renderChatMessages();
           } else {
-            showToast('New live message received!');
+            showToast('New live message received');
+            if (activeTab === 'chats') renderChatsList();
           }
         })
         .subscribe();
     }
 
-    // 5. FILTERING & RESONANCE
-    function getFilteredProfiles() {
-      if (selectedRegion === 'All Global') return profiles;
-      return profiles.filter(p => p.region === selectedRegion);
-    }
-
-    function computeResonance(profile) {
-      const shared = profile.values.filter(v => myProfile.values.includes(v)).length;
-      return Math.min(99, profile.baseResonance + shared * 6);
-    }
-
-    function nowTimeLabel() {
-      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    // 6. RENDER REGION BAR & MAIN CARD
+    // 7. DISCOVER VIEW RENDERING
     function renderRegionBar() {
       regionFilterBar.innerHTML = REGIONS.map(region => {
         const active = region === selectedRegion;
@@ -960,11 +1227,7 @@
           <button
             type="button"
             data-region="${region}"
-            class="region-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-              active
-                ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white shadow-md shadow-rose-500/20'
-                : 'pill-light text-slate-600 hover:text-slate-900 hover:bg-white'
-            }"
+            class="region-pill shrink-0 h-9 px-3.5 rounded-xl text-xs font-semibold transition-all ${active ? 'btn-cta' : 'btn-secondary'}"
           >
             ${region}
           </button>
@@ -982,44 +1245,63 @@
       });
     }
 
+    function renderSkeletonCard() {
+      cardContainer.innerHTML = `
+        <div class="surface-card rounded-2xl p-5 space-y-5">
+          <div class="flex items-center gap-3.5">
+            <div class="w-14 h-14 rounded-2xl skeleton shrink-0"></div>
+            <div class="space-y-2 flex-1">
+              <div class="h-5 w-36 rounded-lg skeleton"></div>
+              <div class="h-3.5 w-48 rounded-lg skeleton"></div>
+            </div>
+          </div>
+          <div class="h-24 w-full rounded-xl skeleton"></div>
+          <div class="h-11 w-full rounded-xl skeleton"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="h-12 rounded-xl skeleton"></div>
+            <div class="h-12 rounded-xl skeleton"></div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderCurrentCard() {
       sparksCount.textContent = sparks.length;
       myVibeLabel.textContent = myProfile.name ? myProfile.name : 'My Vibe';
-      updateCloudBadge();
+      updateCloudIndicators();
+
+      if (isLoadingCloud) {
+        renderSkeletonCard();
+        return;
+      }
 
       const list = getFilteredProfiles();
 
       if (currentIndex >= list.length) {
-        profileCounter.textContent = `0 remaining`;
+        profileCounter.textContent = '0 remaining';
         cardContainer.innerHTML = `
-          <div class="surface-card rounded-3xl p-8 text-center card-enter">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-rose-100 to-amber-100 border border-rose-200 flex items-center justify-center">
-              <i data-lucide="globe" class="w-8 h-8 text-rose-500"></i>
+          <div class="surface-card rounded-2xl p-8 text-center fade-in space-y-4">
+            <div class="w-12 h-12 mx-auto rounded-2xl subtle-box flex items-center justify-center">
+              <i data-lucide="globe" class="w-6 h-6" style="color: var(--accent-primary);"></i>
             </div>
-            <h2 class="text-xl font-bold text-slate-900 mb-2">You've explored ${escapeHtml(selectedRegion)}</h2>
-            <p class="text-sm text-slate-500 mb-6 leading-relaxed">
-              Try another region above, message your Sparks, or explore this circle again.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3">
-              <button
-                id="empty-view-sparks"
-                type="button"
-                class="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm shadow-md shadow-rose-500/25 hover:opacity-95 transition-opacity"
-              >
-                Open Sparks & Chats (${sparks.length})
+            <div>
+              <h2 class="text-lg font-bold" style="color: var(--text-primary);">You've seen everyone in ${escapeHtml(selectedRegion)}</h2>
+              <p class="text-xs mt-1.5 leading-relaxed max-w-xs mx-auto" style="color: var(--text-secondary);">
+                Switch regions above, message your Sparks, or browse this circle again.
+              </p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+              <button id="empty-view-sparks" type="button" class="flex-1 h-11 rounded-xl text-sm font-semibold btn-cta">
+                View Sparks (${sparks.length})
               </button>
-              <button
-                id="reset-circle-btn"
-                type="button"
-                class="flex-1 py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors"
-              >
+              <button id="reset-circle-btn" type="button" class="flex-1 h-11 rounded-xl text-sm font-semibold btn-secondary">
                 Explore Again
               </button>
             </div>
           </div>
         `;
 
-        document.getElementById('empty-view-sparks').addEventListener('click', openSparksModal);
+        document.getElementById('empty-view-sparks').addEventListener('click', () => switchTab('sparks'));
         document.getElementById('reset-circle-btn').addEventListener('click', resetCircle);
         if (window.lucide) lucide.createIcons();
         return;
@@ -1029,106 +1311,115 @@
 
       const p = list[currentIndex];
       const resonance = computeResonance(p);
-      const valuesHtml = p.values
+      const valuesHtml = (p.values || [])
         .map(v => {
           const isMatch = myProfile.values.includes(v);
-          return `<span class="px-3 py-1 rounded-full text-xs font-semibold ${
-            isMatch
-              ? 'bg-rose-50 border border-rose-200 text-rose-700'
-              : 'bg-slate-100 border border-slate-200/70 text-slate-700'
-          }">${isMatch ? '✦ ' : ''}${escapeHtml(v)}</span>`;
+          return `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${isMatch ? 'tag-matched' : 'tag-neutral'}">
+            ${isMatch ? '<span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--accent-primary);"></span>' : ''}
+            ${escapeHtml(v)}
+          </span>`;
         })
         .join('');
 
       cardContainer.innerHTML = `
-        <article class="surface-card rounded-3xl overflow-hidden card-enter">
-          <div class="relative p-5 pb-4 bg-gradient-to-br ${p.bannerBg} border-b border-slate-100">
+        <article class="surface-card rounded-2xl overflow-hidden fade-in">
+          <!-- Profile Header -->
+          <div class="p-5 border-b" style="border-color: var(--border-subtle);">
             <div class="flex items-center justify-between gap-2 mb-4">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/90 border border-slate-200/70 text-slate-700 shadow-sm">
-                <i data-lucide="waves" class="w-3.5 h-3.5 text-rose-500"></i>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box" style="color: var(--text-primary);">
+                <i data-lucide="waves" class="w-3.5 h-3.5" style="color: var(--accent-secondary);"></i>
                 ${escapeHtml(p.vibeTag)}
               </span>
-              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold badge-success">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 ${resonance}% Resonance
               </span>
             </div>
 
-            <div class="flex items-center gap-4">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${p.auraGradient} flex items-center justify-center text-xl font-extrabold text-white shadow-lg shadow-rose-500/20 orb-float shrink-0">
+            <div class="flex items-center gap-3.5">
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white shrink-0" style="background: ${p.avatarBg};">
                 ${escapeHtml(p.initials)}
               </div>
-              <div class="min-w-0">
-                <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</h2>
-                <p class="text-xs font-medium text-slate-600 flex items-center gap-1 mt-1 truncate">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500 shrink-0"></i>
-                  ${escapeHtml(p.city)} · ${escapeHtml(p.timezone)}
+              <div class="min-w-0 flex-1">
+                <h2 class="text-xl font-bold tracking-tight leading-tight truncate" style="color: var(--text-primary);">
+                  ${escapeHtml(p.name)}, ${escapeHtml(p.age)}
+                </h2>
+                <p class="text-xs font-medium flex items-center gap-1 mt-1 truncate" style="color: var(--text-secondary);">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+                  <span>${escapeHtml(p.city)} · ${escapeHtml(p.timezone)}</span>
                 </p>
-                <p class="text-xs text-slate-500 mt-0.5 truncate">${escapeHtml(p.languages)}</p>
+                <p class="text-xs mt-0.5 truncate" style="color: var(--text-secondary);">${escapeHtml(p.languages)}</p>
               </div>
             </div>
           </div>
 
-          <div class="p-5 space-y-4 bg-white">
-            <div class="bg-slate-50/90 border border-slate-100 rounded-2xl p-4">
-              <p class="text-[11px] font-bold uppercase tracking-wider text-rose-500 mb-1.5">
+          <!-- Personality & Values -->
+          <div class="p-5 space-y-4">
+            <div class="subtle-box rounded-xl p-4">
+              <p class="text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--text-secondary);">
                 ${escapeHtml(p.promptQuestion)}
               </p>
-              <p class="text-sm text-slate-800 leading-relaxed font-medium">
+              <p class="text-[15px] leading-relaxed font-medium" style="color: var(--text-primary);">
                 “${escapeHtml(p.promptAnswer)}”
               </p>
             </div>
 
+            <!-- Sunday Ritual Accordion -->
             <div>
               <button
                 id="reveal-ritual-btn"
                 type="button"
-                class="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-amber-50/70 hover:bg-amber-50 border border-amber-200/70 text-sm text-slate-800 transition-colors"
+                aria-expanded="${isRitualRevealed}"
+                class="w-full min-h-[44px] flex items-center justify-between px-3.5 py-2.5 rounded-xl btn-secondary text-xs font-semibold"
               >
-                <span class="flex items-center gap-2 font-semibold">
-                  <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
-                  ${isRitualRevealed ? 'Hide Sunday Ritual' : 'Peek at their Sunday Ritual'}
+                <span class="flex items-center gap-2">
+                  <i data-lucide="sun" class="w-4 h-4" style="color: var(--accent-primary);"></i>
+                  <span>${isRitualRevealed ? 'Hide Sunday Ritual' : 'Peek at Sunday Ritual'}</span>
                 </span>
-                <i data-lucide="${isRitualRevealed ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-amber-600"></i>
+                <i data-lucide="${isRitualRevealed ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4" style="color: var(--text-secondary);"></i>
               </button>
-              <div id="ritual-box" class="${isRitualRevealed ? 'mt-2 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200/80 text-sm text-amber-950 leading-relaxed' : 'hidden'}">
+              <div id="ritual-box" class="${isRitualRevealed ? 'mt-2 px-4 py-3 rounded-xl subtle-box text-sm leading-relaxed fade-in' : 'hidden'}" style="color: var(--text-primary);">
                 ${escapeHtml(p.sundayRitual)}
               </div>
             </div>
 
+            <!-- Core Values -->
             <div>
-              <p class="text-xs font-medium text-slate-500 mb-2">Core Values <span class="text-rose-500 font-semibold">(✦ matches your vibe)</span></p>
-              <div class="flex flex-wrap gap-2">
-                ${valuesHtml}
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-xs font-semibold" style="color: var(--text-secondary);">Core Values</p>
+                <span class="text-[11px] font-medium" style="color: var(--accent-primary);">Highlighted = shared with you</span>
               </div>
+              <div class="flex flex-wrap gap-2">${valuesHtml}</div>
             </div>
 
-            <div>
+            <!-- Interaction Bar -->
+            <div class="pt-1 space-y-3">
               <input
                 id="spark-note-input"
                 type="text"
                 maxlength="140"
-                placeholder="Optional: add a quick opening note with your Spark..."
-                class="w-full bg-slate-50 border border-slate-200 focus:border-rose-400 focus:bg-white focus:outline-none rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400"
+                placeholder="Optional opening note to send with your Spark..."
+                class="w-full h-11 rounded-xl px-3.5 text-xs input-field"
               />
-            </div>
 
-            <div class="grid grid-cols-2 gap-3">
-              <button
-                id="pass-btn"
-                type="button"
-                class="py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
-              >
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                Pass Gently
-              </button>
-              <button
-                id="spark-btn"
-                type="button"
-                class="py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-500/25 transition-opacity"
-              >
-                <i data-lucide="sparkles" class="w-4 h-4"></i>
-                Send a Spark
-              </button>
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  id="pass-btn"
+                  type="button"
+                  class="min-h-[48px] px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 btn-secondary"
+                >
+                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  <span>Pass Gently</span>
+                </button>
+                <button
+                  id="spark-btn"
+                  type="button"
+                  class="min-h-[48px] px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 btn-cta"
+                >
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <span>Send a Spark</span>
+                </button>
+              </div>
             </div>
           </div>
         </article>
@@ -1137,11 +1428,10 @@
       document.getElementById('reveal-ritual-btn').addEventListener('click', toggleRitual);
       document.getElementById('pass-btn').addEventListener('click', handlePass);
       document.getElementById('spark-btn').addEventListener('click', handleSpark);
-
       if (window.lucide) lucide.createIcons();
     }
 
-    // 7. CORE ACTIONS (supports both Demo Mode & Live Supabase Mode)
+    // 8. DISCOVERY ACTIONS
     function toggleRitual() {
       isRitualRevealed = !isRitualRevealed;
       renderCurrentCard();
@@ -1175,7 +1465,7 @@
             await sbClient.from('messages').insert({ sender_id: currentUser.id, receiver_id: profile.id, body: note });
             conversations[profile.id].push({ sender: 'me', text: note, time: nowTimeLabel() });
           }
-          showToast(note ? `Live Spark & note sent to ${profile.name}` : `Live Spark sent to ${profile.name}`);
+          showToast(note ? `Spark & note sent to ${profile.name}` : `Spark sent to ${profile.name}`);
         } catch (err) {
           showToast('Could not save Spark to cloud');
         }
@@ -1190,13 +1480,14 @@
             conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', time: nowTimeLabel() });
             saveState('auraloom_conversations', conversations);
           }
-          showToast(`Spark sent to ${profile.name} — tap Sparks to chat`);
+          showToast(`Spark sent to ${profile.name}`);
         }
       }
 
       isRitualRevealed = false;
       currentIndex += 1;
       renderCurrentCard();
+      renderNavigation();
     }
 
     function resetCircle() {
@@ -1205,106 +1496,278 @@
       renderCurrentCard();
     }
 
-    // 8. SPARKS & LIVE CHAT DRAWER
-    function showSparksListView() {
-      activeChatId = null;
-      chatView.classList.add('hidden');
-      chatView.classList.remove('flex');
-      sparksListView.classList.remove('hidden');
-      sparksListView.classList.add('flex');
-      renderSparksList();
+    // 9. MY VIBE VIEW
+    function populateVibeForm() {
+      vibeNameInput.value = myProfile.name || '';
+      vibeAgeInput.value = myProfile.age || 24;
+      vibeCityInput.value = myProfile.city || '';
+      vibeRegionInput.value = myProfile.region || 'Asia';
+      vibeLanguagesInput.value = myProfile.languages || 'English';
+      vibeTagInput.value = myProfile.vibeTag || 'Live Aura';
+      vibeAnswerInput.value = myProfile.promptAnswer || '';
+      vibeRitualInput.value = myProfile.sundayRitual || '';
+      draftValues = [...myProfile.values];
+      renderValuePicker();
     }
 
-    function renderSparksList() {
-      if (sparks.length === 0) {
-        sparksList.innerHTML = `
-          <div class="text-center py-10 px-4">
-            <p class="text-sm text-slate-800 font-semibold mb-1">No Sparks yet</p>
-            <p class="text-xs text-slate-500">Tap "Send a Spark" on someone worldwide to unlock chat with them.</p>
-          </div>
+    function renderValuePicker() {
+      valuesSelectedCount.textContent = `${draftValues.length} / 3`;
+      vibeValuesGrid.innerHTML = ALL_VALUES.map(val => {
+        const selected = draftValues.includes(val);
+        return `
+          <button
+            type="button"
+            data-val="${val}"
+            class="vibe-val-chip h-9 px-3 rounded-lg text-xs font-semibold transition-all ${selected ? 'tag-matched' : 'tag-neutral'}"
+          >
+            ${selected ? '✓ ' : ''}${val}
+          </button>
         `;
-        return;
-      }
+      }).join('');
 
-      sparksList.innerHTML = sparks
-        .map(p => {
-          const msgs = conversations[p.id] || [];
-          const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1].text : `${p.vibeTag} · ${p.city}`;
-          return `
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 min-w-0">
-                  <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${p.auraGradient} flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-sm">
-                    ${escapeHtml(p.initials)}
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-sm font-bold text-slate-900 truncate">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
-                    <p class="text-xs text-slate-500 truncate">${escapeHtml(p.city)}</p>
-                  </div>
-                </div>
-                <span class="text-xs font-bold text-emerald-600 shrink-0">${computeResonance(p)}%</span>
-              </div>
-              <p class="text-xs text-slate-600 truncate bg-white border border-slate-100 rounded-xl px-3 py-2">
-                ${escapeHtml(lastMsg)}
-              </p>
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  data-chat-id="${escapeHtml(p.id)}"
-                  class="open-chat-btn flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-xs hover:opacity-95 transition-opacity"
-                >
-                  Message
-                </button>
-                <button
-                  type="button"
-                  data-remove-id="${escapeHtml(p.id)}"
-                  class="remove-spark-btn text-xs text-slate-500 hover:text-rose-600 px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-rose-200 transition-colors"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          `;
-        })
-        .join('');
-
-      sparksList.querySelectorAll('.open-chat-btn').forEach(btn => {
-        btn.addEventListener('click', () => openChatRoom(btn.getAttribute('data-chat-id')));
-      });
-
-      sparksList.querySelectorAll('.remove-spark-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-remove-id');
-          const target = sparks.find(item => item.id === id);
-          sparks = sparks.filter(item => item.id !== id);
-          if (isLiveMode() && target && target.isLive) {
-            try {
-              await sbClient.from('sparks').delete().eq('from_user', currentUser.id).eq('to_user', id);
-            } catch (e) {}
+      vibeValuesGrid.querySelectorAll('.vibe-val-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = btn.getAttribute('data-val');
+          if (draftValues.includes(val)) {
+            draftValues = draftValues.filter(v => v !== val);
+          } else if (draftValues.length < 3) {
+            draftValues.push(val);
           } else {
-            saveState('auraloom_sparks', sparks);
+            showToast('Select up to 3 core values');
+            return;
           }
-          sparksCount.textContent = sparks.length;
-          renderSparksList();
-          if (currentIndex >= getFilteredProfiles().length) renderCurrentCard();
+          renderValuePicker();
         });
       });
     }
 
+    vibeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (draftValues.length === 0) {
+        showToast('Pick at least 1 core value');
+        return;
+      }
+
+      myProfile = {
+        name: vibeNameInput.value.trim(),
+        age: parseInt(vibeAgeInput.value, 10) || 24,
+        city: vibeCityInput.value.trim(),
+        region: vibeRegionInput.value || 'Asia',
+        languages: vibeLanguagesInput.value.trim() || 'English',
+        vibeTag: vibeTagInput.value.trim() || 'Live Aura',
+        promptAnswer: vibeAnswerInput.value.trim(),
+        sundayRitual: vibeRitualInput.value.trim(),
+        values: [...draftValues]
+      };
+      saveState('auraloom_my_profile', myProfile);
+
+      if (isLiveMode()) {
+        try {
+          const { error } = await sbClient.from('profiles').upsert({
+            id: currentUser.id,
+            name: myProfile.name || 'Auraloom Member',
+            age: myProfile.age,
+            city: myProfile.city || 'Global Citizen',
+            region: myProfile.region,
+            languages: myProfile.languages,
+            vibe_tag: myProfile.vibeTag,
+            prompt_question: 'What quiet moment always makes you feel alive?',
+            prompt_answer: myProfile.promptAnswer || 'Excited to meet thoughtful people worldwide.',
+            sunday_ritual: myProfile.sundayRitual || 'Slow mornings and good music.',
+            values: myProfile.values
+          });
+          if (error) throw error;
+          showToast('Profile published live to Auraloom');
+        } catch (err) {
+          showToast('Saved locally (cloud sync failed)');
+        }
+      } else {
+        showToast('My Vibe saved — Resonance updated');
+      }
+
+      myVibeLabel.textContent = myProfile.name ? myProfile.name : 'My Vibe';
+      switchTab('discover');
+    });
+
+    // 10. SPARKS VIEW
+    function renderSparksList() {
+      sparksPageCount.textContent = `${sparks.length} saved`;
+      sparksCount.textContent = sparks.length;
+
+      if (sparks.length === 0) {
+        sparksList.innerHTML = `
+          <div class="surface-card rounded-2xl p-8 text-center space-y-3">
+            <div class="w-11 h-11 mx-auto rounded-xl subtle-box flex items-center justify-center">
+              <i data-lucide="heart" class="w-5 h-5" style="color: var(--accent-primary);"></i>
+            </div>
+            <div>
+              <p class="text-sm font-bold" style="color: var(--text-primary);">No Sparks yet</p>
+              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">
+                When you send a Spark in Discover, your connection appears here ready for conversation.
+              </p>
+            </div>
+            <button id="empty-go-discover" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-cta">
+              Explore Profiles
+            </button>
+          </div>
+        `;
+        document.getElementById('empty-go-discover').addEventListener('click', () => switchTab('discover'));
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      sparksList.innerHTML = sparks.map(p => {
+        const msgs = conversations[p.id] || [];
+        const preview = msgs.length > 0 ? msgs[msgs.length - 1].text : p.promptAnswer;
+        return `
+          <div class="surface-card rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0" style="background: ${p.avatarBg};">
+                  ${escapeHtml(p.initials)}
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold truncate" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
+                  <p class="text-xs truncate" style="color: var(--text-secondary);">${escapeHtml(p.city)} · ${escapeHtml(p.vibeTag)}</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 rounded-lg text-xs font-bold badge-success shrink-0">${computeResonance(p)}%</span>
+            </div>
+
+            <p class="text-xs truncate px-3 py-2 rounded-lg subtle-box" style="color: var(--text-secondary);">
+              ${escapeHtml(preview)}
+            </p>
+
+            <div class="flex items-center gap-2">
+              <button type="button" data-chat-id="${escapeHtml(p.id)}" class="open-chat-btn flex-1 h-10 rounded-xl text-xs font-semibold btn-cta">
+                Open Chat
+              </button>
+              <button type="button" data-remove-id="${escapeHtml(p.id)}" class="remove-spark-btn h-10 px-3.5 rounded-xl text-xs font-semibold btn-secondary">
+                Remove
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      sparksList.querySelectorAll('.open-chat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeChatId = btn.getAttribute('data-chat-id');
+          switchTab('chats');
+        });
+      });
+
+      sparksList.querySelectorAll('.remove-spark-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-remove-id');
+          const target = sparks.find(item => item.id === id);
+          if (!target) return;
+          openConfirm(
+            `Remove ${target.name}?`,
+            'This removes the Spark from your list. You can always discover them again later.',
+            'Remove Spark',
+            async () => {
+              sparks = sparks.filter(item => item.id !== id);
+              if (activeChatId === id) activeChatId = null;
+              if (isLiveMode() && target.isLive) {
+                try {
+                  await sbClient.from('sparks').delete().eq('from_user', currentUser.id).eq('to_user', id);
+                } catch (e) {}
+              } else {
+                saveState('auraloom_sparks', sparks);
+              }
+              renderSparksList();
+              renderNavigation();
+              showToast(`Removed ${target.name}`);
+            }
+          );
+        });
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 11. CHATS VIEW
+    function showChatsList() {
+      activeChatId = null;
+      chatView.classList.add('hidden');
+      chatView.classList.remove('flex');
+      chatsListPanel.classList.remove('hidden');
+      renderChatsList();
+    }
+
+    function renderChatsList() {
+      if (sparks.length === 0) {
+        chatsThreadList.innerHTML = `
+          <div class="surface-card rounded-2xl p-8 text-center space-y-3">
+            <div class="w-11 h-11 mx-auto rounded-xl subtle-box flex items-center justify-center">
+              <i data-lucide="message-circle" class="w-5 h-5" style="color: var(--accent-secondary);"></i>
+            </div>
+            <div>
+              <p class="text-sm font-bold" style="color: var(--text-primary);">No conversations yet</p>
+              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">
+                Send a Spark to someone in Discover to start a private conversation.
+              </p>
+            </div>
+            <button id="chats-go-discover" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-cta">
+              Go to Discover
+            </button>
+          </div>
+        `;
+        document.getElementById('chats-go-discover').addEventListener('click', () => switchTab('discover'));
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      chatsThreadList.innerHTML = sparks.map(p => {
+        const msgs = conversations[p.id] || [];
+        const last = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+        return `
+          <button
+            type="button"
+            data-thread-id="${escapeHtml(p.id)}"
+            class="thread-row w-full text-left surface-card rounded-2xl p-4 flex items-center gap-3.5 hover:opacity-95 transition-opacity"
+          >
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0" style="background: ${p.avatarBg};">
+              ${escapeHtml(p.initials)}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-sm font-bold truncate" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
+                <span class="text-[11px] shrink-0" style="color: var(--text-secondary);">${last ? escapeHtml(last.time) : 'New'}</span>
+              </div>
+              <p class="text-xs truncate mt-0.5" style="color: var(--text-secondary);">
+                ${last ? escapeHtml(last.text) : 'Tap to say hello...'}
+              </p>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color: var(--text-secondary);"></i>
+          </button>
+        `;
+      }).join('');
+
+      chatsThreadList.querySelectorAll('.thread-row').forEach(btn => {
+        btn.addEventListener('click', () => openChatRoom(btn.getAttribute('data-thread-id')));
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
     function openChatRoom(profileId) {
       const partner = sparks.find(p => p.id === profileId) || profiles.find(p => p.id === profileId);
-      if (!partner) return;
+      if (!partner) {
+        showChatsList();
+        return;
+      }
 
       activeChatId = profileId;
-      sparksListView.classList.add('hidden');
-      sparksListView.classList.remove('flex');
+      chatsListPanel.classList.add('hidden');
       chatView.classList.remove('hidden');
       chatView.classList.add('flex');
 
-      chatPartnerAvatar.className = `w-9 h-9 rounded-xl bg-gradient-to-br ${partner.auraGradient} flex items-center justify-center text-xs font-bold text-white shrink-0`;
+      chatPartnerAvatar.style.background = partner.avatarBg;
       chatPartnerAvatar.textContent = partner.initials;
       chatPartnerName.textContent = `${partner.name}, ${partner.age}`;
       chatPartnerMeta.textContent = `${partner.city} · ${partner.timezone}`;
+      chatPartnerResonance.textContent = `${computeResonance(partner)}%`;
 
       renderChatMessages();
       if (window.lucide) lucide.createIcons();
@@ -1314,33 +1777,35 @@
       const msgs = conversations[activeChatId] || [];
       if (msgs.length === 0) {
         chatMessages.innerHTML = `
-          <div class="text-center py-8 text-xs text-slate-500">
-            Say hello or drop a Deep Question below to start the conversation.
+          <div class="text-center py-10 text-xs" style="color: var(--text-secondary);">
+            Say hello or tap the Deep Question icebreaker below.
           </div>
         `;
         return;
       }
 
-      chatMessages.innerHTML = msgs
-        .map(m => {
-          const isMe = m.sender === 'me';
-          return `
-            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-              <div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                isMe
-                  ? 'bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-medium rounded-br-md shadow-sm'
-                  : 'bg-slate-100 text-slate-800 rounded-bl-md'
-              }">
-                ${escapeHtml(m.text)}
-              </div>
-              <span class="text-[10px] text-slate-400 mt-1 px-1">${escapeHtml(m.time)}</span>
+      chatMessages.innerHTML = msgs.map(m => {
+        const isMe = m.sender === 'me';
+        return `
+          <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+            <div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe ? 'btn-cta rounded-br-md' : 'subtle-box rounded-bl-md'}" style="${isMe ? '' : 'color: var(--text-primary);'}">
+              ${escapeHtml(m.text)}
             </div>
-          `;
-        })
-        .join('');
+            <span class="text-[10px] mt-1 px-1" style="color: var(--text-secondary);">${escapeHtml(m.time)}</span>
+          </div>
+        `;
+      }).join('');
 
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+
+    chatBackBtn.addEventListener('click', showChatsList);
+
+    chatIcebreakerBtn.addEventListener('click', () => {
+      const randomPrompt = ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)];
+      chatInput.value = randomPrompt;
+      chatInput.focus();
+    });
 
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1374,8 +1839,8 @@
       replyTimer = setTimeout(() => {
         if (!partner) return;
         const replies = [
-          `That really resonates with me! Here in ${partner.city.split(',')[0]}, I was just thinking about the exact same thing.`,
-          `I love how thoughtful your answer is. Tell me more—what inspired that?`,
+          `That really resonates with me! Here in ${partner.city.split(',')[0]}, I was thinking about something similar.`,
+          `I love how thoughtful your answer is. What inspired that?`,
           `This is already way better than small talk. What is your favorite part of your week usually?`
         ];
         const nextReply = replies[conversations[currentPartnerId].length % replies.length];
@@ -1385,175 +1850,40 @@
       }, 650);
     });
 
-    chatIcebreakerBtn.addEventListener('click', () => {
-      const randomPrompt = ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)];
-      chatInput.value = randomPrompt;
-      chatInput.focus();
+    // 12. PROFILE & CLOUD SETTINGS HANDLERS
+    toggleCloudConfigBtn.addEventListener('click', () => {
+      cloudConfigForm.classList.toggle('hidden');
     });
-
-    function openSparksModal() {
-      showSparksListView();
-      sparksModal.classList.remove('hidden');
-      sparksModal.classList.add('flex');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeSparksModal() {
-      sparksModal.classList.add('hidden');
-      sparksModal.classList.remove('flex');
-    }
-
-    // 9. MY VIBE PROFILE MODAL
-    function renderValuePicker() {
-      valuesSelectedCount.textContent = `${draftValues.length} / 3 selected`;
-      vibeValuesGrid.innerHTML = ALL_VALUES.map(val => {
-        const selected = draftValues.includes(val);
-        return `
-          <button
-            type="button"
-            data-val="${val}"
-            class="vibe-val-chip px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-              selected
-                ? 'bg-rose-500 text-white shadow-sm'
-                : 'bg-slate-100 border border-slate-200/70 text-slate-700 hover:bg-slate-200/70'
-            }"
-          >
-            ${selected ? '✦ ' : ''}${val}
-          </button>
-        `;
-      }).join('');
-
-      vibeValuesGrid.querySelectorAll('.vibe-val-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const val = btn.getAttribute('data-val');
-          if (draftValues.includes(val)) {
-            draftValues = draftValues.filter(v => v !== val);
-          } else if (draftValues.length < 3) {
-            draftValues.push(val);
-          } else {
-            showToast('Pick up to 3 core values');
-            return;
-          }
-          renderValuePicker();
-        });
-      });
-    }
-
-    function openVibeModal() {
-      vibeNameInput.value = myProfile.name || '';
-      vibeAgeInput.value = myProfile.age || 24;
-      vibeCityInput.value = myProfile.city || '';
-      vibeRegionInput.value = myProfile.region || 'Asia';
-      vibeAnswerInput.value = myProfile.promptAnswer || '';
-      vibeRitualInput.value = myProfile.sundayRitual || '';
-      draftValues = [...myProfile.values];
-      renderValuePicker();
-      vibeModal.classList.remove('hidden');
-      vibeModal.classList.add('flex');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeVibeModal() {
-      vibeModal.classList.add('hidden');
-      vibeModal.classList.remove('flex');
-    }
-
-    vibeForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (draftValues.length === 0) {
-        showToast('Pick at least 1 core value');
-        return;
-      }
-      myProfile = {
-        name: vibeNameInput.value.trim(),
-        age: parseInt(vibeAgeInput.value, 10) || 24,
-        city: vibeCityInput.value.trim(),
-        region: vibeRegionInput.value || 'Asia',
-        promptAnswer: vibeAnswerInput.value.trim(),
-        sundayRitual: vibeRitualInput.value.trim(),
-        values: [...draftValues]
-      };
-      saveState('auraloom_my_profile', myProfile);
-
-      if (isLiveMode()) {
-        try {
-          const { error } = await sbClient.from('profiles').upsert({
-            id: currentUser.id,
-            name: myProfile.name || 'Auraloom Member',
-            age: myProfile.age,
-            city: myProfile.city || 'Global Citizen',
-            region: myProfile.region,
-            languages: 'English',
-            vibe_tag: 'Live Aura',
-            prompt_question: 'What quiet moment always makes you feel alive?',
-            prompt_answer: myProfile.promptAnswer || 'Excited to meet thoughtful people worldwide.',
-            sunday_ritual: myProfile.sundayRitual || 'Slow mornings and good music.',
-            values: myProfile.values
-          });
-          if (error) throw error;
-          showToast('Profile published live to Auraloom!');
-        } catch (err) {
-          showToast('Saved locally (cloud sync failed)');
-        }
-      } else {
-        showToast('Your Vibe saved — Resonance updated!');
-      }
-
-      closeVibeModal();
-      renderCurrentCard();
-    });
-
-    // 10. CLOUD MODAL CONTROLS
-    function openCloudModal() {
-      sbUrlInput.value = sbConfig.url || '';
-      sbKeyInput.value = sbConfig.key || '';
-      setCloudNotice('');
-      if (sbClient) authSection.classList.remove('hidden');
-      updateAuthUi();
-      cloudModal.classList.remove('hidden');
-      cloudModal.classList.add('flex');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeCloudModal() {
-      cloudModal.classList.add('hidden');
-      cloudModal.classList.remove('flex');
-    }
 
     cloudConfigForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       await initSupabase(sbUrlInput.value, sbKeyInput.value, false);
     });
 
-    sbDisconnectBtn.addEventListener('click', async () => {
-      if (sbClient && currentUser) {
-        try { await sbClient.auth.signOut(); } catch (e) {}
-      }
-      sbClient = null;
-      currentUser = null;
-      sbConfig = { url: '', key: '' };
-      saveState('auraloom_sb_config', sbConfig);
-      profiles = [...DEMO_PROFILES];
-      sparks = loadSaved('auraloom_sparks', []);
-      conversations = loadSaved('auraloom_conversations', {});
-      authSection.classList.add('hidden');
-      setCloudNotice('Switched back to Demo Mode.', 'info');
-      currentIndex = 0;
-      renderCurrentCard();
+    sbDisconnectBtn.addEventListener('click', () => {
+      openConfirm(
+        'Switch to Demo Mode?',
+        'You will sign out of Supabase and browse local demo profiles until you reconnect.',
+        'Use Demo Mode',
+        async () => {
+          if (sbClient && currentUser) {
+            try { await sbClient.auth.signOut(); } catch (e) {}
+          }
+          sbClient = null;
+          currentUser = null;
+          sbConfig = { url: '', key: '' };
+          saveState('auraloom_sb_config', sbConfig);
+          profiles = [...DEMO_PROFILES];
+          sparks = loadSaved('auraloom_sparks', []);
+          conversations = loadSaved('auraloom_conversations', {});
+          updateAuthUi();
+          setCloudNotice('Switched to Demo Mode.', 'info');
+          currentIndex = 0;
+          renderCurrentCard();
+          renderNavigation();
+        }
+      );
     });
-
-    function setAuthTab(mode) {
-      authMode = mode;
-      if (mode === 'signup') {
-        tabSignupBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200';
-        tabLoginBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600';
-        authSubmitBtn.textContent = 'Sign Up for Auraloom';
-      } else {
-        tabLoginBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200';
-        tabSignupBtn.className = 'flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-600';
-        authSubmitBtn.textContent = 'Log In to Auraloom';
-      }
-    }
 
     tabSignupBtn.addEventListener('click', () => setAuthTab('signup'));
     tabLoginBtn.addEventListener('click', () => setAuthTab('login'));
@@ -1575,19 +1905,17 @@
           if (data.session) {
             currentUser = data.session.user;
             updateAuthUi();
-            updateCloudBadge();
             await loadLiveCloudData();
             subscribeToLiveMessages();
             setCloudNotice('Account created and signed in! Open My Vibe to publish your card.', 'success');
           } else {
-            setCloudNotice('Account created! Check your email to confirm (or turn off Confirm Email in Supabase → Authentication → Providers → Email for instant testing).', 'info');
+            setCloudNotice('Account created! Check your email to confirm, then log in.', 'info');
           }
         } else {
           const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
           if (error) throw error;
           currentUser = data.user;
           updateAuthUi();
-          updateCloudBadge();
           await loadLiveCloudData();
           subscribeToLiveMessages();
           setCloudNotice('Welcome back! Synced with your live Supabase database.', 'success');
@@ -1604,33 +1932,30 @@
       currentUser = null;
       profiles = [...DEMO_PROFILES];
       updateAuthUi();
-      updateCloudBadge();
       setCloudNotice('Signed out. Viewing Demo Circle.', 'info');
       renderCurrentCard();
+      renderNavigation();
     });
 
-    // Wire up modal controls
-    openSparksBtn.addEventListener('click', openSparksModal);
-    closeSparksBtn.addEventListener('click', closeSparksModal);
-    closeChatModalBtn.addEventListener('click', closeSparksModal);
-    chatBackBtn.addEventListener('click', showSparksListView);
-    sparksModal.addEventListener('click', (e) => {
-      if (e.target === sparksModal) closeSparksModal();
-    });
+    // Header & theme shortcuts
+    document.getElementById('open-vibe-btn').addEventListener('click', () => switchTab('vibe'));
+    document.getElementById('open-sparks-btn').addEventListener('click', () => switchTab('sparks'));
+    document.getElementById('open-cloud-btn').addEventListener('click', () => switchTab('profile'));
+    document.getElementById('desktop-cloud-btn').addEventListener('click', () => switchTab('profile'));
+    document.getElementById('mobile-theme-btn').addEventListener('click', toggleTheme);
+    document.getElementById('desktop-theme-btn').addEventListener('click', toggleTheme);
+    document.getElementById('settings-theme-btn').addEventListener('click', toggleTheme);
 
-    openVibeBtn.addEventListener('click', openVibeModal);
-    closeVibeBtn.addEventListener('click', closeVibeModal);
-    vibeModal.addEventListener('click', (e) => {
-      if (e.target === vibeModal) closeVibeModal();
-    });
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
 
-    openCloudBtn.addEventListener('click', openCloudModal);
-    closeCloudBtn.addEventListener('click', closeCloudModal);
-    cloudModal.addEventListener('click', (e) => {
-      if (e.target === cloudModal) closeCloudModal();
-    });
-
-    // Start the app!
+    // 13. BOOTSTRAP
+    applyTheme(theme);
+    renderNavigation();
     renderRegionBar();
     renderCurrentCard();
     if (sbConfig.url && sbConfig.key) {
