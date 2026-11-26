@@ -128,24 +128,26 @@
       color: var(--text-primary);
     }
 
-    .fade-in {
-      animation: fadeSlide 0.24s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+    .fade-in { animation: fadeSlide 0.24s cubic-bezier(0.16, 1, 0.3, 1); }
 
     @keyframes fadeSlide {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes popCelebration {
+      0% { transform: scale(0.88); opacity: 0; }
+      70% { transform: scale(1.03); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in { animation: popCelebration 0.34s cubic-bezier(0.16, 1, 0.3, 1); }
+
     @keyframes shimmer {
       0% { opacity: 0.55; }
       50% { opacity: 0.9; }
       100% { opacity: 0.55; }
     }
-    .skeleton {
-      background-color: var(--bg-subtle);
-      animation: shimmer 1.4s ease-in-out infinite;
-    }
+    .skeleton { background-color: var(--bg-subtle); animation: shimmer 1.4s ease-in-out infinite; }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -165,9 +167,7 @@
       border-bottom: 1px solid var(--border-subtle);
     }
 
-    input[type="range"] {
-      accent-color: #E94776;
-    }
+    input[type="range"] { accent-color: #E94776; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -176,7 +176,6 @@
 
     <!-- DESKTOP LEFT SIDEBAR (md+) -->
     <aside class="hidden md:flex md:flex-col md:w-64 md:shrink-0 md:sticky md:top-0 md:h-screen px-4 py-6 border-r" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
-      <!-- Brand -->
       <div class="flex items-center gap-3 px-2 mb-7">
         <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background: #231130;">
           <svg viewBox="0 0 36 36" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -197,10 +196,8 @@
         </div>
       </div>
 
-      <!-- Desktop Nav Links -->
       <nav aria-label="Primary navigation" class="space-y-1 flex-1" id="desktop-nav"></nav>
 
-      <!-- Bottom Sidebar Utilities -->
       <div class="pt-4 border-t space-y-2" style="border-color: var(--border-subtle);">
         <button id="desktop-theme-btn" type="button" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors btn-secondary">
           <span class="flex items-center gap-2">
@@ -263,25 +260,20 @@
       <!-- MAIN CONTENT WORKSPACE -->
       <main class="flex-1 w-full max-w-2xl mx-auto px-4 pt-4 pb-24 md:py-8 md:px-8">
 
-        <!-- VIEW 1: DISCOVER (Smart Discovery + Daily Resonance + Filters) -->
+        <!-- VIEW 1: DISCOVER -->
         <section id="view-discover" class="space-y-4">
-          <!-- Region Filter Bar + Advanced Filters Trigger -->
           <div class="flex items-center gap-2">
             <nav aria-label="Global discovery filters" class="flex-1 min-w-0">
               <div id="region-filter-bar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5"></div>
             </nav>
-            <button
-              id="open-filters-btn"
-              type="button"
-              class="h-9 px-3 rounded-xl text-xs font-semibold btn-secondary flex items-center gap-1.5 shrink-0"
-            >
+            <button id="open-filters-btn" type="button" class="h-9 px-3 rounded-xl text-xs font-semibold btn-secondary flex items-center gap-1.5 shrink-0">
               <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5" style="color: var(--accent-primary);"></i>
               <span>Filters</span>
               <span id="active-filter-badge" class="hidden text-[10px] font-bold px-1.5 py-0.5 rounded-md leading-none text-white" style="background-color: var(--accent-primary);">0</span>
             </button>
           </div>
 
-          <!-- Daily Resonance Personalized Recommendations -->
+          <!-- Daily Resonance -->
           <div id="daily-resonance-section" class="space-y-2">
             <div class="flex items-center justify-between px-0.5">
               <div class="flex items-center gap-1.5">
@@ -293,36 +285,59 @@
             <div id="daily-resonance-strip" class="flex items-stretch gap-2.5 overflow-x-auto no-scrollbar pb-1"></div>
           </div>
 
-          <!-- Counter + Secondary Cloud Status -->
+          <!-- Counter + Cloud Status -->
           <div id="progress-row" class="flex items-center justify-between gap-2 text-xs px-0.5">
             <span id="profile-counter" class="font-semibold" style="color: var(--text-secondary);">Profile 1 of 8</span>
-            <button
-              id="open-cloud-btn"
-              type="button"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium subtle-box hover:opacity-90 transition-opacity"
-              style="color: var(--text-secondary);"
-            >
+            <button id="open-cloud-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium subtle-box hover:opacity-90 transition-opacity" style="color: var(--text-secondary);">
               <span id="cloud-dot" class="w-2 h-2 rounded-full bg-amber-500"></span>
               <span id="circle-label">Connect Cloud</span>
             </button>
           </div>
 
-          <!-- Active Filter Summary Chips (shown when advanced filters are active) -->
           <div id="active-filters-bar" class="hidden flex-wrap items-center gap-1.5 px-0.5"></div>
-
-          <!-- Main Profile Card / Loading Skeleton / Empty State -->
           <div id="card-container" class="w-full"></div>
         </section>
 
-        <!-- VIEW 2: MY VIBE -->
-        <section id="view-vibe" class="hidden space-y-5 fade-in">
+        <!-- VIEW 2: MY VIBE (with Profile Completion & Photo Manager) -->
+        <section id="view-vibe" class="hidden space-y-4 fade-in">
           <div>
             <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">My Vibe</h2>
             <p class="text-xs mt-1" style="color: var(--text-secondary);">
-              Complete your profile so our Compatibility Engine can calculate accurate Resonance scores.
+              Upload photos and complete your profile to unlock stronger compatibility matches.
             </p>
           </div>
 
+          <!-- Profile Completion Indicator -->
+          <div class="surface-card rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold" style="color: var(--text-primary);">Profile Completion</span>
+              <span id="completion-pct" class="text-xs font-bold badge-success px-2 py-0.5 rounded-md">0%</span>
+            </div>
+            <div class="w-full h-2 rounded-full overflow-hidden" style="background-color: var(--bg-subtle);">
+              <div id="completion-bar" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, #E94776, #A64AE5);"></div>
+            </div>
+            <div id="completion-checklist" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <!-- Profile Photos Manager -->
+          <div class="surface-card rounded-2xl p-5 space-y-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-bold" style="color: var(--text-primary);">Profile Photos</h3>
+                <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Up to 6 photos (JPG, PNG, WebP · max 5 MB each)</p>
+              </div>
+              <label for="photo-upload-input" class="h-9 px-3 rounded-xl text-xs font-semibold btn-cta flex items-center gap-1.5 cursor-pointer shrink-0">
+                <i data-lucide="image-plus" class="w-3.5 h-3.5"></i>
+                <span>Add Photo</span>
+              </label>
+              <input id="photo-upload-input" type="file" accept="image/jpeg,image/png,image/webp" multiple class="hidden" />
+            </div>
+
+            <div id="photo-upload-status" class="hidden text-xs font-medium px-3 py-2 rounded-xl subtle-box" style="color: var(--text-secondary);"></div>
+            <div id="my-photos-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
+          </div>
+
+          <!-- Profile Details Form -->
           <form id="vibe-form" class="surface-card rounded-2xl p-5 space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div class="sm:col-span-2">
@@ -354,7 +369,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="vibe-languages-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Languages (comma or dot separated)</label>
+                <label for="vibe-languages-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Languages</label>
                 <input id="vibe-languages-input" type="text" maxlength="60" placeholder="e.g., English, Hindi, Punjabi" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
               <div>
@@ -363,7 +378,6 @@
               </div>
             </div>
 
-            <!-- Compatibility Dimensions Inputs -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label for="vibe-comm-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Communication Style</label>
@@ -430,46 +444,66 @@
           </form>
         </section>
 
-        <!-- VIEW 3: SPARKS & LIKES -->
+        <!-- VIEW 3: MUTUAL, INCOMING & SENT SPARKS -->
         <section id="view-sparks" class="hidden space-y-4 fade-in">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Sparks & Likes</h2>
-              <p class="text-xs mt-1" style="color: var(--text-secondary);">Your saved connections and sent Sparks</p>
+              <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Sparks</h2>
+              <p class="text-xs mt-1" style="color: var(--text-secondary);">Mutual connections, incoming Sparks, and Sparks you've sent</p>
             </div>
-            <span id="sparks-page-count" class="px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box" style="color: var(--text-secondary);">0 saved</span>
+            <span id="sparks-page-count" class="px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box" style="color: var(--text-secondary);">0 total</span>
+          </div>
+
+          <!-- Segmented Tabs: Mutual | Incoming | Sent -->
+          <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl subtle-box" id="sparks-subtabs">
+            <button type="button" data-spark-tab="mutual" class="spark-tab-btn h-9 rounded-lg text-xs font-semibold transition-all">Mutual (0)</button>
+            <button type="button" data-spark-tab="incoming" class="spark-tab-btn h-9 rounded-lg text-xs font-semibold transition-all">Incoming (0)</button>
+            <button type="button" data-spark-tab="sent" class="spark-tab-btn h-9 rounded-lg text-xs font-semibold transition-all">Sent (0)</button>
           </div>
 
           <div id="sparks-list" class="space-y-3"></div>
         </section>
 
-        <!-- VIEW 4: CHATS -->
+        <!-- VIEW 4: ADVANCED CHATS -->
         <section id="view-chats" class="hidden fade-in">
           <div id="chats-list-panel" class="space-y-4">
             <div>
               <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Chats</h2>
-              <p class="text-xs mt-1" style="color: var(--text-secondary);">Meaningful conversations with your Sparks</p>
+              <p class="text-xs mt-1" style="color: var(--text-secondary);">Real-time conversations with read receipts, photos, and voice notes</p>
             </div>
             <div id="chats-thread-list" class="space-y-2.5"></div>
           </div>
 
-          <div id="chat-view" class="hidden surface-card rounded-2xl overflow-hidden flex-col" style="height: calc(100vh - 180px); min-height: 440px; max-height: 660px;">
-            <div class="flex items-center justify-between gap-3 px-4 py-3 border-b shrink-0" style="border-color: var(--border-subtle);">
-              <div class="flex items-center gap-3 min-w-0">
+          <div id="chat-view" class="hidden surface-card rounded-2xl overflow-hidden flex-col" style="height: calc(100vh - 175px); min-height: 450px; max-height: 680px;">
+            <!-- Chat Header with Trust & Safety Menu -->
+            <div class="flex items-center justify-between gap-2 px-4 py-3 border-b shrink-0" style="border-color: var(--border-subtle);">
+              <div class="flex items-center gap-2.5 min-w-0">
                 <button id="chat-back-btn" type="button" aria-label="Back to conversations" class="w-9 h-9 rounded-xl btn-secondary flex items-center justify-center shrink-0">
                   <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 </button>
-                <div id="chat-partner-avatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"></div>
+                <div id="chat-partner-avatar" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white overflow-hidden shrink-0"></div>
                 <div class="min-w-0">
                   <p id="chat-partner-name" class="text-sm font-bold truncate" style="color: var(--text-primary);"></p>
                   <p id="chat-partner-meta" class="text-xs truncate" style="color: var(--text-secondary);"></p>
                 </div>
               </div>
-              <span id="chat-partner-resonance" class="px-2.5 py-1 rounded-lg text-xs font-semibold badge-success shrink-0"></span>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span id="chat-partner-resonance" class="px-2 py-1 rounded-lg text-xs font-semibold badge-success"></span>
+                <button id="chat-safety-btn" type="button" aria-label="Safety options" class="w-8 h-8 rounded-lg btn-secondary flex items-center justify-center">
+                  <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                </button>
+              </div>
             </div>
 
+            <!-- Messages List -->
             <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
 
+            <!-- Typing Indicator -->
+            <div id="chat-typing-row" class="hidden px-4 py-1.5 text-xs font-medium" style="color: var(--accent-primary);">
+              Typing...
+            </div>
+
+            <!-- Composer with Image Attachment + Voice Recording + Icebreaker -->
             <div class="p-3 border-t space-y-2 shrink-0" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
               <button id="chat-icebreaker-btn" type="button" class="w-full text-left text-xs px-3 py-2 rounded-xl subtle-box hover:opacity-90 flex items-center justify-between gap-2 transition-opacity">
                 <span class="flex items-center gap-2 truncate font-medium" style="color: var(--text-primary);">
@@ -479,28 +513,48 @@
                 <span class="font-semibold shrink-0" style="color: var(--accent-primary);">Use</span>
               </button>
 
-              <form id="chat-form" class="flex items-center gap-2">
-                <input id="chat-input" type="text" placeholder="Write a message..." autocomplete="off" class="flex-1 h-11 rounded-xl px-3.5 text-sm input-field" />
-                <button type="submit" class="h-11 px-4 rounded-xl text-sm font-semibold btn-cta shrink-0">Send</button>
+              <div id="voice-recording-bar" class="hidden px-3 py-2 rounded-xl tag-matched flex items-center justify-between gap-2 text-xs font-semibold">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                  Recording voice note...
+                </span>
+                <button id="stop-voice-btn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold text-white" style="background-color: var(--accent-primary);">
+                  Stop & Send
+                </button>
+              </div>
+
+              <form id="chat-form" class="flex items-center gap-1.5">
+                <label for="chat-image-input" title="Attach image" class="w-10 h-10 rounded-xl btn-secondary flex items-center justify-center cursor-pointer shrink-0">
+                  <i data-lucide="image" class="w-4 h-4"></i>
+                </label>
+                <input id="chat-image-input" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" />
+
+                <button id="chat-voice-btn" type="button" title="Record voice note" class="w-10 h-10 rounded-xl btn-secondary flex items-center justify-center shrink-0">
+                  <i data-lucide="mic" class="w-4 h-4"></i>
+                </button>
+
+                <input id="chat-input" type="text" placeholder="Write a message..." autocomplete="off" class="flex-1 min-w-0 h-10 rounded-xl px-3 text-sm input-field" />
+                <button type="submit" class="h-10 px-3.5 rounded-xl text-xs sm:text-sm font-semibold btn-cta shrink-0">Send</button>
               </form>
             </div>
           </div>
         </section>
 
-        <!-- VIEW 5: PROFILE, CLOUD & SETTINGS -->
+        <!-- VIEW 5: PROFILE, PRIVACY, TRUST & SETTINGS -->
         <section id="view-profile" class="hidden space-y-4 fade-in">
           <div>
             <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Profile & Settings</h2>
-            <p class="text-xs mt-1" style="color: var(--text-secondary);">Account, Supabase cloud sync, and app preferences</p>
+            <p class="text-xs mt-1" style="color: var(--text-secondary);">Account, privacy controls, safety, and Supabase cloud sync</p>
           </div>
 
           <div id="cloud-status-msg" class="hidden px-4 py-3 rounded-xl text-xs font-medium"></div>
 
+          <!-- Account & Auth -->
           <div class="surface-card rounded-2xl p-5 space-y-4">
             <div class="flex items-center justify-between gap-2">
               <div>
                 <h3 class="text-sm font-bold" style="color: var(--text-primary);">Auraloom Account</h3>
-                <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Sign in to sync your profile, preferences, Sparks, and live chats</p>
+                <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Sign in to sync photos, mutual Sparks, and live chat</p>
               </div>
               <span id="profile-cloud-pill" class="px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box" style="color: var(--text-secondary);">Demo Mode</span>
             </div>
@@ -522,20 +576,50 @@
               <div id="auth-logged-in" class="hidden space-y-3">
                 <div class="p-3.5 rounded-xl flex items-center justify-between gap-3 badge-success">
                   <div class="min-w-0">
-                    <p class="text-xs font-bold">Live Cloud Active</p>
+                    <p class="text-xs font-bold flex items-center gap-1.5">
+                      <span>Live Cloud Active</span>
+                      <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
+                    </p>
                     <p id="auth-user-email" class="text-xs truncate opacity-90"></p>
                   </div>
                   <button id="auth-signout-btn" type="button" class="h-9 px-3 rounded-lg text-xs font-semibold btn-secondary shrink-0">Sign Out</button>
                 </div>
-                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
-                  Your <strong>My Vibe</strong> card, discovery filters, Sparks, and chat messages sync with Supabase.
-                </p>
               </div>
             </div>
           </div>
 
+          <!-- Privacy & Visibility Controls -->
+          <div class="surface-card rounded-2xl p-5 space-y-4">
+            <h3 class="text-sm font-bold" style="color: var(--text-primary);">Privacy & Visibility</h3>
+
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold" style="color: var(--text-primary);">Profile Visibility</p>
+                <p class="text-xs" style="color: var(--text-secondary);">Allow other Auraloom members to discover your card</p>
+              </div>
+              <button id="toggle-visibility-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold shrink-0"></button>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-3 border-t" style="border-color: var(--border-subtle);">
+              <div>
+                <p class="text-xs font-semibold" style="color: var(--text-primary);">Read Receipts</p>
+                <p class="text-xs" style="color: var(--text-secondary);">Let mutual Sparks see when you've read their messages</p>
+              </div>
+              <button id="toggle-receipts-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold shrink-0"></button>
+            </div>
+
+            <div class="pt-3 border-t space-y-2" style="border-color: var(--border-subtle);">
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-semibold" style="color: var(--text-primary);">Blocked Users</p>
+                <span id="blocked-count-label" class="text-xs" style="color: var(--text-secondary);">0 blocked</span>
+              </div>
+              <div id="blocked-users-list" class="space-y-2"></div>
+            </div>
+          </div>
+
+          <!-- Appearance & Discovery History -->
           <div class="surface-card rounded-2xl p-5 space-y-3">
-            <h3 class="text-sm font-bold" style="color: var(--text-primary);">Appearance & Discovery History</h3>
+            <h3 class="text-sm font-bold" style="color: var(--text-primary);">Appearance & Discovery</h3>
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="text-xs font-semibold" style="color: var(--text-primary);">Theme</p>
@@ -551,12 +635,11 @@
                 <p class="text-xs font-semibold" style="color: var(--text-primary);">Reset Passed Profiles</p>
                 <p class="text-xs" style="color: var(--text-secondary);">Bring back profiles you previously passed on</p>
               </div>
-              <button id="reset-passed-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary shrink-0">
-                Reset Passes
-              </button>
+              <button id="reset-passed-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary shrink-0">Reset Passes</button>
             </div>
           </div>
 
+          <!-- Supabase Connection Settings -->
           <div class="surface-card rounded-2xl p-5 space-y-3">
             <button id="toggle-cloud-config-btn" type="button" class="w-full flex items-center justify-between text-left">
               <div>
@@ -580,6 +663,19 @@
                 <button id="sb-disconnect-btn" type="button" class="h-10 px-3.5 rounded-xl text-xs font-semibold btn-secondary">Demo Mode</button>
               </div>
             </form>
+          </div>
+
+          <!-- Danger Zone: Account Deletion -->
+          <div class="surface-card rounded-2xl p-5 space-y-3" style="border-color: rgba(220, 38, 38, 0.28);">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-bold" style="color: #DC2626;">Delete Account</h3>
+                <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Permanently delete your profile, Sparks, and messages</p>
+              </div>
+              <button id="open-delete-account-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold text-white shrink-0" style="background-color: #DC2626;">
+                Delete
+              </button>
+            </div>
           </div>
         </section>
 
@@ -606,7 +702,6 @@
       </div>
 
       <div class="p-5 space-y-5 overflow-y-auto flex-1">
-        <!-- Age Range Sliders -->
         <div class="space-y-2.5">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold" style="color: var(--text-primary);">Age Range</span>
@@ -624,7 +719,6 @@
           </div>
         </div>
 
-        <!-- Region & Country -->
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label for="filter-region-select" class="block text-xs font-bold mb-1.5" style="color: var(--text-primary);">Region</label>
@@ -653,31 +747,26 @@
           </div>
         </div>
 
-        <!-- Preferred Connection Type -->
         <div>
           <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">Preferred Connection Type</p>
           <div id="filter-connection-chips" class="flex flex-wrap gap-1.5"></div>
         </div>
 
-        <!-- Languages -->
         <div>
           <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">Languages</p>
           <div id="filter-language-chips" class="flex flex-wrap gap-1.5"></div>
         </div>
 
-        <!-- Core Values -->
         <div>
           <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">Core Values</p>
           <div id="filter-value-chips" class="flex flex-wrap gap-1.5"></div>
         </div>
 
-        <!-- Interests -->
         <div>
           <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">Interests</p>
           <div id="filter-interest-chips" class="flex flex-wrap gap-1.5"></div>
         </div>
 
-        <!-- Vibe Tags -->
         <div>
           <p class="text-xs font-bold mb-2" style="color: var(--text-primary);">Vibe Tags</p>
           <div id="filter-vibe-chips" class="flex flex-wrap gap-1.5"></div>
@@ -707,9 +796,83 @@
       <div id="compat-body" class="p-5 space-y-4 overflow-y-auto flex-1"></div>
 
       <div class="p-4 border-t shrink-0" style="border-color: var(--border-subtle);">
-        <button id="compat-edit-vibe-btn" type="button" class="w-full h-10 rounded-xl text-xs font-semibold btn-secondary">
-          Improve accuracy in My Vibe
+        <button id="compat-edit-vibe-btn" type="button" class="w-full h-10 rounded-xl text-xs font-semibold btn-secondary">Improve accuracy in My Vibe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MUTUAL MATCH CELEBRATION MODAL -->
+  <div id="match-modal" class="fixed inset-0 bg-black/55 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="surface-card w-full max-w-sm rounded-3xl p-6 text-center space-y-5 pop-in">
+      <div class="flex items-center justify-center gap-3">
+        <div id="match-my-avatar" class="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold text-white overflow-hidden shadow-md"></div>
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: #231130;">
+          <i data-lucide="heart-handshake" class="w-5 h-5" style="color: #E94776;"></i>
+        </div>
+        <div id="match-their-avatar" class="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold text-white overflow-hidden shadow-md"></div>
+      </div>
+
+      <div>
+        <span class="inline-block px-3 py-1 rounded-full text-[11px] font-bold tag-matched mb-2">Mutual Resonance</span>
+        <h3 id="match-title" class="text-xl font-extrabold tracking-tight" style="color: var(--text-primary);">You & Elena Sparked!</h3>
+        <p id="match-subtitle" class="text-xs mt-1.5 leading-relaxed" style="color: var(--text-secondary);"></p>
+      </div>
+
+      <div class="space-y-2">
+        <button id="match-start-chat-btn" type="button" class="w-full h-12 rounded-xl text-sm font-semibold btn-cta">Start Chat</button>
+        <button id="match-close-btn" type="button" class="w-full h-10 rounded-xl text-xs font-semibold btn-secondary">Keep Discovering</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT & BLOCK SAFETY MODAL -->
+  <div id="safety-modal" class="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surface-card w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 id="safety-title" class="text-base font-bold" style="color: var(--text-primary);">Trust & Safety</h3>
+          <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Report or block this user — enforced across your account</p>
+        </div>
+        <button id="close-safety-btn" type="button" aria-label="Close safety menu" class="w-9 h-9 rounded-xl btn-secondary flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
+      </div>
+
+      <form id="report-form" class="space-y-3">
+        <div>
+          <label for="report-reason-select" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Report Reason</label>
+          <select id="report-reason-select" class="w-full h-10 rounded-xl px-3 text-xs input-field">
+            <option value="Fake or spam profile">Fake or spam profile</option>
+            <option value="Harassment or disrespect">Harassment or disrespect</option>
+            <option value="Inappropriate content">Inappropriate content</option>
+            <option value="Safety concern">Safety concern</option>
+          </select>
+        </div>
+        <div>
+          <label for="report-details-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Details (optional)</label>
+          <textarea id="report-details-input" rows="2" maxlength="240" placeholder="Share any helpful context..." class="w-full rounded-xl p-3 text-xs input-field resize-none"></textarea>
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 h-10 rounded-xl text-xs font-semibold btn-cta">Submit Report</button>
+          <button id="safety-block-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold text-white" style="background-color: #DC2626;">Block User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ACCOUNT DELETION MODAL -->
+  <div id="delete-account-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="surface-card w-full max-w-sm rounded-2xl p-5 space-y-4 fade-in">
+      <div>
+        <h3 class="text-base font-bold" style="color: #DC2626;">Delete Your Auraloom Account</h3>
+        <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">
+          This permanently removes your profile, uploaded photo references, Sparks, and messages. Type <strong>DELETE</strong> below to confirm.
+        </p>
+      </div>
+      <input id="delete-confirm-input" type="text" placeholder="Type DELETE to confirm" class="w-full h-10 rounded-xl px-3 text-xs input-field" />
+      <div class="flex items-center justify-end gap-2">
+        <button id="delete-cancel-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-secondary">Cancel</button>
+        <button id="delete-confirm-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold text-white" style="background-color: #DC2626;">Permanently Delete</button>
       </div>
     </div>
   </div>
@@ -723,7 +886,7 @@
       </div>
       <div class="flex items-center justify-end gap-2">
         <button id="confirm-cancel-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-secondary">Cancel</button>
-        <button id="confirm-ok-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold text-white" style="background-color: #DC2626;">Remove</button>
+        <button id="confirm-ok-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold text-white" style="background-color: #DC2626;">Confirm</button>
       </div>
     </div>
   </div>
@@ -735,44 +898,38 @@
 
   <script>
     // =========================================================================
-    // PRE-WIRED SUPABASE CONNECTION (Public Publishable Key Only)
+    // PRE-WIRED SUPABASE CONNECTION (Public Publishable Key Only — Never Service Role)
     // =========================================================================
     const DEFAULT_SUPABASE_URL = 'https://kpmkxsqvktsgyqcyluac.supabase.co';
     const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_YaoQtXxzY65y9ZSVlAEshg_bBAtdFi_';
+    const STORAGE_BUCKET = 'auraloom-media';
+    const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+    const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-    // 1. TAXONOMIES & DEMO PROFILES
+    // 1. TAXONOMIES & DEMO DATA (used only when not signed into Supabase Live Cloud)
     const ALL_VALUES = [
       'Curiosity', 'Deep Talks', 'Slow Mornings', 'Kindness',
       'Creativity', 'Loyalty', 'Ambition', 'Humor',
       'Honesty', 'Empathy', 'Adventure', 'Warmth'
     ];
-
     const ALL_INTERESTS = [
       'Music', 'Books', 'Travel', 'Coffee & Chai', 'Art & Design',
       'Cooking', 'Fitness', 'Film', 'Architecture', 'Nature'
     ];
-
-    const ALL_LANGUAGES = [
-      'English', 'Hindi', 'Punjabi', 'Japanese', 'Portuguese', 'Spanish', 'French', 'Swahili'
-    ];
-
+    const ALL_LANGUAGES = ['English', 'Hindi', 'Punjabi', 'Japanese', 'Portuguese', 'Spanish', 'French', 'Swahili'];
     const ALL_VIBE_TAGS = [
       'Midnight Stargazer', 'Warm Bookshop', 'Golden Tramway',
       'Acoustic Sunrise', 'Velvet Horizon', 'Laneway Espresso',
       'Rainy Vinyl', 'Sunlit Studio'
     ];
-
     const CONNECTION_TYPES = ['Any', 'Soulmate', 'Long-Term', 'Slow Dating', 'Deep Friendship'];
-
     const REGIONS = ['All Global', 'Asia', 'Europe', 'Americas', 'Africa', 'Oceania'];
-
     const ICEBREAKERS = [
       'What is one place in your city you wish you could show someone at sunset?',
       'If we had a 10-minute coffee call right now, what would you ask me first?',
       'What song or album feels like home to you?',
       'What is a tradition from your culture you love sharing?'
     ];
-
     const AVATAR_GRADIENTS = [
       'linear-gradient(135deg, #6366F1 0%, #A64AE5 100%)',
       'linear-gradient(135deg, #E94776 0%, #F59E0B 100%)',
@@ -783,20 +940,10 @@
 
     const DEMO_PROFILES = [
       {
-        id: 'p1',
-        name: 'Aarav',
-        age: 26,
-        city: 'Chandigarh, India',
-        country: 'India',
-        region: 'Asia',
-        languages: 'English · Hindi · Punjabi',
-        timezone: 'UTC+5:30',
-        initials: 'AM',
-        vibeTag: 'Midnight Stargazer',
-        avatarBg: AVATAR_GRADIENTS[0],
-        connectionType: 'Soulmate',
-        communicationStyle: 'Deep Texts',
-        lifestyle: 'Night Owl',
+        id: 'p1', name: 'Aarav', age: 26, city: 'Chandigarh, India', country: 'India', region: 'Asia',
+        languages: 'English · Hindi · Punjabi', timezone: 'UTC+5:30', initials: 'AM', vibeTag: 'Midnight Stargazer',
+        avatarBg: AVATAR_GRADIENTS[0], isVerified: true, photoUrls: [],
+        connectionType: 'Soulmate', communicationStyle: 'Deep Texts', lifestyle: 'Night Owl',
         interests: ['Music', 'Coffee & Chai', 'Art & Design', 'Nature'],
         gallery: [
           { bg: 'linear-gradient(135deg, #312E81 0%, #7C3AED 100%)', label: 'Aura Card', caption: 'Late rainstorms, masala chai, and calm midnight drives.' },
@@ -810,20 +957,10 @@
         autoReply: 'Love that you reached out! I am always up for a late-night conversation—what is your favorite rainy-day ritual?'
       },
       {
-        id: 'p2',
-        name: 'Hana',
-        age: 25,
-        city: 'Kyoto, Japan',
-        country: 'Japan',
-        region: 'Asia',
-        languages: 'Japanese · English',
-        timezone: 'UTC+9',
-        initials: 'HT',
-        vibeTag: 'Warm Bookshop',
-        avatarBg: AVATAR_GRADIENTS[1],
-        connectionType: 'Long-Term',
-        communicationStyle: 'Slow & Thoughtful',
-        lifestyle: 'Slow Mornings',
+        id: 'p2', name: 'Hana', age: 25, city: 'Kyoto, Japan', country: 'Japan', region: 'Asia',
+        languages: 'Japanese · English', timezone: 'UTC+9', initials: 'HT', vibeTag: 'Warm Bookshop',
+        avatarBg: AVATAR_GRADIENTS[1], isVerified: true, photoUrls: [],
+        connectionType: 'Long-Term', communicationStyle: 'Slow & Thoughtful', lifestyle: 'Slow Mornings',
         interests: ['Books', 'Film', 'Cooking', 'Coffee & Chai'],
         gallery: [
           { bg: 'linear-gradient(135deg, #9A3412 0%, #E94776 100%)', label: 'Aura Card', caption: 'Secondhand bookshops, matcha mornings, and quiet kindness.' },
@@ -837,20 +974,10 @@
         autoReply: 'Hi from Kyoto! It is so nice to connect across time zones. What is something small that made your week better?'
       },
       {
-        id: 'p3',
-        name: 'Lucas',
-        age: 28,
-        city: 'Lisbon, Portugal',
-        country: 'Portugal',
-        region: 'Europe',
-        languages: 'Portuguese · English · Spanish',
-        timezone: 'UTC+0',
-        initials: 'LM',
-        vibeTag: 'Golden Tramway',
-        avatarBg: AVATAR_GRADIENTS[2],
-        connectionType: 'Soulmate',
-        communicationStyle: 'Voice Notes',
-        lifestyle: 'Active & Outdoors',
+        id: 'p3', name: 'Lucas', age: 28, city: 'Lisbon, Portugal', country: 'Portugal', region: 'Europe',
+        languages: 'Portuguese · English · Spanish', timezone: 'UTC+0', initials: 'LM', vibeTag: 'Golden Tramway',
+        avatarBg: AVATAR_GRADIENTS[2], isVerified: true, photoUrls: [],
+        connectionType: 'Soulmate', communicationStyle: 'Voice Notes', lifestyle: 'Active & Outdoors',
         interests: ['Architecture', 'Music', 'Travel', 'Cooking'],
         gallery: [
           { bg: 'linear-gradient(135deg, #BE123C 0%, #A64AE5 100%)', label: 'Aura Card', caption: 'Ocean breezes, golden streets, and stories through a lens.' },
@@ -864,20 +991,10 @@
         autoReply: 'Hey! Sending a warm hello from Lisbon. Are you more of a spontaneous traveler or a slow explorer?'
       },
       {
-        id: 'p4',
-        name: 'Camille',
-        age: 27,
-        city: 'Montreal, Canada',
-        country: 'Canada',
-        region: 'Americas',
-        languages: 'French · English',
-        timezone: 'UTC-5',
-        initials: 'CD',
-        vibeTag: 'Acoustic Sunrise',
-        avatarBg: AVATAR_GRADIENTS[3],
-        connectionType: 'Long-Term',
-        communicationStyle: 'Video Calls',
-        lifestyle: 'Active & Outdoors',
+        id: 'p4', name: 'Camille', age: 27, city: 'Montreal, Canada', country: 'Canada', region: 'Americas',
+        languages: 'French · English', timezone: 'UTC-5', initials: 'CD', vibeTag: 'Acoustic Sunrise',
+        avatarBg: AVATAR_GRADIENTS[3], isVerified: false, photoUrls: [],
+        connectionType: 'Long-Term', communicationStyle: 'Video Calls', lifestyle: 'Active & Outdoors',
         interests: ['Fitness', 'Music', 'Coffee & Chai', 'Travel'],
         gallery: [
           { bg: 'linear-gradient(135deg, #0F766E 0%, #2563EB 100%)', label: 'Aura Card', caption: 'Morning trails, warm bagels, and chasing bold dreams.' },
@@ -891,20 +1008,10 @@
         autoReply: 'So glad we sparked! Even from across the globe, good energy is easy to spot. What are you excited about lately?'
       },
       {
-        id: 'p5',
-        name: 'Amara',
-        age: 26,
-        city: 'Nairobi, Kenya',
-        country: 'Kenya',
-        region: 'Africa',
-        languages: 'English · Swahili',
-        timezone: 'UTC+3',
-        initials: 'AO',
-        vibeTag: 'Velvet Horizon',
-        avatarBg: AVATAR_GRADIENTS[4],
-        connectionType: 'Soulmate',
-        communicationStyle: 'Deep Texts',
-        lifestyle: 'Creative Homebody',
+        id: 'p5', name: 'Amara', age: 26, city: 'Nairobi, Kenya', country: 'Kenya', region: 'Africa',
+        languages: 'English · Swahili', timezone: 'UTC+3', initials: 'AO', vibeTag: 'Velvet Horizon',
+        avatarBg: AVATAR_GRADIENTS[4], isVerified: true, photoUrls: [],
+        connectionType: 'Soulmate', communicationStyle: 'Deep Texts', lifestyle: 'Creative Homebody',
         interests: ['Books', 'Music', 'Art & Design', 'Travel'],
         gallery: [
           { bg: 'linear-gradient(135deg, #86198F 0%, #E94776 100%)', label: 'Aura Card', caption: 'Acoustic brunches, sunset journaling, and big ideas.' },
@@ -918,20 +1025,10 @@
         autoReply: 'Hello from Nairobi! I loved seeing your Spark pop up. What is a dream project you would love to build one day?'
       },
       {
-        id: 'p6',
-        name: 'Liam',
-        age: 29,
-        city: 'Melbourne, Australia',
-        country: 'Australia',
-        region: 'Oceania',
-        languages: 'English',
-        timezone: 'UTC+11',
-        initials: 'LW',
-        vibeTag: 'Laneway Espresso',
-        avatarBg: AVATAR_GRADIENTS[0],
-        connectionType: 'Slow Dating',
-        communicationStyle: 'Voice Notes',
-        lifestyle: 'Slow Mornings',
+        id: 'p6', name: 'Liam', age: 29, city: 'Melbourne, Australia', country: 'Australia', region: 'Oceania',
+        languages: 'English', timezone: 'UTC+11', initials: 'LW', vibeTag: 'Laneway Espresso',
+        avatarBg: AVATAR_GRADIENTS[0], isVerified: true, photoUrls: [],
+        connectionType: 'Slow Dating', communicationStyle: 'Voice Notes', lifestyle: 'Slow Mornings',
         interests: ['Cooking', 'Music', 'Coffee & Chai', 'Nature'],
         gallery: [
           { bg: 'linear-gradient(135deg, #1E3A8A 0%, #6366F1 100%)', label: 'Aura Card', caption: 'Vinyl records, coastal drives, and cooking for friends.' },
@@ -945,20 +1042,10 @@
         autoReply: 'G’day from Melbourne! Always awesome meeting someone new on Auraloom. What is your go-to comfort meal?'
       },
       {
-        id: 'p7',
-        name: 'Elena',
-        age: 24,
-        city: 'London, United Kingdom',
-        country: 'United Kingdom',
-        region: 'Europe',
-        languages: 'English · Spanish',
-        timezone: 'UTC+0',
-        initials: 'EV',
-        vibeTag: 'Rainy Vinyl',
-        avatarBg: AVATAR_GRADIENTS[2],
-        connectionType: 'Soulmate',
-        communicationStyle: 'Deep Texts',
-        lifestyle: 'Creative Homebody',
+        id: 'p7', name: 'Elena', age: 24, city: 'London, United Kingdom', country: 'United Kingdom', region: 'Europe',
+        languages: 'English · Spanish', timezone: 'UTC+0', initials: 'EV', vibeTag: 'Rainy Vinyl',
+        avatarBg: AVATAR_GRADIENTS[2], isVerified: true, photoUrls: [],
+        connectionType: 'Soulmate', communicationStyle: 'Deep Texts', lifestyle: 'Creative Homebody',
         interests: ['Film', 'Books', 'Art & Design', 'Coffee & Chai'],
         gallery: [
           { bg: 'linear-gradient(135deg, #4C1D95 0%, #E94776 100%)', label: 'Aura Card', caption: 'Independent cinemas, rainy walks, and museum afternoons.' },
@@ -972,20 +1059,10 @@
         autoReply: 'Hello from London! I love how intentional Auraloom feels. Seen any unforgettable films lately?'
       },
       {
-        id: 'p8',
-        name: 'Mateo',
-        age: 27,
-        city: 'Sao Paulo, Brazil',
-        country: 'Brazil',
-        region: 'Americas',
-        languages: 'Portuguese · English · Spanish',
-        timezone: 'UTC-3',
-        initials: 'MS',
-        vibeTag: 'Sunlit Studio',
-        avatarBg: AVATAR_GRADIENTS[1],
-        connectionType: 'Deep Friendship',
-        communicationStyle: 'Voice Notes',
-        lifestyle: 'Night Owl',
+        id: 'p8', name: 'Mateo', age: 27, city: 'Sao Paulo, Brazil', country: 'Brazil', region: 'Americas',
+        languages: 'Portuguese · English · Spanish', timezone: 'UTC-3', initials: 'MS', vibeTag: 'Sunlit Studio',
+        avatarBg: AVATAR_GRADIENTS[1], isVerified: false, photoUrls: [],
+        connectionType: 'Deep Friendship', communicationStyle: 'Voice Notes', lifestyle: 'Night Owl',
         interests: ['Music', 'Art & Design', 'Architecture', 'Travel'],
         gallery: [
           { bg: 'linear-gradient(135deg, #B45309 0%, #E94776 100%)', label: 'Aura Card', caption: 'Bossa nova evenings, street art, and spontaneous ideas.' },
@@ -1025,70 +1102,65 @@
     }
 
     const DEFAULT_FILTERS = {
-      minAge: 18,
-      maxAge: 50,
-      region: 'All Global',
-      country: '',
-      languages: [],
-      values: [],
-      interests: [],
-      vibeTags: [],
-      connectionType: 'Any'
+      minAge: 18, maxAge: 50, region: 'All Global', country: '',
+      languages: [], values: [], interests: [], vibeTags: [], connectionType: 'Any'
     };
 
     let theme = loadSaved('auraloom_theme', 'light');
     let activeTab = 'discover';
-    let sbConfig = loadSaved('auraloom_sb_config', {
-      url: DEFAULT_SUPABASE_URL,
-      key: DEFAULT_SUPABASE_ANON_KEY
-    });
+    let activeSparkSubtab = 'mutual';
+    let sbConfig = loadSaved('auraloom_sb_config', { url: DEFAULT_SUPABASE_URL, key: DEFAULT_SUPABASE_ANON_KEY });
     if (!sbConfig.url && DEFAULT_SUPABASE_URL) sbConfig.url = DEFAULT_SUPABASE_URL;
     if (!sbConfig.key && DEFAULT_SUPABASE_ANON_KEY) sbConfig.key = DEFAULT_SUPABASE_ANON_KEY;
 
     let sbClient = null;
     let currentUser = null;
     let liveChannel = null;
+    let typingChannel = null;
     let authMode = 'signup';
     let isLoadingCloud = false;
 
     let profiles = [...DEMO_PROFILES];
-    let myProfile = loadSaved('auraloom_my_profile', {
-      name: '',
-      age: 24,
-      city: '',
-      region: 'Asia',
-      languages: 'English, Hindi, Punjabi',
-      vibeTag: 'Live Aura',
-      communicationStyle: 'Deep Texts',
-      lifestyle: 'Slow Mornings',
-      connectionType: 'Soulmate',
-      promptAnswer: '',
-      sundayRitual: '',
+    let myProfile = {
+      name: '', age: 24, city: '', region: 'Asia', languages: 'English, Hindi, Punjabi',
+      vibeTag: 'Live Aura', communicationStyle: 'Deep Texts', lifestyle: 'Slow Mornings',
+      connectionType: 'Soulmate', promptAnswer: '', sundayRitual: '',
       values: ['Curiosity', 'Deep Talks', 'Warmth'],
-      interests: ['Music', 'Coffee & Chai', 'Books']
-    });
+      interests: ['Music', 'Coffee & Chai', 'Books'],
+      photoUrls: [],
+      isVisible: true,
+      showReadReceipts: true,
+      ...loadSaved('auraloom_my_profile', {})
+    };
+    if (!Array.isArray(myProfile.photoUrls)) myProfile.photoUrls = [];
     if (!Array.isArray(myProfile.interests)) myProfile.interests = ['Music', 'Coffee & Chai', 'Books'];
-    if (!myProfile.communicationStyle) myProfile.communicationStyle = 'Deep Texts';
-    if (!myProfile.lifestyle) myProfile.lifestyle = 'Slow Mornings';
-    if (!myProfile.connectionType) myProfile.connectionType = 'Soulmate';
 
     let filters = { ...DEFAULT_FILTERS, ...loadSaved('auraloom_filters', {}) };
     let draftFilters = JSON.parse(JSON.stringify(filters));
 
-    let sparks = loadSaved('auraloom_sparks', []);
+    // Mutual, Incoming & Sent Sparks State
+    let sentSparks = loadSaved('auraloom_sparks', []);
+    let incomingSparks = loadSaved('auraloom_incoming_sparks', [DEMO_PROFILES[6]]); // Demo preview incoming spark
+    let mutualMatches = loadSaved('auraloom_mutual_matches', []);
     let likedIds = loadSaved('auraloom_liked_ids', []);
     let passedIds = loadSaved('auraloom_passed_ids', []);
+    let blockedUsers = loadSaved('auraloom_blocked_users', []);
     let conversations = loadSaved('auraloom_conversations', {});
 
     let currentIndex = 0;
     let currentGalleryIdx = 0;
     let isRitualRevealed = false;
     let activeChatId = null;
-    let draftValues = [...myProfile.values];
-    let draftInterests = [...myProfile.interests];
+    let activeSafetyTarget = null;
+    let activeMatchPartner = null;
+    let draftValues = [...(myProfile.values || [])];
+    let draftInterests = [...(myProfile.interests || [])];
     let toastTimer = null;
     let replyTimer = null;
+    let typingHideTimer = null;
     let pendingConfirmAction = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
 
     // 3. DOM REFERENCES
     const views = {
@@ -1113,6 +1185,13 @@
     const sparksList = document.getElementById('sparks-list');
     const myVibeLabel = document.getElementById('my-vibe-label');
 
+    const completionPct = document.getElementById('completion-pct');
+    const completionBar = document.getElementById('completion-bar');
+    const completionChecklist = document.getElementById('completion-checklist');
+    const photoUploadInput = document.getElementById('photo-upload-input');
+    const photoUploadStatus = document.getElementById('photo-upload-status');
+    const myPhotosGrid = document.getElementById('my-photos-grid');
+
     const chatsListPanel = document.getElementById('chats-list-panel');
     const chatsThreadList = document.getElementById('chats-thread-list');
     const chatView = document.getElementById('chat-view');
@@ -1121,8 +1200,14 @@
     const chatPartnerName = document.getElementById('chat-partner-name');
     const chatPartnerMeta = document.getElementById('chat-partner-meta');
     const chatPartnerResonance = document.getElementById('chat-partner-resonance');
+    const chatSafetyBtn = document.getElementById('chat-safety-btn');
     const chatMessages = document.getElementById('chat-messages');
+    const chatTypingRow = document.getElementById('chat-typing-row');
     const chatIcebreakerBtn = document.getElementById('chat-icebreaker-btn');
+    const chatImageInput = document.getElementById('chat-image-input');
+    const chatVoiceBtn = document.getElementById('chat-voice-btn');
+    const voiceRecordingBar = document.getElementById('voice-recording-bar');
+    const stopVoiceBtn = document.getElementById('stop-voice-btn');
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
 
@@ -1160,6 +1245,26 @@
     const compatSubtitle = document.getElementById('compat-subtitle');
     const compatBody = document.getElementById('compat-body');
 
+    const matchModal = document.getElementById('match-modal');
+    const matchMyAvatar = document.getElementById('match-my-avatar');
+    const matchTheirAvatar = document.getElementById('match-their-avatar');
+    const matchTitle = document.getElementById('match-title');
+    const matchSubtitle = document.getElementById('match-subtitle');
+
+    const safetyModal = document.getElementById('safety-modal');
+    const safetyTitle = document.getElementById('safety-title');
+    const reportForm = document.getElementById('report-form');
+    const reportReasonSelect = document.getElementById('report-reason-select');
+    const reportDetailsInput = document.getElementById('report-details-input');
+
+    const deleteAccountModal = document.getElementById('delete-account-modal');
+    const deleteConfirmInput = document.getElementById('delete-confirm-input');
+
+    const toggleVisibilityBtn = document.getElementById('toggle-visibility-btn');
+    const toggleReceiptsBtn = document.getElementById('toggle-receipts-btn');
+    const blockedCountLabel = document.getElementById('blocked-count-label');
+    const blockedUsersList = document.getElementById('blocked-users-list');
+
     const cloudDot = document.getElementById('cloud-dot');
     const circleLabel = document.getElementById('circle-label');
     const desktopCloudDot = document.getElementById('desktop-cloud-dot');
@@ -1193,240 +1298,7 @@
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toast-text');
 
-    // 4. TRANSPARENT COMPATIBILITY ENGINE
-    function parseLanguages(str) {
-      if (!str) return [];
-      return String(str)
-        .split(/[·,|/]/)
-        .map(s => s.trim())
-        .filter(Boolean);
-    }
-
-    function computeCompatibility(user, profile) {
-      const dimensions = [];
-
-      // 1. Shared Core Values (weight 30)
-      const uVals = Array.isArray(user.values) ? user.values : [];
-      const pVals = Array.isArray(profile.values) ? profile.values : [];
-      if (uVals.length > 0 && pVals.length > 0) {
-        const shared = pVals.filter(v => uVals.includes(v));
-        const denom = Math.min(uVals.length, pVals.length);
-        const score = Math.round((shared.length / denom) * 100);
-        dimensions.push({
-          key: 'values',
-          label: 'Shared Core Values',
-          weight: 30,
-          score,
-          shared,
-          detail: shared.length > 0
-            ? `You both prioritize ${shared.join(', ')}.`
-            : 'Different top values — complementary perspectives.'
-        });
-      } else {
-        dimensions.push({
-          key: 'values', label: 'Shared Core Values', weight: 30, score: null, shared: [],
-          detail: 'Missing core values on one or both profiles.'
-        });
-      }
-
-      // 2. Common Interests (weight 25)
-      const uInts = Array.isArray(user.interests) ? user.interests : [];
-      const pInts = Array.isArray(profile.interests) ? profile.interests : [];
-      if (uInts.length > 0 && pInts.length > 0) {
-        const shared = pInts.filter(i => uInts.includes(i));
-        const denom = Math.min(uInts.length, pInts.length);
-        const score = Math.round((shared.length / denom) * 100);
-        dimensions.push({
-          key: 'interests',
-          label: 'Common Interests',
-          weight: 25,
-          score,
-          shared,
-          detail: shared.length > 0
-            ? `Shared interests in ${shared.join(', ')}.`
-            : 'Different hobbies — plenty of new things to share.'
-        });
-      } else {
-        dimensions.push({
-          key: 'interests', label: 'Common Interests', weight: 25, score: null, shared: [],
-          detail: 'Interests not yet specified on one of the profiles.'
-        });
-      }
-
-      // 3. Communication Preferences (weight 15)
-      if (user.communicationStyle && profile.communicationStyle) {
-        const exact = user.communicationStyle === profile.communicationStyle;
-        const warmPairs = [
-          ['Deep Texts', 'Slow & Thoughtful'],
-          ['Voice Notes', 'Video Calls'],
-          ['Deep Texts', 'Voice Notes']
-        ];
-        const close = warmPairs.some(pair =>
-          pair.includes(user.communicationStyle) && pair.includes(profile.communicationStyle)
-        );
-        const score = exact ? 100 : close ? 70 : 40;
-        dimensions.push({
-          key: 'communication',
-          label: 'Communication Style',
-          weight: 15,
-          score,
-          shared: exact ? [profile.communicationStyle] : [],
-          detail: exact
-            ? `Both prefer ${profile.communicationStyle}.`
-            : `You prefer ${user.communicationStyle}; ${profile.name} prefers ${profile.communicationStyle}.`
-        });
-      } else {
-        dimensions.push({
-          key: 'communication', label: 'Communication Style', weight: 15, score: null, shared: [],
-          detail: 'Communication preference not set yet.'
-        });
-      }
-
-      // 4. Lifestyle & Connection Alignment (weight 15)
-      if (user.lifestyle && profile.lifestyle) {
-        const sameLife = user.lifestyle === profile.lifestyle;
-        const sameConn = user.connectionType && profile.connectionType && user.connectionType === profile.connectionType;
-        const score = (sameLife ? 55 : 25) + (sameConn ? 45 : 20);
-        const matched = [];
-        if (sameLife) matched.push(profile.lifestyle);
-        if (sameConn) matched.push(profile.connectionType);
-        dimensions.push({
-          key: 'lifestyle',
-          label: 'Lifestyle & Intent',
-          weight: 15,
-          score,
-          shared: matched,
-          detail: matched.length > 0
-            ? `Aligned on ${matched.join(' & ')}.`
-            : `${profile.name} leans ${profile.lifestyle} (${profile.connectionType || 'Open'}).`
-        });
-      } else {
-        dimensions.push({
-          key: 'lifestyle', label: 'Lifestyle & Intent', weight: 15, score: null, shared: [],
-          detail: 'Lifestyle rhythm not specified yet.'
-        });
-      }
-
-      // 5. Language Compatibility (weight 15)
-      const uLangs = parseLanguages(user.languages);
-      const pLangs = parseLanguages(profile.languages);
-      if (uLangs.length > 0 && pLangs.length > 0) {
-        const uLower = uLangs.map(l => l.toLowerCase());
-        const shared = pLangs.filter(l => uLower.includes(l.toLowerCase()));
-        const score = shared.length >= 2 ? 100 : shared.length === 1 ? 85 : 20;
-        dimensions.push({
-          key: 'languages',
-          label: 'Language Compatibility',
-          weight: 15,
-          score,
-          shared,
-          detail: shared.length > 0
-            ? `You can converse comfortably in ${shared.join(', ')}.`
-            : 'No shared languages listed yet.'
-        });
-      } else {
-        dimensions.push({
-          key: 'languages', label: 'Language Compatibility', weight: 15, score: null, shared: [],
-          detail: 'Languages not listed on one of the profiles.'
-        });
-      }
-
-      // Compute transparent weighted score strictly from available dimensions
-      const scored = dimensions.filter(d => d.score !== null);
-      let overall = null;
-      if (scored.length > 0) {
-        const totalWeight = scored.reduce((acc, d) => acc + d.weight, 0);
-        const weightedSum = scored.reduce((acc, d) => acc + d.score * d.weight, 0);
-        overall = Math.round(weightedSum / totalWeight);
-      }
-
-      // Build concise human reason for Daily Resonance
-      const reasons = [];
-      const valDim = dimensions[0];
-      const intDim = dimensions[1];
-      const commDim = dimensions[2];
-      if (valDim.shared.length > 0) reasons.push(`Shares ${valDim.shared.slice(0, 2).join(' & ')}`);
-      if (intDim.shared.length > 0) reasons.push(`${intDim.shared.length} shared interest${intDim.shared.length > 1 ? 's' : ''}`);
-      if (commDim.score === 100) reasons.push(`Same chat style`);
-      if (reasons.length === 0) reasons.push(`Matches your ${profile.region} discovery preferences`);
-
-      return {
-        overall,
-        scoredCount: scored.length,
-        totalDimensions: dimensions.length,
-        dimensions,
-        topReason: reasons.slice(0, 2).join(' · ')
-      };
-    }
-
-    function computeResonance(profile) {
-      const res = computeCompatibility(myProfile, profile);
-      return res.overall !== null ? res.overall : 0;
-    }
-
-    // 5. FILTERING & DAILY RESONANCE ENGINE
-    function countActiveFilters(f) {
-      let n = 0;
-      if (f.minAge > 18 || f.maxAge < 50) n++;
-      if (f.region && f.region !== 'All Global') n++;
-      if (f.country) n++;
-      if (f.connectionType && f.connectionType !== 'Any') n++;
-      n += (f.languages || []).length;
-      n += (f.values || []).length;
-      n += (f.interests || []).length;
-      n += (f.vibeTags || []).length;
-      return n;
-    }
-
-    function matchesFilters(profile, f) {
-      const age = Number(profile.age) || 25;
-      if (age < f.minAge || age > f.maxAge) return false;
-      if (f.region && f.region !== 'All Global' && profile.region !== f.region) return false;
-      if (f.country) {
-        const haystack = `${profile.country || ''} ${profile.city || ''}`.toLowerCase();
-        if (!haystack.includes(f.country.toLowerCase())) return false;
-      }
-      if (f.connectionType && f.connectionType !== 'Any' && profile.connectionType && profile.connectionType !== f.connectionType) return false;
-      if (f.languages.length > 0) {
-        const pLangs = parseLanguages(profile.languages).map(l => l.toLowerCase());
-        if (!f.languages.some(l => pLangs.includes(l.toLowerCase()))) return false;
-      }
-      if (f.values.length > 0) {
-        const pVals = profile.values || [];
-        if (!f.values.some(v => pVals.includes(v))) return false;
-      }
-      if (f.interests.length > 0) {
-        const pInts = profile.interests || [];
-        if (!f.interests.some(i => pInts.includes(i))) return false;
-      }
-      if (f.vibeTags.length > 0) {
-        if (!f.vibeTags.includes(profile.vibeTag)) return false;
-      }
-      return true;
-    }
-
-    function getFilteredProfiles() {
-      const sparkedSet = new Set(sparks.map(s => s.id));
-      const passedSet = new Set(passedIds);
-      return profiles
-        .filter(p => !passedSet.has(p.id) && !sparkedSet.has(p.id))
-        .filter(p => matchesFilters(p, filters))
-        .sort((a, b) => computeResonance(b) - computeResonance(a));
-    }
-
-    function getDailyResonanceRecommendations() {
-      const sparkedSet = new Set(sparks.map(s => s.id));
-      const passedSet = new Set(passedIds);
-      const likedSet = new Set(likedIds);
-      return profiles
-        .filter(p => !passedSet.has(p.id) && !sparkedSet.has(p.id) && !likedSet.has(p.id))
-        .filter(p => matchesFilters(p, filters))
-        .map(p => ({ profile: p, compat: computeCompatibility(myProfile, p) }))
-        .sort((a, b) => (b.compat.overall || 0) - (a.compat.overall || 0))
-        .slice(0, 5);
-    }
-
-    // 6. UTILITIES
+    // 4. HELPERS & AVATAR RENDERER
     function escapeHtml(str) {
       return String(str || '')
         .replace(/&/g, '&amp;')
@@ -1434,6 +1306,19 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function avatarHtml(profile, sizeClass = 'w-11 h-11 text-sm') {
+      const primaryPhoto = Array.isArray(profile.photoUrls) && profile.photoUrls.length > 0 ? profile.photoUrls[0] : null;
+      if (primaryPhoto) {
+        return `<img src="${escapeHtml(primaryPhoto)}" alt="${escapeHtml(profile.name)}" class="${sizeClass} rounded-xl object-cover shrink-0" />`;
+      }
+      return `<div class="${sizeClass} rounded-xl flex items-center justify-center font-bold text-white shrink-0" style="background: ${profile.avatarBg || AVATAR_GRADIENTS[0]};">${escapeHtml(profile.initials || 'AL')}</div>`;
+    }
+
+    function verifiedBadgeHtml(profile) {
+      if (!profile.isVerified) return '';
+      return `<span title="Verified Profile" class="inline-flex items-center" style="color: var(--success);"><i data-lucide="badge-check" class="w-4 h-4"></i></span>`;
     }
 
     function showToast(message) {
@@ -1444,7 +1329,7 @@
       toastTimer = setTimeout(() => {
         toast.classList.remove('opacity-100', 'translate-y-0');
         toast.classList.add('opacity-0', 'translate-y-2');
-      }, 2400);
+      }, 2600);
     }
 
     function openConfirm(title, body, okLabel, onConfirm) {
@@ -1468,9 +1353,7 @@
       closeConfirm();
       if (typeof fn === 'function') fn();
     });
-    confirmModal.addEventListener('click', (e) => {
-      if (e.target === confirmModal) closeConfirm();
-    });
+    confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) closeConfirm(); });
 
     function applyTheme(nextTheme) {
       theme = nextTheme;
@@ -1484,35 +1367,664 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    function toggleTheme() {
-      applyTheme(theme === 'dark' ? 'light' : 'dark');
+    function toggleTheme() { applyTheme(theme === 'dark' ? 'light' : 'dark'); }
+    function nowTimeLabel() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    function isLiveMode() { return Boolean(sbClient && currentUser); }
+
+    function getBlockedIdSet() {
+      return new Set(blockedUsers.map(b => b.id));
     }
 
-    function nowTimeLabel() {
-      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    function getAllChatPartners() {
+      const blocked = getBlockedIdSet();
+      const map = new Map();
+      [...mutualMatches, ...sentSparks].forEach(p => {
+        if (p && !blocked.has(p.id) && !map.has(p.id)) map.set(p.id, p);
+      });
+      return Array.from(map.values());
     }
 
-    function isLiveMode() {
-      return Boolean(sbClient && currentUser);
+    function getUnreadCountFor(partnerId) {
+      const msgs = conversations[partnerId] || [];
+      return msgs.filter(m => m.sender === 'them' && !m.read).length;
     }
 
+    function getTotalUnreadCount() {
+      return getAllChatPartners().reduce((sum, p) => sum + getUnreadCountFor(p.id), 0);
+    }
+
+    // 5. COMPATIBILITY ENGINE
+    function parseLanguages(str) {
+      if (!str) return [];
+      return String(str).split(/[·,|/]/).map(s => s.trim()).filter(Boolean);
+    }
+
+    function computeCompatibility(user, profile) {
+      const dimensions = [];
+      const uVals = Array.isArray(user.values) ? user.values : [];
+      const pVals = Array.isArray(profile.values) ? profile.values : [];
+      if (uVals.length > 0 && pVals.length > 0) {
+        const shared = pVals.filter(v => uVals.includes(v));
+        const score = Math.round((shared.length / Math.min(uVals.length, pVals.length)) * 100);
+        dimensions.push({ key: 'values', label: 'Shared Core Values', weight: 30, score, shared,
+          detail: shared.length > 0 ? `You both prioritize ${shared.join(', ')}.` : 'Different top values — complementary perspectives.' });
+      } else {
+        dimensions.push({ key: 'values', label: 'Shared Core Values', weight: 30, score: null, shared: [], detail: 'Missing core values on one or both profiles.' });
+      }
+
+      const uInts = Array.isArray(user.interests) ? user.interests : [];
+      const pInts = Array.isArray(profile.interests) ? profile.interests : [];
+      if (uInts.length > 0 && pInts.length > 0) {
+        const shared = pInts.filter(i => uInts.includes(i));
+        const score = Math.round((shared.length / Math.min(uInts.length, pInts.length)) * 100);
+        dimensions.push({ key: 'interests', label: 'Common Interests', weight: 25, score, shared,
+          detail: shared.length > 0 ? `Shared interests in ${shared.join(', ')}.` : 'Different hobbies — plenty of new things to share.' });
+      } else {
+        dimensions.push({ key: 'interests', label: 'Common Interests', weight: 25, score: null, shared: [], detail: 'Interests not yet specified on one of the profiles.' });
+      }
+
+      if (user.communicationStyle && profile.communicationStyle) {
+        const exact = user.communicationStyle === profile.communicationStyle;
+        const close = [['Deep Texts', 'Slow & Thoughtful'], ['Voice Notes', 'Video Calls'], ['Deep Texts', 'Voice Notes']]
+          .some(pair => pair.includes(user.communicationStyle) && pair.includes(profile.communicationStyle));
+        const score = exact ? 100 : close ? 70 : 40;
+        dimensions.push({ key: 'communication', label: 'Communication Style', weight: 15, score, shared: exact ? [profile.communicationStyle] : [],
+          detail: exact ? `Both prefer ${profile.communicationStyle}.` : `You prefer ${user.communicationStyle}; ${profile.name} prefers ${profile.communicationStyle}.` });
+      } else {
+        dimensions.push({ key: 'communication', label: 'Communication Style', weight: 15, score: null, shared: [], detail: 'Communication preference not set yet.' });
+      }
+
+      if (user.lifestyle && profile.lifestyle) {
+        const sameLife = user.lifestyle === profile.lifestyle;
+        const sameConn = user.connectionType && profile.connectionType && user.connectionType === profile.connectionType;
+        const score = (sameLife ? 55 : 25) + (sameConn ? 45 : 20);
+        const matched = [];
+        if (sameLife) matched.push(profile.lifestyle);
+        if (sameConn) matched.push(profile.connectionType);
+        dimensions.push({ key: 'lifestyle', label: 'Lifestyle & Intent', weight: 15, score, shared: matched,
+          detail: matched.length > 0 ? `Aligned on ${matched.join(' & ')}.` : `${profile.name} leans ${profile.lifestyle} (${profile.connectionType || 'Open'}).` });
+      } else {
+        dimensions.push({ key: 'lifestyle', label: 'Lifestyle & Intent', weight: 15, score: null, shared: [], detail: 'Lifestyle rhythm not specified yet.' });
+      }
+
+      const uLangs = parseLanguages(user.languages);
+      const pLangs = parseLanguages(profile.languages);
+      if (uLangs.length > 0 && pLangs.length > 0) {
+        const uLower = uLangs.map(l => l.toLowerCase());
+        const shared = pLangs.filter(l => uLower.includes(l.toLowerCase()));
+        const score = shared.length >= 2 ? 100 : shared.length === 1 ? 85 : 20;
+        dimensions.push({ key: 'languages', label: 'Language Compatibility', weight: 15, score, shared,
+          detail: shared.length > 0 ? `You can converse comfortably in ${shared.join(', ')}.` : 'No shared languages listed yet.' });
+      } else {
+        dimensions.push({ key: 'languages', label: 'Language Compatibility', weight: 15, score: null, shared: [], detail: 'Languages not listed on one of the profiles.' });
+      }
+
+      const scored = dimensions.filter(d => d.score !== null);
+      let overall = null;
+      if (scored.length > 0) {
+        const totalWeight = scored.reduce((acc, d) => acc + d.weight, 0);
+        overall = Math.round(scored.reduce((acc, d) => acc + d.score * d.weight, 0) / totalWeight);
+      }
+
+      const reasons = [];
+      if (dimensions[0].shared.length > 0) reasons.push(`Shares ${dimensions[0].shared.slice(0, 2).join(' & ')}`);
+      if (dimensions[1].shared.length > 0) reasons.push(`${dimensions[1].shared.length} shared interest${dimensions[1].shared.length > 1 ? 's' : ''}`);
+      if (dimensions[2].score === 100) reasons.push('Same chat style');
+      if (reasons.length === 0) reasons.push(`Matches your ${profile.region} preferences`);
+
+      return { overall, scoredCount: scored.length, totalDimensions: dimensions.length, dimensions, topReason: reasons.slice(0, 2).join(' · ') };
+    }
+
+    function computeResonance(profile) {
+      const res = computeCompatibility(myProfile, profile);
+      return res.overall !== null ? res.overall : 0;
+    }
+
+    // 6. PROFILE PHOTO SYSTEM (Validation + Supabase Storage + Reorder/Primary/Delete)
+    function fileToCompressedDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Could not read file'));
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 960;
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              const ratio = Math.min(maxDim / width, maxDim / height);
+              width = Math.round(width * ratio);
+              height = Math.round(height * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+          };
+          img.onerror = () => reject(new Error('Invalid image file'));
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadFileToStorage(file, folder) {
+      if (isLiveMode()) {
+        try {
+          const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const filePath = `${currentUser.id}/${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+          const { error: upErr } = await sbClient.storage.from(STORAGE_BUCKET).upload(filePath, file, { upsert: false, contentType: file.type });
+          if (!upErr) {
+            const { data } = sbClient.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+            if (data && data.publicUrl) return data.publicUrl;
+          }
+        } catch (e) {
+          // Fall back to local compressed data URL if bucket isn't created yet
+        }
+      }
+      if (file.type.startsWith('image/')) return await fileToCompressedDataUrl(file);
+      return URL.createObjectURL(file);
+    }
+
+    photoUploadInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      e.target.value = '';
+      if (files.length === 0) return;
+
+      const remaining = 6 - myProfile.photoUrls.length;
+      if (remaining <= 0) {
+        showToast('Maximum 6 profile photos reached');
+        return;
+      }
+
+      photoUploadStatus.classList.remove('hidden');
+      photoUploadStatus.textContent = 'Uploading photo...';
+
+      let added = 0;
+      for (const file of files.slice(0, remaining)) {
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+          showToast(`Skipped ${file.name}: use JPG, PNG, or WebP`);
+          continue;
+        }
+        if (file.size > MAX_IMAGE_BYTES) {
+          showToast(`Skipped ${file.name}: max size is 5 MB`);
+          continue;
+        }
+        try {
+          const url = await uploadFileToStorage(file, 'photos');
+          myProfile.photoUrls.push(url);
+          added++;
+        } catch (err) {
+          showToast('Photo upload failed');
+        }
+      }
+
+      photoUploadStatus.classList.add('hidden');
+      if (added > 0) {
+        saveState('auraloom_my_profile', myProfile);
+        if (isLiveMode()) {
+          try { await sbClient.from('profiles').update({ photo_urls: myProfile.photoUrls }).eq('id', currentUser.id); } catch (err) {}
+        }
+        renderMyPhotosGrid();
+        renderProfileCompletion();
+        showToast(`${added} photo${added > 1 ? 's' : ''} added`);
+      }
+    });
+
+    function renderMyPhotosGrid() {
+      if (!myProfile.photoUrls || myProfile.photoUrls.length === 0) {
+        myPhotosGrid.innerHTML = `
+          <div class="col-span-full p-5 rounded-xl subtle-box text-center text-xs" style="color: var(--text-secondary);">
+            No profile photos yet. Tap <strong>Add Photo</strong> above to build your gallery.
+          </div>
+        `;
+        return;
+      }
+
+      myPhotosGrid.innerHTML = myProfile.photoUrls.map((url, idx) => `
+        <div class="relative rounded-xl overflow-hidden border group" style="border-color: var(--border-subtle); aspect-ratio: 4/5;">
+          <img src="${escapeHtml(url)}" alt="Profile photo ${idx + 1}" class="w-full h-full object-cover" />
+          ${idx === 0 ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold text-white" style="background: linear-gradient(135deg,#E94776,#A64AE5);">Primary</span>` : ''}
+          <div class="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/75 to-transparent flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1">
+              ${idx > 0 ? `<button type="button" data-photo-primary="${idx}" title="Set as primary" class="photo-primary-btn px-1.5 py-1 rounded-md text-[10px] font-bold bg-white/90 text-slate-900">Primary</button>` : ''}
+              ${idx > 0 ? `<button type="button" data-photo-left="${idx}" title="Move left" class="photo-left-btn w-6 h-6 rounded-md bg-white/85 text-slate-900 flex items-center justify-center"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>` : ''}
+              ${idx < myProfile.photoUrls.length - 1 ? `<button type="button" data-photo-right="${idx}" title="Move right" class="photo-right-btn w-6 h-6 rounded-md bg-white/85 text-slate-900 flex items-center justify-center"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>` : ''}
+            </div>
+            <button type="button" data-photo-del="${idx}" title="Delete photo" class="photo-del-btn w-6 h-6 rounded-md bg-red-600/90 text-white flex items-center justify-center">
+              <i data-lucide="trash-2" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      const syncPhotos = async () => {
+        saveState('auraloom_my_profile', myProfile);
+        if (isLiveMode()) {
+          try { await sbClient.from('profiles').update({ photo_urls: myProfile.photoUrls }).eq('id', currentUser.id); } catch (e) {}
+        }
+        renderMyPhotosGrid();
+        renderProfileCompletion();
+      };
+
+      myPhotosGrid.querySelectorAll('.photo-primary-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = parseInt(btn.getAttribute('data-photo-primary'), 10);
+          const [picked] = myProfile.photoUrls.splice(i, 1);
+          myProfile.photoUrls.unshift(picked);
+          syncPhotos();
+          showToast('Primary photo updated');
+        });
+      });
+
+      myPhotosGrid.querySelectorAll('.photo-left-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = parseInt(btn.getAttribute('data-photo-left'), 10);
+          [myProfile.photoUrls[i - 1], myProfile.photoUrls[i]] = [myProfile.photoUrls[i], myProfile.photoUrls[i - 1]];
+          syncPhotos();
+        });
+      });
+
+      myPhotosGrid.querySelectorAll('.photo-right-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = parseInt(btn.getAttribute('data-photo-right'), 10);
+          [myProfile.photoUrls[i + 1], myProfile.photoUrls[i]] = [myProfile.photoUrls[i], myProfile.photoUrls[i + 1]];
+          syncPhotos();
+        });
+      });
+
+      myPhotosGrid.querySelectorAll('.photo-del-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = parseInt(btn.getAttribute('data-photo-del'), 10);
+          openConfirm('Delete photo?', 'This removes the photo from your profile gallery.', 'Delete', () => {
+            myProfile.photoUrls.splice(i, 1);
+            syncPhotos();
+            showToast('Photo removed');
+          });
+        });
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderProfileCompletion() {
+      const checks = [
+        { label: 'Photos', done: myProfile.photoUrls.length > 0 },
+        { label: 'Prompt', done: Boolean((myProfile.promptAnswer || '').trim()) },
+        { label: 'Languages', done: parseLanguages(myProfile.languages).length > 0 },
+        { label: 'Interests', done: (myProfile.interests || []).length > 0 },
+        { label: 'Core Values', done: (myProfile.values || []).length > 0 },
+        { label: 'Chat Style', done: Boolean(myProfile.communicationStyle) },
+        { label: 'Lifestyle', done: Boolean(myProfile.lifestyle) }
+      ];
+      const doneCount = checks.filter(c => c.done).length;
+      const pct = Math.round((doneCount / checks.length) * 100);
+      completionPct.textContent = `${pct}%`;
+      completionBar.style.width = `${pct}%`;
+      completionChecklist.innerHTML = checks.map(c => `
+        <span class="px-2 py-1 rounded-lg text-[11px] font-semibold ${c.done ? 'badge-success' : 'tag-neutral'}">
+          ${c.done ? '✓ ' : '+ '}${c.label}
+        </span>
+      `).join('');
+    }
+
+    // 7. FILTERING & DAILY RESONANCE
+    function countActiveFilters(f) {
+      let n = 0;
+      if (f.minAge > 18 || f.maxAge < 50) n++;
+      if (f.region && f.region !== 'All Global') n++;
+      if (f.country) n++;
+      if (f.connectionType && f.connectionType !== 'Any') n++;
+      n += (f.languages || []).length + (f.values || []).length + (f.interests || []).length + (f.vibeTags || []).length;
+      return n;
+    }
+
+    function matchesFilters(profile, f) {
+      const age = Number(profile.age) || 25;
+      if (age < f.minAge || age > f.maxAge) return false;
+      if (f.region && f.region !== 'All Global' && profile.region !== f.region) return false;
+      if (f.country) {
+        const hay = `${profile.country || ''} ${profile.city || ''}`.toLowerCase();
+        if (!hay.includes(f.country.toLowerCase())) return false;
+      }
+      if (f.connectionType && f.connectionType !== 'Any' && profile.connectionType && profile.connectionType !== f.connectionType) return false;
+      if (f.languages.length > 0) {
+        const pLangs = parseLanguages(profile.languages).map(l => l.toLowerCase());
+        if (!f.languages.some(l => pLangs.includes(l.toLowerCase()))) return false;
+      }
+      if (f.values.length > 0 && !f.values.some(v => (profile.values || []).includes(v))) return false;
+      if (f.interests.length > 0 && !f.interests.some(i => (profile.interests || []).includes(i))) return false;
+      if (f.vibeTags.length > 0 && !f.vibeTags.includes(profile.vibeTag)) return false;
+      return true;
+    }
+
+    function getFilteredProfiles() {
+      const excluded = new Set([
+        ...sentSparks.map(s => s.id),
+        ...mutualMatches.map(m => m.id),
+        ...passedIds,
+        ...blockedUsers.map(b => b.id)
+      ]);
+      return profiles
+        .filter(p => !excluded.has(p.id) && p.isVisible !== false)
+        .filter(p => matchesFilters(p, filters))
+        .sort((a, b) => computeResonance(b) - computeResonance(a));
+    }
+
+    function getDailyResonanceRecommendations() {
+      const excluded = new Set([
+        ...sentSparks.map(s => s.id),
+        ...mutualMatches.map(m => m.id),
+        ...passedIds,
+        ...likedIds,
+        ...blockedUsers.map(b => b.id)
+      ]);
+      return profiles
+        .filter(p => !excluded.has(p.id) && p.isVisible !== false)
+        .filter(p => matchesFilters(p, filters))
+        .map(p => ({ profile: p, compat: computeCompatibility(myProfile, p) }))
+        .sort((a, b) => (b.compat.overall || 0) - (a.compat.overall || 0))
+        .slice(0, 5);
+    }
+
+    // 8. MUTUAL MATCH CELEBRATION & TRUST/SAFETY MODALS
+    function openMatchCelebration(partner) {
+      activeMatchPartner = partner;
+      const myPhoto = myProfile.photoUrls[0];
+      matchMyAvatar.innerHTML = myPhoto
+        ? `<img src="${escapeHtml(myPhoto)}" alt="You" class="w-full h-full object-cover" />`
+        : `<div class="w-full h-full flex items-center justify-center" style="background: ${AVATAR_GRADIENTS[2]};">${escapeHtml((myProfile.name || 'You').slice(0, 2).toUpperCase())}</div>`;
+
+      const theirPhoto = Array.isArray(partner.photoUrls) && partner.photoUrls[0];
+      matchTheirAvatar.innerHTML = theirPhoto
+        ? `<img src="${escapeHtml(theirPhoto)}" alt="${escapeHtml(partner.name)}" class="w-full h-full object-cover" />`
+        : `<div class="w-full h-full flex items-center justify-center" style="background: ${partner.avatarBg || AVATAR_GRADIENTS[0]};">${escapeHtml(partner.initials)}</div>`;
+
+      const compat = computeCompatibility(myProfile, partner);
+      matchTitle.textContent = `You & ${partner.name} Sparked!`;
+      matchSubtitle.textContent = compat.overall !== null
+        ? `${compat.overall}% Resonance · ${compat.topReason}`
+        : 'You both sent a Spark — start a conversation now.';
+
+      matchModal.classList.remove('hidden');
+      matchModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    document.getElementById('match-start-chat-btn').addEventListener('click', () => {
+      const target = activeMatchPartner;
+      matchModal.classList.add('hidden');
+      matchModal.classList.remove('flex');
+      if (target) {
+        activeChatId = target.id;
+        switchTab('chats');
+      }
+    });
+
+    document.getElementById('match-close-btn').addEventListener('click', () => {
+      matchModal.classList.add('hidden');
+      matchModal.classList.remove('flex');
+    });
+
+    function openSafetyModal(profile) {
+      activeSafetyTarget = profile;
+      safetyTitle.textContent = `Safety: ${profile.name}`;
+      reportDetailsInput.value = '';
+      safetyModal.classList.remove('hidden');
+      safetyModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeSafetyModal() {
+      safetyModal.classList.add('hidden');
+      safetyModal.classList.remove('flex');
+    }
+
+    document.getElementById('close-safety-btn').addEventListener('click', closeSafetyModal);
+    safetyModal.addEventListener('click', (e) => { if (e.target === safetyModal) closeSafetyModal(); });
+
+    reportForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeSafetyTarget) return;
+      const reason = reportReasonSelect.value;
+      const details = reportDetailsInput.value.trim();
+
+      if (isLiveMode() && activeSafetyTarget.isLive) {
+        try {
+          await sbClient.from('reports').insert({
+            reporter_id: currentUser.id,
+            reported_id: activeSafetyTarget.id,
+            reason,
+            details
+          });
+        } catch (err) {}
+      }
+      closeSafetyModal();
+      showToast(`Report submitted for ${activeSafetyTarget.name}`);
+    });
+
+    document.getElementById('safety-block-btn').addEventListener('click', () => {
+      const target = activeSafetyTarget;
+      if (!target) return;
+      closeSafetyModal();
+      openConfirm(
+        `Block ${target.name}?`,
+        'They will be removed from Discover, Sparks, and Chats and cannot message you.',
+        'Block User',
+        async () => {
+          if (!blockedUsers.some(b => b.id === target.id)) {
+            blockedUsers.push({ id: target.id, name: target.name });
+            saveState('auraloom_blocked_users', blockedUsers);
+          }
+          sentSparks = sentSparks.filter(x => x.id !== target.id);
+          incomingSparks = incomingSparks.filter(x => x.id !== target.id);
+          mutualMatches = mutualMatches.filter(x => x.id !== target.id);
+          saveState('auraloom_sparks', sentSparks);
+          saveState('auraloom_incoming_sparks', incomingSparks);
+          saveState('auraloom_mutual_matches', mutualMatches);
+
+          if (isLiveMode() && target.isLive) {
+            try {
+              await sbClient.from('blocks').upsert({ blocker_id: currentUser.id, blocked_id: target.id }, { onConflict: 'blocker_id,blocked_id' });
+            } catch (e) {}
+          }
+
+          if (activeChatId === target.id) {
+            activeChatId = null;
+            showChatsList();
+          }
+          renderDiscoverAll();
+          renderSparksList();
+          renderBlockedUsersList();
+          renderNavigation();
+          showToast(`Blocked ${target.name}`);
+        }
+      );
+    });
+
+    // 9. COMPATIBILITY & FILTERS MODALS
+    function openCompatibilityModal(profile) {
+      const compat = computeCompatibility(myProfile, profile);
+      compatTitle.textContent = `You & ${profile.name}`;
+      compatSubtitle.textContent = compat.overall !== null
+        ? `${compat.overall}% Resonance · Based on ${compat.scoredCount} of ${compat.totalDimensions} available dimensions`
+        : 'Not enough shared profile fields yet';
+
+      compatBody.innerHTML = `
+        <div class="p-4 rounded-2xl subtle-box flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-semibold" style="color: var(--text-secondary);">Overall Compatibility</p>
+            <p class="text-xs mt-0.5" style="color: var(--text-primary);">${escapeHtml(compat.topReason)}</p>
+          </div>
+          <div class="px-3.5 py-2 rounded-xl text-lg font-extrabold badge-success shrink-0">
+            ${compat.overall !== null ? `${compat.overall}%` : 'N/A'}
+          </div>
+        </div>
+        <div class="space-y-3">
+          ${compat.dimensions.map(d => {
+            const hasScore = d.score !== null;
+            return `
+              <div class="p-3.5 rounded-xl border space-y-2" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-bold" style="color: var(--text-primary);">${escapeHtml(d.label)}</span>
+                  <span class="text-xs font-bold" style="color: ${hasScore ? 'var(--success)' : 'var(--text-secondary)'};">${hasScore ? `${d.score}%` : 'Missing data'}</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--bg-subtle);">
+                  <div class="h-full rounded-full" style="width: ${hasScore ? d.score : 0}%; background: linear-gradient(90deg, #E94776, #A64AE5);"></div>
+                </div>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">${escapeHtml(d.detail)}</p>
+                ${d.shared.length > 0 ? `<div class="flex flex-wrap gap-1.5 pt-0.5">${d.shared.map(t => `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold tag-matched">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      compatModal.classList.remove('hidden');
+      compatModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeCompatModal() { compatModal.classList.add('hidden'); compatModal.classList.remove('flex'); }
+    document.getElementById('close-compat-btn').addEventListener('click', closeCompatModal);
+    document.getElementById('compat-edit-vibe-btn').addEventListener('click', () => { closeCompatModal(); switchTab('vibe'); });
+    compatModal.addEventListener('click', (e) => { if (e.target === compatModal) closeCompatModal(); });
+
+    function renderFilterChips(container, options, selectedList, singleMode, onToggle) {
+      container.innerHTML = options.map(opt => {
+        const active = singleMode ? selectedList === opt : selectedList.includes(opt);
+        return `<button type="button" data-opt="${escapeHtml(opt)}" class="filter-chip h-8 px-3 rounded-lg text-xs font-semibold transition-all ${active ? 'tag-matched' : 'tag-neutral'}">${active ? '✓ ' : ''}${escapeHtml(opt)}</button>`;
+      }).join('');
+      container.querySelectorAll('.filter-chip').forEach(btn => btn.addEventListener('click', () => onToggle(btn.getAttribute('data-opt'))));
+    }
+
+    function renderFiltersModalBody() {
+      filterMinAge.value = draftFilters.minAge;
+      filterMaxAge.value = draftFilters.maxAge;
+      filterAgeReadout.textContent = `${draftFilters.minAge} – ${draftFilters.maxAge}`;
+      filterRegionSelect.value = draftFilters.region;
+      filterCountrySelect.value = draftFilters.country;
+      renderFilterChips(filterConnectionChips, CONNECTION_TYPES, draftFilters.connectionType, true, v => { draftFilters.connectionType = v; renderFiltersModalBody(); });
+      const toggleMulti = (key, val) => {
+        draftFilters[key] = draftFilters[key].includes(val) ? draftFilters[key].filter(x => x !== val) : [...draftFilters[key], val];
+        renderFiltersModalBody();
+      };
+      renderFilterChips(filterLanguageChips, ALL_LANGUAGES, draftFilters.languages, false, v => toggleMulti('languages', v));
+      renderFilterChips(filterValueChips, ALL_VALUES, draftFilters.values, false, v => toggleMulti('values', v));
+      renderFilterChips(filterInterestChips, ALL_INTERESTS, draftFilters.interests, false, v => toggleMulti('interests', v));
+      renderFilterChips(filterVibeChips, ALL_VIBE_TAGS, draftFilters.vibeTags, false, v => toggleMulti('vibeTags', v));
+    }
+
+    function openFiltersModal() {
+      draftFilters = JSON.parse(JSON.stringify(filters));
+      renderFiltersModalBody();
+      filtersModal.classList.remove('hidden');
+      filtersModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeFiltersModal() { filtersModal.classList.add('hidden'); filtersModal.classList.remove('flex'); }
+
+    filterMinAge.addEventListener('input', () => {
+      draftFilters.minAge = Math.min(parseInt(filterMinAge.value, 10), draftFilters.maxAge);
+      filterMinAge.value = draftFilters.minAge;
+      filterAgeReadout.textContent = `${draftFilters.minAge} – ${draftFilters.maxAge}`;
+    });
+    filterMaxAge.addEventListener('input', () => {
+      draftFilters.maxAge = Math.max(parseInt(filterMaxAge.value, 10), draftFilters.minAge);
+      filterMaxAge.value = draftFilters.maxAge;
+      filterAgeReadout.textContent = `${draftFilters.minAge} – ${draftFilters.maxAge}`;
+    });
+    filterRegionSelect.addEventListener('change', () => { draftFilters.region = filterRegionSelect.value; });
+    filterCountrySelect.addEventListener('change', () => { draftFilters.country = filterCountrySelect.value; });
+    document.getElementById('open-filters-btn').addEventListener('click', openFiltersModal);
+    document.getElementById('close-filters-btn').addEventListener('click', closeFiltersModal);
+    filtersModal.addEventListener('click', (e) => { if (e.target === filtersModal) closeFiltersModal(); });
+    document.getElementById('reset-filters-btn').addEventListener('click', () => { draftFilters = JSON.parse(JSON.stringify(DEFAULT_FILTERS)); renderFiltersModalBody(); });
+    document.getElementById('apply-filters-btn').addEventListener('click', async () => {
+      filters = JSON.parse(JSON.stringify(draftFilters));
+      saveState('auraloom_filters', filters);
+      closeFiltersModal();
+      currentIndex = 0;
+      currentGalleryIdx = 0;
+      if (isLiveMode()) await loadLiveCloudData();
+      else renderDiscoverAll();
+      showToast('Discovery filters applied');
+    });
+
+    // 10. NAVIGATION
+    function renderNavigation() {
+      const sparkTotal = mutualMatches.length + incomingSparks.length;
+      const unreadTotal = getTotalUnreadCount();
+      sparksCount.textContent = mutualMatches.length + sentSparks.length;
+
+      desktopNav.innerHTML = NAV_ITEMS.map(item => {
+        const active = item.id === activeTab;
+        const badgeNum = item.id === 'sparks' ? sparkTotal : item.id === 'chats' ? unreadTotal : 0;
+        return `
+          <button type="button" data-nav="${item.id}" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+            style="${active ? 'background-color: var(--accent-soft); color: var(--accent-primary);' : 'color: var(--text-secondary);'}">
+            <span class="flex items-center gap-3">
+              <i data-lucide="${item.icon}" class="w-4 h-4"></i>
+              <span>${item.label}</span>
+            </span>
+            ${badgeNum > 0 ? `<span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md text-white" style="background-color: var(--accent-primary);">${badgeNum}</span>` : ''}
+          </button>
+        `;
+      }).join('');
+
+      mobileNavGrid.innerHTML = NAV_ITEMS.map(item => {
+        const active = item.id === activeTab;
+        const badgeNum = item.id === 'sparks' ? sparkTotal : item.id === 'chats' ? unreadTotal : 0;
+        return `
+          <button type="button" data-nav="${item.id}" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition-colors"
+            style="color: ${active ? 'var(--accent-primary)' : 'var(--text-secondary)'};">
+            <span class="relative">
+              <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+              ${badgeNum > 0 ? `<span class="absolute -top-1 -right-2 text-[9px] font-bold px-1 rounded-full text-white leading-tight" style="background-color: var(--accent-primary);">${badgeNum}</span>` : ''}
+            </span>
+            <span class="text-[10px] font-semibold mt-0.5">${item.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.getAttribute('data-nav'))));
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function switchTab(tabId) {
+      if (!views[tabId]) return;
+      activeTab = tabId;
+      Object.entries(views).forEach(([id, el]) => el.classList.toggle('hidden', id !== tabId));
+
+      if (tabId === 'discover') renderDiscoverAll();
+      else if (tabId === 'vibe') populateVibeForm();
+      else if (tabId === 'sparks') renderSparksList();
+      else if (tabId === 'chats') { if (activeChatId) openChatRoom(activeChatId); else showChatsList(); }
+      else if (tabId === 'profile') {
+        sbUrlInput.value = sbConfig.url || '';
+        sbKeyInput.value = sbConfig.key || '';
+        updateAuthUi();
+        renderPrivacyControls();
+        renderBlockedUsersList();
+      }
+      renderNavigation();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 11. SUPABASE CLOUD SYNC, REALTIME CHAT & TYPING INDICATORS
     function mapDbProfile(row, index) {
       const cleanName = row.name || 'Auraloom Member';
       const parts = cleanName.trim().split(/\s+/);
       const initials = (parts[0][0] + (parts[1] ? parts[1][0] : (parts[0][1] || ''))).toUpperCase();
       const bg = AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length];
       return {
-        id: row.id,
-        name: cleanName,
-        age: row.age || 25,
+        id: row.id, name: cleanName, age: row.age || 25,
         city: row.city || 'Global Citizen',
         country: row.country || (row.city && row.city.includes(',') ? row.city.split(',').pop().trim() : ''),
-        region: row.region || 'Asia',
-        languages: row.languages || 'English',
-        timezone: 'Live Member',
-        initials,
-        vibeTag: row.vibe_tag || 'Live Aura',
-        avatarBg: bg,
+        region: row.region || 'Asia', languages: row.languages || 'English', timezone: 'Live Member',
+        initials, vibeTag: row.vibe_tag || 'Live Aura', avatarBg: bg,
+        photoUrls: Array.isArray(row.photo_urls) ? row.photo_urls : [],
+        isVerified: Boolean(row.is_verified),
+        isVisible: row.is_visible !== false,
         connectionType: row.connection_type || 'Soulmate',
         communicationStyle: row.communication_style || null,
         lifestyle: row.lifestyle || null,
@@ -1529,265 +2041,12 @@
       };
     }
 
-    // 7. COMPATIBILITY BREAKDOWN MODAL
-    function openCompatibilityModal(profile) {
-      const compat = computeCompatibility(myProfile, profile);
-      compatTitle.textContent = `You & ${profile.name}`;
-      compatSubtitle.textContent = compat.overall !== null
-        ? `${compat.overall}% Resonance · Calculated from ${compat.scoredCount} of ${compat.totalDimensions} available dimensions`
-        : 'Not enough shared profile fields yet to calculate a score';
-
-      compatBody.innerHTML = `
-        <div class="p-4 rounded-2xl subtle-box flex items-center justify-between gap-3">
-          <div>
-            <p class="text-xs font-semibold" style="color: var(--text-secondary);">Overall Compatibility</p>
-            <p class="text-xs mt-0.5" style="color: var(--text-primary);">${escapeHtml(compat.topReason)}</p>
-          </div>
-          <div class="px-3.5 py-2 rounded-xl text-lg font-extrabold badge-success shrink-0">
-            ${compat.overall !== null ? `${compat.overall}%` : 'N/A'}
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          ${compat.dimensions.map(d => {
-            const hasScore = d.score !== null;
-            return `
-              <div class="p-3.5 rounded-xl border space-y-2" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-xs font-bold" style="color: var(--text-primary);">${escapeHtml(d.label)}</span>
-                  <span class="text-xs font-bold" style="color: ${hasScore ? 'var(--success)' : 'var(--text-secondary)'};">
-                    ${hasScore ? `${d.score}%` : 'Missing data'}
-                  </span>
-                </div>
-                <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--bg-subtle);">
-                  <div class="h-full rounded-full" style="width: ${hasScore ? d.score : 0}%; background: linear-gradient(90deg, #E94776, #A64AE5);"></div>
-                </div>
-                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">${escapeHtml(d.detail)}</p>
-                ${d.shared.length > 0 ? `
-                  <div class="flex flex-wrap gap-1.5 pt-0.5">
-                    ${d.shared.map(t => `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold tag-matched">${escapeHtml(t)}</span>`).join('')}
-                  </div>
-                ` : ''}
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-
-      compatModal.classList.remove('hidden');
-      compatModal.classList.add('flex');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeCompatModal() {
-      compatModal.classList.add('hidden');
-      compatModal.classList.remove('flex');
-    }
-
-    document.getElementById('close-compat-btn').addEventListener('click', closeCompatModal);
-    document.getElementById('compat-edit-vibe-btn').addEventListener('click', () => {
-      closeCompatModal();
-      switchTab('vibe');
-    });
-    compatModal.addEventListener('click', (e) => {
-      if (e.target === compatModal) closeCompatModal();
-    });
-
-    // 8. ADVANCED FILTERS MODAL
-    function renderFilterChips(container, options, selectedList, singleMode = false, onToggle) {
-      container.innerHTML = options.map(opt => {
-        const active = singleMode ? selectedList === opt : selectedList.includes(opt);
-        return `
-          <button
-            type="button"
-            data-opt="${escapeHtml(opt)}"
-            class="filter-chip h-8 px-3 rounded-lg text-xs font-semibold transition-all ${active ? 'tag-matched' : 'tag-neutral'}"
-          >
-            ${active ? '✓ ' : ''}${escapeHtml(opt)}
-          </button>
-        `;
-      }).join('');
-
-      container.querySelectorAll('.filter-chip').forEach(btn => {
-        btn.addEventListener('click', () => onToggle(btn.getAttribute('data-opt')));
-      });
-    }
-
-    function renderFiltersModalBody() {
-      filterMinAge.value = draftFilters.minAge;
-      filterMaxAge.value = draftFilters.maxAge;
-      filterAgeReadout.textContent = `${draftFilters.minAge} – ${draftFilters.maxAge}`;
-      filterRegionSelect.value = draftFilters.region;
-      filterCountrySelect.value = draftFilters.country;
-
-      renderFilterChips(filterConnectionChips, CONNECTION_TYPES, draftFilters.connectionType, true, (val) => {
-        draftFilters.connectionType = val;
-        renderFiltersModalBody();
-      });
-
-      const toggleMulti = (key, val) => {
-        if (draftFilters[key].includes(val)) {
-          draftFilters[key] = draftFilters[key].filter(x => x !== val);
-        } else {
-          draftFilters[key].push(val);
-        }
-        renderFiltersModalBody();
-      };
-
-      renderFilterChips(filterLanguageChips, ALL_LANGUAGES, draftFilters.languages, false, v => toggleMulti('languages', v));
-      renderFilterChips(filterValueChips, ALL_VALUES, draftFilters.values, false, v => toggleMulti('values', v));
-      renderFilterChips(filterInterestChips, ALL_INTERESTS, draftFilters.interests, false, v => toggleMulti('interests', v));
-      renderFilterChips(filterVibeChips, ALL_VIBE_TAGS, draftFilters.vibeTags, false, v => toggleMulti('vibeTags', v));
-    }
-
-    function openFiltersModal() {
-      draftFilters = JSON.parse(JSON.stringify(filters));
-      renderFiltersModalBody();
-      filtersModal.classList.remove('hidden');
-      filtersModal.classList.add('flex');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeFiltersModal() {
-      filtersModal.classList.add('hidden');
-      filtersModal.classList.remove('flex');
-    }
-
-    filterMinAge.addEventListener('input', () => {
-      draftFilters.minAge = Math.min(parseInt(filterMinAge.value, 10), draftFilters.maxAge);
-      filterMinAge.value = draftFilters.minAge;
-      filterAgeReadout.textContent = `${draftFilters.minAge} – ${draftFilters.maxAge}`;
-    });
-
-    filterMaxAge.addEventListener('input', () => {
-      draftFilters.maxAge = Math.max(parseInt(filterMaxAge.value, 10), draftFilters.minAge);
-      filterMaxAge.value = draftFilters.maxAge;
-      filterAgeReadout.textContent = `${draftFilters.minAge} – ${draftFilters.maxAge}`;
-    });
-
-    filterRegionSelect.addEventListener('change', () => {
-      draftFilters.region = filterRegionSelect.value;
-    });
-
-    filterCountrySelect.addEventListener('change', () => {
-      draftFilters.country = filterCountrySelect.value;
-    });
-
-    document.getElementById('open-filters-btn').addEventListener('click', openFiltersModal);
-    document.getElementById('close-filters-btn').addEventListener('click', closeFiltersModal);
-    filtersModal.addEventListener('click', (e) => {
-      if (e.target === filtersModal) closeFiltersModal();
-    });
-
-    document.getElementById('reset-filters-btn').addEventListener('click', () => {
-      draftFilters = JSON.parse(JSON.stringify(DEFAULT_FILTERS));
-      renderFiltersModalBody();
-    });
-
-    document.getElementById('apply-filters-btn').addEventListener('click', async () => {
-      filters = JSON.parse(JSON.stringify(draftFilters));
-      saveState('auraloom_filters', filters);
-      closeFiltersModal();
-      currentIndex = 0;
-      currentGalleryIdx = 0;
-      isRitualRevealed = false;
-      if (isLiveMode()) {
-        await loadLiveCloudData();
-      } else {
-        renderDiscoverAll();
-      }
-      showToast('Discovery filters applied');
-    });
-
-    // 9. NAVIGATION (5-TAB ARCHITECTURE)
-    function renderNavigation() {
-      desktopNav.innerHTML = NAV_ITEMS.map(item => {
-        const active = item.id === activeTab;
-        const showBadge = item.id === 'sparks' && sparks.length > 0;
-        return `
-          <button
-            type="button"
-            data-nav="${item.id}"
-            class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-            style="${active
-              ? 'background-color: var(--accent-soft); color: var(--accent-primary);'
-              : 'color: var(--text-secondary);'}"
-          >
-            <span class="flex items-center gap-3">
-              <i data-lucide="${item.icon}" class="w-4 h-4"></i>
-              <span>${item.label}</span>
-            </span>
-            ${showBadge ? `<span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md text-white" style="background-color: var(--accent-primary);">${sparks.length}</span>` : ''}
-          </button>
-        `;
-      }).join('');
-
-      mobileNavGrid.innerHTML = NAV_ITEMS.map(item => {
-        const active = item.id === activeTab;
-        const showBadge = item.id === 'sparks' && sparks.length > 0;
-        return `
-          <button
-            type="button"
-            data-nav="${item.id}"
-            class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl transition-colors"
-            style="color: ${active ? 'var(--accent-primary)' : 'var(--text-secondary)'};"
-          >
-            <span class="relative">
-              <i data-lucide="${item.icon}" class="w-5 h-5"></i>
-              ${showBadge ? `<span class="absolute -top-1 -right-2 text-[9px] font-bold px-1 rounded-full text-white leading-tight" style="background-color: var(--accent-primary);">${sparks.length}</span>` : ''}
-            </span>
-            <span class="text-[10px] font-semibold mt-0.5">${item.label}</span>
-          </button>
-        `;
-      }).join('');
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-nav')));
-      });
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function switchTab(tabId) {
-      if (!views[tabId]) return;
-      activeTab = tabId;
-      Object.entries(views).forEach(([id, el]) => {
-        if (id === tabId) el.classList.remove('hidden');
-        else el.classList.add('hidden');
-      });
-
-      if (tabId === 'discover') {
-        renderDiscoverAll();
-      } else if (tabId === 'vibe') {
-        populateVibeForm();
-      } else if (tabId === 'sparks') {
-        renderSparksList();
-      } else if (tabId === 'chats') {
-        if (activeChatId) openChatRoom(activeChatId);
-        else showChatsList();
-      } else if (tabId === 'profile') {
-        sbUrlInput.value = sbConfig.url || '';
-        sbKeyInput.value = sbConfig.key || '';
-        updateAuthUi();
-      }
-
-      renderNavigation();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // 10. CLOUD STATUS & SUPABASE QUERIES
     function setCloudNotice(text, type = 'info') {
-      if (!text) {
-        cloudStatusMsg.classList.add('hidden');
-        return;
-      }
+      if (!text) { cloudStatusMsg.classList.add('hidden'); return; }
       cloudStatusMsg.classList.remove('hidden');
-      if (type === 'error') {
-        cloudStatusMsg.style.cssText = 'background: rgba(220,38,38,0.10); color: #DC2626; border: 1px solid rgba(220,38,38,0.25);';
-      } else if (type === 'success') {
-        cloudStatusMsg.style.cssText = 'background: var(--success-bg); color: var(--success); border: 1px solid rgba(22,134,106,0.28);';
-      } else {
-        cloudStatusMsg.style.cssText = 'background: var(--bg-subtle); color: var(--text-primary); border: 1px solid var(--border-subtle);';
-      }
+      if (type === 'error') cloudStatusMsg.style.cssText = 'background: rgba(220,38,38,0.10); color: #DC2626; border: 1px solid rgba(220,38,38,0.25);';
+      else if (type === 'success') cloudStatusMsg.style.cssText = 'background: var(--success-bg); color: var(--success); border: 1px solid rgba(22,134,106,0.28);';
+      else cloudStatusMsg.style.cssText = 'background: var(--bg-subtle); color: var(--text-primary); border: 1px solid var(--border-subtle);';
       cloudStatusMsg.textContent = text;
     }
 
@@ -1796,29 +2055,19 @@
       const connected = Boolean(sbClient);
       const label = live ? 'Live Cloud' : connected ? 'Sign In (Cloud)' : 'Connect Cloud';
       const dotColor = live ? '#16866A' : '#F59E0B';
-
       circleLabel.textContent = label;
       cloudDot.style.backgroundColor = dotColor;
       desktopCloudLabel.textContent = label;
       desktopCloudDot.style.backgroundColor = dotColor;
       profileCloudPill.textContent = live ? 'Live Cloud' : connected ? 'Connected' : 'Demo Mode';
-      profileCloudPill.className = live
-        ? 'px-2.5 py-1 rounded-lg text-xs font-semibold badge-success'
-        : 'px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box';
+      profileCloudPill.className = live ? 'px-2.5 py-1 rounded-lg text-xs font-semibold badge-success' : 'px-2.5 py-1 rounded-lg text-xs font-semibold subtle-box';
     }
 
     function updateAuthUi() {
-      if (sbClient) authSection.classList.remove('hidden');
-      else authSection.classList.add('hidden');
-
-      if (currentUser) {
-        authLoggedOut.classList.add('hidden');
-        authLoggedIn.classList.remove('hidden');
-        authUserEmail.textContent = currentUser.email || 'Signed in';
-      } else {
-        authLoggedOut.classList.remove('hidden');
-        authLoggedIn.classList.add('hidden');
-      }
+      authSection.classList.toggle('hidden', !sbClient);
+      authLoggedOut.classList.toggle('hidden', Boolean(currentUser));
+      authLoggedIn.classList.toggle('hidden', !currentUser);
+      if (currentUser) authUserEmail.textContent = currentUser.email || 'Signed in';
       setAuthTab(authMode);
       updateCloudIndicators();
     }
@@ -1827,15 +2076,9 @@
       authMode = mode;
       const activeStyle = 'background-color: var(--bg-surface); color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.06);';
       const idleStyle = 'background-color: transparent; color: var(--text-secondary);';
-      if (mode === 'signup') {
-        tabSignupBtn.style.cssText = activeStyle;
-        tabLoginBtn.style.cssText = idleStyle;
-        authSubmitBtn.textContent = 'Sign Up for Auraloom';
-      } else {
-        tabLoginBtn.style.cssText = activeStyle;
-        tabSignupBtn.style.cssText = idleStyle;
-        authSubmitBtn.textContent = 'Log In to Auraloom';
-      }
+      tabSignupBtn.style.cssText = mode === 'signup' ? activeStyle : idleStyle;
+      tabLoginBtn.style.cssText = mode === 'login' ? activeStyle : idleStyle;
+      authSubmitBtn.textContent = mode === 'signup' ? 'Sign Up for Auraloom' : 'Log In to Auraloom';
     }
 
     async function initSupabase(url, key, silent = false) {
@@ -1844,15 +2087,13 @@
         sbClient = window.supabase.createClient(url.trim(), key.trim());
         sbConfig = { url: url.trim(), key: key.trim() };
         saveState('auraloom_sb_config', sbConfig);
-
         const { data, error } = await sbClient.auth.getSession();
         if (error) throw error;
         currentUser = data.session ? data.session.user : null;
-
         updateAuthUi();
         if (currentUser) {
           await loadLiveCloudData();
-          subscribeToLiveMessages();
+          subscribeToLiveRealtime();
         }
         if (!silent) setCloudNotice('Connected to Supabase. Sign up or log in below.', 'success');
         return true;
@@ -1870,7 +2111,15 @@
       isLoadingCloud = true;
       if (activeTab === 'discover') renderCurrentCard();
       try {
-        // Dynamic Supabase query applying age & region filters server-side
+        // Load blocks (graceful if blocks table not yet migrated)
+        try {
+          const { data: bRows } = await sbClient.from('blocks').select('blocked_id').eq('blocker_id', currentUser.id);
+          if (bRows) {
+            blockedUsers = bRows.map(b => ({ id: b.blocked_id, name: 'Blocked Member' }));
+            saveState('auraloom_blocked_users', blockedUsers);
+          }
+        } catch (e) {}
+
         let query = sbClient.from('profiles').select('*').order('created_at', { ascending: false });
         if (filters.minAge > 18) query = query.gte('age', filters.minAge);
         if (filters.maxAge < 60) query = query.lte('age', filters.maxAge);
@@ -1880,7 +2129,6 @@
         const { data: rows, error: pErr } = await query;
         if (pErr) throw pErr;
 
-        // Also fetch own profile cleanly
         const { data: ownRow } = await sbClient.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
         if (ownRow) {
           myProfile = {
@@ -1895,38 +2143,67 @@
             sundayRitual: ownRow.sunday_ritual || myProfile.sundayRitual,
             values: Array.isArray(ownRow.values) && ownRow.values.length ? ownRow.values : myProfile.values,
             interests: Array.isArray(ownRow.interests) && ownRow.interests.length ? ownRow.interests : myProfile.interests,
+            photoUrls: Array.isArray(ownRow.photo_urls) && ownRow.photo_urls.length ? ownRow.photo_urls : myProfile.photoUrls,
             communicationStyle: ownRow.communication_style || myProfile.communicationStyle,
             lifestyle: ownRow.lifestyle || myProfile.lifestyle,
-            connectionType: ownRow.connection_type || myProfile.connectionType
+            connectionType: ownRow.connection_type || myProfile.connectionType,
+            isVisible: ownRow.is_visible !== false,
+            showReadReceipts: ownRow.show_read_receipts !== false
           };
           saveState('auraloom_my_profile', myProfile);
         }
 
-        const others = (rows || []).filter(r => r.id !== currentUser.id).map((r, i) => mapDbProfile(r, i));
-        profiles = others.length > 0 ? others : [...DEMO_PROFILES];
+        const allOthers = (rows || []).filter(r => r.id !== currentUser.id).map((r, i) => mapDbProfile(r, i));
+        profiles = allOthers.length > 0 ? allOthers : [];
 
-        const { data: sparkRows, error: sErr } = await sbClient
+        // Load both outgoing & incoming Sparks to detect real Mutual Connections
+        const { data: sparkRows } = await sbClient
           .from('sparks')
           .select('*')
-          .eq('from_user', currentUser.id);
-        if (!sErr && sparkRows) {
-          const sparkedIds = new Set(sparkRows.map(s => s.to_user));
-          sparks = others.filter(p => sparkedIds.has(p.id));
+          .or(`from_user.eq.${currentUser.id},to_user.eq.${currentUser.id}`);
+
+        if (sparkRows) {
+          const outIds = new Set(sparkRows.filter(s => s.from_user === currentUser.id).map(s => s.to_user));
+          const inIds = new Set(sparkRows.filter(s => s.to_user === currentUser.id).map(s => s.from_user));
+          const byId = new Map(allOthers.map(p => [p.id, p]));
+
+          mutualMatches = [];
+          incomingSparks = [];
+          sentSparks = [];
+
+          outIds.forEach(id => {
+            const p = byId.get(id);
+            if (!p) return;
+            if (inIds.has(id)) mutualMatches.push(p);
+            else sentSparks.push(p);
+          });
+
+          inIds.forEach(id => {
+            const p = byId.get(id);
+            if (!p || outIds.has(id)) return;
+            incomingSparks.push(p);
+          });
         }
 
-        const { data: msgRows, error: mErr } = await sbClient
+        // Load real conversation history with read receipts & attachments
+        const { data: msgRows } = await sbClient
           .from('messages')
           .select('*')
           .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
           .order('created_at', { ascending: true });
-        if (!mErr && msgRows) {
+
+        if (msgRows) {
           conversations = {};
           msgRows.forEach(m => {
             const partnerId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
             if (!conversations[partnerId]) conversations[partnerId] = [];
             conversations[partnerId].push({
+              id: m.id,
               sender: m.sender_id === currentUser.id ? 'me' : 'them',
-              text: m.body,
+              text: m.body || '',
+              attachmentUrl: m.attachment_url || null,
+              attachmentType: m.attachment_type || null,
+              read: Boolean(m.read_at),
               time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
           });
@@ -1938,43 +2215,82 @@
       } finally {
         isLoadingCloud = false;
         renderDiscoverAll();
+        renderSparksList();
         renderNavigation();
       }
     }
 
-    function subscribeToLiveMessages() {
+    function subscribeToLiveRealtime() {
       if (!isLiveMode()) return;
-      if (liveChannel) {
-        sbClient.removeChannel(liveChannel);
-        liveChannel = null;
-      }
+      if (liveChannel) { sbClient.removeChannel(liveChannel); liveChannel = null; }
+      if (typingChannel) { sbClient.removeChannel(typingChannel); typingChannel = null; }
+
       liveChannel = sbClient
-        .channel('auraloom-live-chat')
+        .channel('auraloom-live-events')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
           const m = payload.new;
-          if (!m || !currentUser) return;
-          if (m.sender_id !== currentUser.id && m.receiver_id !== currentUser.id) return;
-          if (m.sender_id === currentUser.id) return;
-
+          if (!m || !currentUser || m.sender_id === currentUser.id) return;
+          if (m.receiver_id !== currentUser.id) return;
           const partnerId = m.sender_id;
           if (!conversations[partnerId]) conversations[partnerId] = [];
+          const isViewing = activeTab === 'chats' && activeChatId === partnerId;
           conversations[partnerId].push({
-            sender: 'them',
-            text: m.body,
+            id: m.id, sender: 'them', text: m.body || '',
+            attachmentUrl: m.attachment_url || null, attachmentType: m.attachment_type || null,
+            read: isViewing,
             time: new Date(m.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           });
-
-          if (activeTab === 'chats' && activeChatId === partnerId) {
+          if (isViewing) {
+            markConversationRead(partnerId);
             renderChatMessages();
           } else {
             showToast('New live message received');
+            renderNavigation();
             if (activeTab === 'chats') renderChatsList();
+          }
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, (payload) => {
+          const m = payload.new;
+          if (!m || !currentUser || m.sender_id !== currentUser.id) return;
+          const list = conversations[m.receiver_id] || [];
+          const target = list.find(x => x.id === m.id);
+          if (target && m.read_at) {
+            target.read = true;
+            if (activeTab === 'chats' && activeChatId === m.receiver_id) renderChatMessages();
+          }
+        })
+        .subscribe();
+
+      typingChannel = sbClient
+        .channel('auraloom-typing')
+        .on('broadcast', { event: 'typing' }, ({ payload }) => {
+          if (!payload || !currentUser || payload.to !== currentUser.id) return;
+          if (activeTab === 'chats' && activeChatId === payload.from) {
+            chatTypingRow.classList.remove('hidden');
+            if (typingHideTimer) clearTimeout(typingHideTimer);
+            typingHideTimer = setTimeout(() => chatTypingRow.classList.add('hidden'), 2200);
           }
         })
         .subscribe();
     }
 
-    // 11. DISCOVER VIEW RENDERING
+    async function markConversationRead(partnerId) {
+      const msgs = conversations[partnerId] || [];
+      let changed = false;
+      msgs.forEach(m => { if (m.sender === 'them' && !m.read) { m.read = true; changed = true; } });
+      if (!changed) return;
+      if (isLiveMode() && myProfile.showReadReceipts !== false) {
+        try {
+          await sbClient.from('messages').update({ read_at: new Date().toISOString() })
+            .eq('sender_id', partnerId).eq('receiver_id', currentUser.id).is('read_at', null);
+        } catch (e) {}
+      } else {
+        saveState('auraloom_conversations', conversations);
+      }
+      renderNavigation();
+    }
+
+    // 12. DISCOVER VIEW RENDERING
     function renderDiscoverAll() {
       renderRegionBar();
       renderActiveFiltersSummary();
@@ -1985,15 +2301,7 @@
     function renderRegionBar() {
       regionFilterBar.innerHTML = REGIONS.map(region => {
         const active = region === filters.region;
-        return `
-          <button
-            type="button"
-            data-region="${region}"
-            class="region-pill shrink-0 h-9 px-3 rounded-xl text-xs font-semibold transition-all ${active ? 'btn-cta' : 'btn-secondary'}"
-          >
-            ${region}
-          </button>
-        `;
+        return `<button type="button" data-region="${region}" class="region-pill shrink-0 h-9 px-3 rounded-xl text-xs font-semibold transition-all ${active ? 'btn-cta' : 'btn-secondary'}">${region}</button>`;
       }).join('');
 
       regionFilterBar.querySelectorAll('.region-pill').forEach(btn => {
@@ -2002,19 +2310,14 @@
           saveState('auraloom_filters', filters);
           currentIndex = 0;
           currentGalleryIdx = 0;
-          isRitualRevealed = false;
           if (isLiveMode()) await loadLiveCloudData();
           else renderDiscoverAll();
         });
       });
 
       const count = countActiveFilters(filters);
-      if (count > 0) {
-        activeFilterBadge.textContent = count;
-        activeFilterBadge.classList.remove('hidden');
-      } else {
-        activeFilterBadge.classList.add('hidden');
-      }
+      activeFilterBadge.textContent = count;
+      activeFilterBadge.classList.toggle('hidden', count === 0);
     }
 
     function renderActiveFiltersSummary() {
@@ -2032,15 +2335,10 @@
         activeFiltersBar.classList.remove('flex');
         return;
       }
-
       activeFiltersBar.classList.remove('hidden');
       activeFiltersBar.classList.add('flex');
-      activeFiltersBar.innerHTML = chips.map(c => `
-        <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold tag-matched">${escapeHtml(c)}</span>
-      `).join('') + `
-        <button id="quick-clear-filters" type="button" class="text-[11px] font-semibold underline px-1" style="color: var(--text-secondary);">Clear all</button>
-      `;
-
+      activeFiltersBar.innerHTML = chips.map(c => `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold tag-matched">${escapeHtml(c)}</span>`).join('') +
+        `<button id="quick-clear-filters" type="button" class="text-[11px] font-semibold underline px-1" style="color: var(--text-secondary);">Clear all</button>`;
       document.getElementById('quick-clear-filters').addEventListener('click', async () => {
         filters = JSON.parse(JSON.stringify(DEFAULT_FILTERS));
         saveState('auraloom_filters', filters);
@@ -2052,31 +2350,19 @@
 
     function renderDailyResonance() {
       const recs = getDailyResonanceRecommendations();
-      if (recs.length === 0) {
-        dailyResonanceSection.classList.add('hidden');
-        return;
-      }
+      if (recs.length === 0) { dailyResonanceSection.classList.add('hidden'); return; }
       dailyResonanceSection.classList.remove('hidden');
       dailyResonanceStrip.innerHTML = recs.map(({ profile: p, compat }) => `
-        <div
-          data-rec-id="${escapeHtml(p.id)}"
-          class="rec-card surface-card rounded-xl p-3 w-52 shrink-0 flex flex-col justify-between gap-2 cursor-pointer hover:opacity-95 transition-opacity"
-        >
+        <div data-rec-id="${escapeHtml(p.id)}" class="rec-card surface-card rounded-xl p-3 w-52 shrink-0 flex flex-col justify-between gap-2 cursor-pointer hover:opacity-95 transition-opacity">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 min-w-0">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0" style="background: ${p.avatarBg};">
-                ${escapeHtml(p.initials)}
-              </div>
+              ${avatarHtml(p, 'w-8 h-8 text-xs')}
               <div class="min-w-0">
-                <p class="text-xs font-bold truncate" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
+                <p class="text-xs font-bold truncate flex items-center gap-1" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)} ${p.isVerified ? '<span style="color:var(--success)">✓</span>' : ''}</p>
                 <p class="text-[10px] truncate" style="color: var(--text-secondary);">${escapeHtml(p.city.split(',')[0])}</p>
               </div>
             </div>
-            <button
-              type="button"
-              data-compat-id="${escapeHtml(p.id)}"
-              class="rec-compat-btn px-1.5 py-0.5 rounded-md text-[10px] font-bold badge-success shrink-0"
-            >
+            <button type="button" data-compat-id="${escapeHtml(p.id)}" class="rec-compat-btn px-1.5 py-0.5 rounded-md text-[10px] font-bold badge-success shrink-0">
               ${compat.overall !== null ? `${compat.overall}%` : 'New'}
             </button>
           </div>
@@ -2097,12 +2383,7 @@
           const id = card.getAttribute('data-rec-id');
           const list = getFilteredProfiles();
           const idx = list.findIndex(x => x.id === id);
-          if (idx >= 0) {
-            currentIndex = idx;
-            currentGalleryIdx = 0;
-            isRitualRevealed = false;
-            renderCurrentCard();
-          }
+          if (idx >= 0) { currentIndex = idx; currentGalleryIdx = 0; isRitualRevealed = false; renderCurrentCard(); }
         });
       });
     }
@@ -2110,36 +2391,22 @@
     function renderSkeletonCard() {
       cardContainer.innerHTML = `
         <div class="surface-card rounded-2xl p-5 space-y-4">
-          <div class="h-36 w-full rounded-xl skeleton"></div>
+          <div class="h-44 w-full rounded-xl skeleton"></div>
           <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-xl skeleton shrink-0"></div>
-            <div class="space-y-2 flex-1">
-              <div class="h-5 w-36 rounded-lg skeleton"></div>
-              <div class="h-3.5 w-48 rounded-lg skeleton"></div>
-            </div>
+            <div class="space-y-2 flex-1"><div class="h-5 w-36 rounded-lg skeleton"></div><div class="h-3.5 w-48 rounded-lg skeleton"></div></div>
           </div>
           <div class="h-20 w-full rounded-xl skeleton"></div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="h-12 rounded-xl skeleton"></div>
-            <div class="h-12 rounded-xl skeleton"></div>
-            <div class="h-12 rounded-xl skeleton"></div>
-          </div>
         </div>
       `;
     }
 
     function renderCurrentCard() {
-      sparksCount.textContent = sparks.length;
       myVibeLabel.textContent = myProfile.name ? myProfile.name : 'My Vibe';
       updateCloudIndicators();
-
-      if (isLoadingCloud) {
-        renderSkeletonCard();
-        return;
-      }
+      if (isLoadingCloud) { renderSkeletonCard(); return; }
 
       const list = getFilteredProfiles();
-
       if (list.length === 0 || currentIndex >= list.length) {
         profileCounter.textContent = '0 matching profiles';
         cardContainer.innerHTML = `
@@ -2148,22 +2415,19 @@
               <i data-lucide="globe" class="w-6 h-6" style="color: var(--accent-primary);"></i>
             </div>
             <div>
-              <h2 class="text-lg font-bold" style="color: var(--text-primary);">No more profiles match right now</h2>
+              <h2 class="text-lg font-bold" style="color: var(--text-primary);">${isLiveMode() && profiles.length === 0 ? 'Waiting for more live members' : 'No more profiles match right now'}</h2>
               <p class="text-xs mt-1.5 leading-relaxed max-w-xs mx-auto" style="color: var(--text-secondary);">
-                Try widening your Discovery Filters, resetting passed profiles, or messaging your Sparks.
+                ${isLiveMode() && profiles.length === 0
+                  ? 'Invite a friend to sign up on your Auraloom link so you can test real mutual Sparks and live chat together.'
+                  : 'Try widening your Discovery Filters, resetting passed profiles, or checking your Sparks.'}
               </p>
             </div>
             <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-              <button id="empty-view-sparks" type="button" class="flex-1 h-11 rounded-xl text-xs font-semibold btn-cta">
-                View Sparks (${sparks.length})
-              </button>
-              <button id="reset-circle-btn" type="button" class="flex-1 h-11 rounded-xl text-xs font-semibold btn-secondary">
-                Reset Passes & Filters
-              </button>
+              <button id="empty-view-sparks" type="button" class="flex-1 h-11 rounded-xl text-xs font-semibold btn-cta">View Sparks</button>
+              <button id="reset-circle-btn" type="button" class="flex-1 h-11 rounded-xl text-xs font-semibold btn-secondary">Reset Passes & Filters</button>
             </div>
           </div>
         `;
-
         document.getElementById('empty-view-sparks').addEventListener('click', () => switchTab('sparks'));
         document.getElementById('reset-circle-btn').addEventListener('click', resetCircle);
         if (window.lucide) lucide.createIcons();
@@ -2171,12 +2435,15 @@
       }
 
       profileCounter.textContent = `Profile ${currentIndex + 1} of ${list.length}`;
-
       const p = list[currentIndex];
       const compat = computeCompatibility(myProfile, p);
-      const gallery = Array.isArray(p.gallery) && p.gallery.length > 0
-        ? p.gallery
-        : [{ bg: p.avatarBg, label: p.vibeTag, caption: p.promptAnswer }];
+
+      // Build unified photo + aura gallery (real uploaded photos first!)
+      const hasRealPhotos = Array.isArray(p.photoUrls) && p.photoUrls.length > 0;
+      const gallery = hasRealPhotos
+        ? p.photoUrls.map((url, idx) => ({ photoUrl: url, label: idx === 0 ? 'Primary Photo' : `Photo ${idx + 1}`, caption: '' }))
+        : (Array.isArray(p.gallery) && p.gallery.length > 0 ? p.gallery : [{ bg: p.avatarBg, label: p.vibeTag, caption: p.promptAnswer }]);
+
       if (currentGalleryIdx >= gallery.length) currentGalleryIdx = 0;
       const slide = gallery[currentGalleryIdx];
       const isLiked = likedIds.includes(p.id);
@@ -2184,9 +2451,7 @@
       const valuesHtml = (p.values || []).map(v => {
         const isMatch = myProfile.values.includes(v);
         return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${isMatch ? 'tag-matched' : 'tag-neutral'}">
-          ${isMatch ? '<span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--accent-primary);"></span>' : ''}
-          ${escapeHtml(v)}
-        </span>`;
+          ${isMatch ? '<span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--accent-primary);"></span>' : ''}${escapeHtml(v)}</span>`;
       }).join('');
 
       const interestsHtml = (p.interests || []).map(i => {
@@ -2196,163 +2461,90 @@
 
       cardContainer.innerHTML = `
         <article class="surface-card rounded-2xl overflow-hidden fade-in">
-          <!-- Interactive Photo / Aura Gallery -->
-          <div class="relative h-44 sm:h-48 p-4 flex flex-col justify-between text-white select-none" style="background: ${slide.bg};">
-            <!-- Gallery Progress Bars -->
+          <!-- Photo / Aura Gallery -->
+          <div class="relative ${slide.photoUrl ? 'h-72 sm:h-80' : 'h-44 sm:h-48'} p-4 flex flex-col justify-between text-white select-none overflow-hidden" style="${slide.photoUrl ? 'background:#171A23;' : `background: ${slide.bg};`}">
+            ${slide.photoUrl ? `<img src="${escapeHtml(slide.photoUrl)}" alt="${escapeHtml(p.name)}" class="absolute inset-0 w-full h-full object-cover" /><div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/55"></div>` : ''}
+
             <div class="flex items-center gap-1.5 z-10">
-              ${gallery.map((_, idx) => `
-                <button
-                  type="button"
-                  data-gal-idx="${idx}"
-                  aria-label="Gallery slide ${idx + 1}"
-                  class="gal-dot flex-1 h-1 rounded-full transition-all"
-                  style="background-color: ${idx === currentGalleryIdx ? '#FFFFFF' : 'rgba(255,255,255,0.35)'};"
-                ></button>
-              `).join('')}
+              ${gallery.map((_, idx) => `<button type="button" data-gal-idx="${idx}" aria-label="Slide ${idx + 1}" class="gal-dot flex-1 h-1 rounded-full transition-all" style="background-color: ${idx === currentGalleryIdx ? '#FFFFFF' : 'rgba(255,255,255,0.35)'};"></button>`).join('')}
             </div>
 
-            <!-- Gallery Center Story Content -->
             <div class="z-10 flex items-center justify-between gap-3 my-auto">
-              <button id="gal-prev-btn" type="button" aria-label="Previous photo" class="w-8 h-8 rounded-full flex items-center justify-center bg-black/20 hover:bg-black/35 transition-colors shrink-0">
+              <button id="gal-prev-btn" type="button" aria-label="Previous" class="w-8 h-8 rounded-full flex items-center justify-center bg-black/25 hover:bg-black/40 transition-colors shrink-0">
                 <i data-lucide="chevron-left" class="w-4 h-4 text-white"></i>
               </button>
-              <div class="text-center px-2 min-w-0">
-                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-sm mb-1.5">
-                  ${escapeHtml(slide.label)}
-                </span>
-                <p class="text-xs sm:text-sm font-medium leading-snug text-white/95 line-clamp-2">
-                  ${escapeHtml(slide.caption)}
-                </p>
-              </div>
-              <button id="gal-next-btn" type="button" aria-label="Next photo" class="w-8 h-8 rounded-full flex items-center justify-center bg-black/20 hover:bg-black/35 transition-colors shrink-0">
+              ${!slide.photoUrl ? `
+                <div class="text-center px-2 min-w-0">
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-sm mb-1.5">${escapeHtml(slide.label)}</span>
+                  <p class="text-xs sm:text-sm font-medium leading-snug text-white/95 line-clamp-2">${escapeHtml(slide.caption)}</p>
+                </div>
+              ` : '<div></div>'}
+              <button id="gal-next-btn" type="button" aria-label="Next" class="w-8 h-8 rounded-full flex items-center justify-center bg-black/25 hover:bg-black/40 transition-colors shrink-0">
                 <i data-lucide="chevron-right" class="w-4 h-4 text-white"></i>
               </button>
             </div>
 
-            <!-- Bottom Badges on Gallery -->
             <div class="flex items-center justify-between gap-2 z-10">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-black/25 backdrop-blur-sm text-white">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-black/30 backdrop-blur-sm text-white">
                 <i data-lucide="waves" class="w-3.5 h-3.5"></i>
                 ${escapeHtml(p.vibeTag)}
               </span>
-              <button
-                id="open-compat-btn"
-                type="button"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-sm hover:opacity-95 transition-opacity"
-              >
+              <button id="open-compat-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-sm hover:opacity-95 transition-opacity">
                 <i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i>
-                <span>${compat.overall !== null ? `${compat.overall}% Resonance` : 'View Match Info'}</span>
+                <span>${compat.overall !== null ? `${compat.overall}% Resonance` : 'Match Info'}</span>
                 <i data-lucide="info" class="w-3 h-3 opacity-70"></i>
               </button>
             </div>
           </div>
 
-          <!-- Profile Identity Header -->
+          <!-- Profile Identity + Trust & Safety Action -->
           <div class="p-5 pb-4 border-b" style="border-color: var(--border-subtle);">
-            <div class="flex items-center gap-3.5">
-              <div class="w-13 h-13 w-12 h-12 rounded-xl flex items-center justify-center text-base font-bold text-white shrink-0" style="background: ${p.avatarBg};">
-                ${escapeHtml(p.initials)}
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h2 class="text-xl font-bold tracking-tight leading-tight" style="color: var(--text-primary);">
-                    ${escapeHtml(p.name)}, ${escapeHtml(p.age)}
-                  </h2>
-                  ${p.connectionType ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold subtle-box" style="color: var(--text-secondary);">${escapeHtml(p.connectionType)}</span>` : ''}
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3.5 min-w-0">
+                ${avatarHtml(p, 'w-12 h-12 text-base')}
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-xl font-bold tracking-tight leading-tight" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</h2>
+                    ${verifiedBadgeHtml(p)}
+                    ${p.connectionType ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold subtle-box" style="color: var(--text-secondary);">${escapeHtml(p.connectionType)}</span>` : ''}
+                  </div>
+                  <p class="text-xs font-medium flex items-center gap-1 mt-1 truncate" style="color: var(--text-secondary);">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
+                    <span>${escapeHtml(p.city)} · ${escapeHtml(p.timezone)}</span>
+                  </p>
+                  <p class="text-xs mt-0.5 truncate" style="color: var(--text-secondary);">${escapeHtml(p.languages)}</p>
                 </div>
-                <p class="text-xs font-medium flex items-center gap-1 mt-1 truncate" style="color: var(--text-secondary);">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-primary);"></i>
-                  <span>${escapeHtml(p.city)} · ${escapeHtml(p.timezone)}</span>
-                </p>
-                <p class="text-xs mt-0.5 truncate" style="color: var(--text-secondary);">${escapeHtml(p.languages)}</p>
               </div>
+              <button id="card-safety-btn" type="button" title="Report or block user" class="w-8 h-8 rounded-lg btn-secondary flex items-center justify-center shrink-0">
+                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+              </button>
             </div>
           </div>
 
           <!-- Personality, Values, Interests & Actions -->
           <div class="p-5 space-y-4">
             <div class="subtle-box rounded-xl p-4">
-              <p class="text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--text-secondary);">
-                ${escapeHtml(p.promptQuestion)}
-              </p>
-              <p class="text-[15px] leading-relaxed font-medium" style="color: var(--text-primary);">
-                “${escapeHtml(p.promptAnswer)}”
-              </p>
+              <p class="text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--text-secondary);">${escapeHtml(p.promptQuestion)}</p>
+              <p class="text-[15px] leading-relaxed font-medium" style="color: var(--text-primary);">“${escapeHtml(p.promptAnswer)}”</p>
             </div>
 
-            <!-- Sunday Ritual Accordion -->
             <div>
-              <button
-                id="reveal-ritual-btn"
-                type="button"
-                aria-expanded="${isRitualRevealed}"
-                class="w-full min-h-[42px] flex items-center justify-between px-3.5 py-2 rounded-xl btn-secondary text-xs font-semibold"
-              >
-                <span class="flex items-center gap-2">
-                  <i data-lucide="sun" class="w-4 h-4" style="color: var(--accent-primary);"></i>
-                  <span>${isRitualRevealed ? 'Hide Sunday Ritual' : 'Peek at Sunday Ritual'}</span>
-                </span>
+              <button id="reveal-ritual-btn" type="button" aria-expanded="${isRitualRevealed}" class="w-full min-h-[42px] flex items-center justify-between px-3.5 py-2 rounded-xl btn-secondary text-xs font-semibold">
+                <span class="flex items-center gap-2"><i data-lucide="sun" class="w-4 h-4" style="color: var(--accent-primary);"></i><span>${isRitualRevealed ? 'Hide Sunday Ritual' : 'Peek at Sunday Ritual'}</span></span>
                 <i data-lucide="${isRitualRevealed ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4" style="color: var(--text-secondary);"></i>
               </button>
-              <div id="ritual-box" class="${isRitualRevealed ? 'mt-2 px-4 py-3 rounded-xl subtle-box text-sm leading-relaxed fade-in' : 'hidden'}" style="color: var(--text-primary);">
-                ${escapeHtml(p.sundayRitual)}
-              </div>
+              <div id="ritual-box" class="${isRitualRevealed ? 'mt-2 px-4 py-3 rounded-xl subtle-box text-sm leading-relaxed fade-in' : 'hidden'}" style="color: var(--text-primary);">${escapeHtml(p.sundayRitual)}</div>
             </div>
 
-            <!-- Core Values -->
-            ${valuesHtml ? `
-              <div>
-                <div class="flex items-center justify-between mb-1.5">
-                  <p class="text-xs font-semibold" style="color: var(--text-secondary);">Core Values</p>
-                  <span class="text-[11px] font-medium" style="color: var(--accent-primary);">Highlighted = shared</span>
-                </div>
-                <div class="flex flex-wrap gap-1.5">${valuesHtml}</div>
-              </div>
-            ` : ''}
+            ${valuesHtml ? `<div><div class="flex items-center justify-between mb-1.5"><p class="text-xs font-semibold" style="color: var(--text-secondary);">Core Values</p><span class="text-[11px] font-medium" style="color: var(--accent-primary);">Highlighted = shared</span></div><div class="flex flex-wrap gap-1.5">${valuesHtml}</div></div>` : ''}
+            ${interestsHtml ? `<div><p class="text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Interests</p><div class="flex flex-wrap gap-1.5">${interestsHtml}</div></div>` : ''}
 
-            <!-- Interests -->
-            ${interestsHtml ? `
-              <div>
-                <p class="text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Interests</p>
-                <div class="flex flex-wrap gap-1.5">${interestsHtml}</div>
-              </div>
-            ` : ''}
-
-            <!-- Interaction Bar: Opening Note + Pass / Like / Send Spark -->
             <div class="pt-1 space-y-3">
-              <input
-                id="spark-note-input"
-                type="text"
-                maxlength="140"
-                placeholder="Optional opening note to send with your Spark..."
-                class="w-full h-11 rounded-xl px-3.5 text-xs input-field"
-              />
-
+              <input id="spark-note-input" type="text" maxlength="140" placeholder="Optional opening note to send with your Spark..." class="w-full h-11 rounded-xl px-3.5 text-xs input-field" />
               <div class="grid grid-cols-3 gap-2">
-                <button
-                  id="pass-btn"
-                  type="button"
-                  class="min-h-[48px] px-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 btn-secondary"
-                >
-                  <i data-lucide="x" class="w-4 h-4"></i>
-                  <span>Pass</span>
-                </button>
-                <button
-                  id="like-btn"
-                  type="button"
-                  class="min-h-[48px] px-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 ${isLiked ? 'tag-matched' : 'btn-secondary'}"
-                >
-                  <i data-lucide="heart" class="w-4 h-4" style="color: var(--accent-primary);"></i>
-                  <span>${isLiked ? 'Liked' : 'Like'}</span>
-                </button>
-                <button
-                  id="spark-btn"
-                  type="button"
-                  class="min-h-[48px] px-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 btn-cta"
-                >
-                  <i data-lucide="flame" class="w-4 h-4"></i>
-                  <span>Spark</span>
-                </button>
+                <button id="pass-btn" type="button" class="min-h-[48px] px-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 btn-secondary"><i data-lucide="x" class="w-4 h-4"></i><span>Pass</span></button>
+                <button id="like-btn" type="button" class="min-h-[48px] px-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 ${isLiked ? 'tag-matched' : 'btn-secondary'}"><i data-lucide="heart" class="w-4 h-4" style="color: var(--accent-primary);"></i><span>${isLiked ? 'Liked' : 'Like'}</span></button>
+                <button id="spark-btn" type="button" class="min-h-[48px] px-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 btn-cta"><i data-lucide="flame" class="w-4 h-4"></i><span>Spark</span></button>
               </div>
             </div>
           </div>
@@ -2360,34 +2552,18 @@
       `;
 
       document.getElementById('open-compat-btn').addEventListener('click', () => openCompatibilityModal(p));
-      document.getElementById('gal-prev-btn').addEventListener('click', () => {
-        currentGalleryIdx = (currentGalleryIdx - 1 + gallery.length) % gallery.length;
-        renderCurrentCard();
-      });
-      document.getElementById('gal-next-btn').addEventListener('click', () => {
-        currentGalleryIdx = (currentGalleryIdx + 1) % gallery.length;
-        renderCurrentCard();
-      });
-      cardContainer.querySelectorAll('.gal-dot').forEach(dot => {
-        dot.addEventListener('click', () => {
-          currentGalleryIdx = parseInt(dot.getAttribute('data-gal-idx'), 10) || 0;
-          renderCurrentCard();
-        });
-      });
-
-      document.getElementById('reveal-ritual-btn').addEventListener('click', toggleRitual);
+      document.getElementById('card-safety-btn').addEventListener('click', () => openSafetyModal(p));
+      document.getElementById('gal-prev-btn').addEventListener('click', () => { currentGalleryIdx = (currentGalleryIdx - 1 + gallery.length) % gallery.length; renderCurrentCard(); });
+      document.getElementById('gal-next-btn').addEventListener('click', () => { currentGalleryIdx = (currentGalleryIdx + 1) % gallery.length; renderCurrentCard(); });
+      cardContainer.querySelectorAll('.gal-dot').forEach(dot => dot.addEventListener('click', () => { currentGalleryIdx = parseInt(dot.getAttribute('data-gal-idx'), 10) || 0; renderCurrentCard(); }));
+      document.getElementById('reveal-ritual-btn').addEventListener('click', () => { isRitualRevealed = !isRitualRevealed; renderCurrentCard(); });
       document.getElementById('pass-btn').addEventListener('click', handlePass);
       document.getElementById('like-btn').addEventListener('click', handleLike);
-      document.getElementById('spark-btn').addEventListener('click', handleSpark);
+      document.getElementById('spark-btn').addEventListener('click', () => sendSparkToProfile(p, (document.getElementById('spark-note-input') || {}).value || ''));
       if (window.lucide) lucide.createIcons();
     }
 
-    // 12. DISCOVERY INTERACTIONS (PASS, LIKE, SPARK)
-    function toggleRitual() {
-      isRitualRevealed = !isRitualRevealed;
-      renderCurrentCard();
-    }
-
+    // 13. INTERACTIONS: PASS, LIKE, MUTUAL SPARK DETECTION
     function handlePass() {
       const list = getFilteredProfiles();
       const profile = list[currentIndex];
@@ -2404,66 +2580,75 @@
       const list = getFilteredProfiles();
       const profile = list[currentIndex];
       if (!profile) return;
-
-      if (!likedIds.includes(profile.id)) {
-        likedIds.push(profile.id);
-        saveState('auraloom_liked_ids', likedIds);
-        showToast(`Liked ${profile.name}`);
-      } else {
-        likedIds = likedIds.filter(id => id !== profile.id);
-        saveState('auraloom_liked_ids', likedIds);
-        showToast(`Removed like for ${profile.name}`);
-      }
+      if (!likedIds.includes(profile.id)) { likedIds.push(profile.id); showToast(`Liked ${profile.name}`); }
+      else { likedIds = likedIds.filter(id => id !== profile.id); showToast(`Removed like for ${profile.name}`); }
+      saveState('auraloom_liked_ids', likedIds);
       renderDailyResonance();
       renderCurrentCard();
     }
 
-    async function handleSpark() {
-      const list = getFilteredProfiles();
-      const profile = list[currentIndex];
+    async function sendSparkToProfile(profile, rawNote = '') {
       if (!profile) return;
-
-      const noteInput = document.getElementById('spark-note-input');
-      const note = noteInput ? noteInput.value.trim() : '';
-
-      if (sparks.some(item => item.id === profile.id)) {
-        showToast(`You already sparked with ${profile.name}`);
+      const note = String(rawNote || '').trim();
+      if (mutualMatches.some(m => m.id === profile.id) || sentSparks.some(s => s.id === profile.id)) {
+        showToast(`Already connected with ${profile.name}`);
         return;
       }
 
-      sparks.push(profile);
-      if (!profile.isLive) saveState('auraloom_sparks', sparks);
-      if (!conversations[profile.id]) conversations[profile.id] = [];
+      const wasIncoming = incomingSparks.some(i => i.id === profile.id);
 
       if (isLiveMode() && profile.isLive) {
         try {
           await sbClient.from('sparks').upsert({ from_user: currentUser.id, to_user: profile.id }, { onConflict: 'from_user,to_user' });
           if (note) {
             await sbClient.from('messages').insert({ sender_id: currentUser.id, receiver_id: profile.id, body: note });
-            conversations[profile.id].push({ sender: 'me', text: note, time: nowTimeLabel() });
           }
-          showToast(note ? `Spark & note sent to ${profile.name}` : `Spark sent to ${profile.name}`);
+          // Check if reverse spark exists in Supabase for true Mutual Match
+          const { data: rev } = await sbClient.from('sparks').select('id').eq('from_user', profile.id).eq('to_user', currentUser.id).maybeSingle();
+          if (rev || wasIncoming) {
+            incomingSparks = incomingSparks.filter(i => i.id !== profile.id);
+            mutualMatches.unshift(profile);
+            const [userA, userB] = [currentUser.id, profile.id].sort();
+            try { await sbClient.from('matches').upsert({ user_a: userA, user_b: userB }, { onConflict: 'user_a,user_b' }); } catch (e) {}
+            openMatchCelebration(profile);
+          } else {
+            sentSparks.unshift(profile);
+            showToast(note ? `Spark & note sent to ${profile.name}` : `Spark sent to ${profile.name}`);
+          }
         } catch (err) {
           showToast('Could not save Spark to cloud');
+          return;
         }
       } else {
+        if (!conversations[profile.id]) conversations[profile.id] = [];
         if (note) {
-          conversations[profile.id].push({ sender: 'me', text: note, time: nowTimeLabel() });
-          conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', time: nowTimeLabel() });
-          saveState('auraloom_conversations', conversations);
-          showToast(`Spark & note sent to ${profile.name}`);
-        } else {
+          conversations[profile.id].push({ sender: 'me', text: note, read: true, time: nowTimeLabel() });
+        }
+        if (wasIncoming) {
+          incomingSparks = incomingSparks.filter(i => i.id !== profile.id);
+          mutualMatches.unshift(profile);
+          saveState('auraloom_incoming_sparks', incomingSparks);
+          saveState('auraloom_mutual_matches', mutualMatches);
           if (conversations[profile.id].length === 0) {
-            conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', time: nowTimeLabel() });
-            saveState('auraloom_conversations', conversations);
+            conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', read: false, time: nowTimeLabel() });
           }
-          showToast(`Spark sent to ${profile.name}`);
+          saveState('auraloom_conversations', conversations);
+          openMatchCelebration(profile);
+        } else {
+          sentSparks.unshift(profile);
+          saveState('auraloom_sparks', sentSparks);
+          if (conversations[profile.id].length === 0) {
+            conversations[profile.id].push({ sender: 'them', text: profile.autoReply || 'So glad we sparked!', read: false, time: nowTimeLabel() });
+          }
+          saveState('auraloom_conversations', conversations);
+          showToast(note ? `Spark & note sent to ${profile.name}` : `Spark sent to ${profile.name}`);
         }
       }
 
       isRitualRevealed = false;
       currentGalleryIdx = 0;
       renderDiscoverAll();
+      renderSparksList();
       renderNavigation();
     }
 
@@ -2474,12 +2659,11 @@
       saveState('auraloom_filters', filters);
       currentIndex = 0;
       currentGalleryIdx = 0;
-      isRitualRevealed = false;
       renderDiscoverAll();
       showToast('Filters and passes reset');
     }
 
-    // 13. MY VIBE VIEW
+    // 14. MY VIBE FORM
     function populateVibeForm() {
       vibeNameInput.value = myProfile.name || '';
       vibeAgeInput.value = myProfile.age || 24;
@@ -2494,6 +2678,8 @@
       vibeRitualInput.value = myProfile.sundayRitual || '';
       draftValues = [...(myProfile.values || [])];
       draftInterests = [...(myProfile.interests || [])];
+      renderMyPhotosGrid();
+      renderProfileCompletion();
       renderValuePicker();
       renderInterestPicker();
     }
@@ -2502,54 +2688,37 @@
       valuesSelectedCount.textContent = `${draftValues.length} / 3`;
       vibeValuesGrid.innerHTML = ALL_VALUES.map(val => {
         const selected = draftValues.includes(val);
-        return `
-          <button type="button" data-val="${val}" class="vibe-val-chip h-9 px-3 rounded-lg text-xs font-semibold transition-all ${selected ? 'tag-matched' : 'tag-neutral'}">
-            ${selected ? '✓ ' : ''}${val}
-          </button>
-        `;
+        return `<button type="button" data-val="${val}" class="vibe-val-chip h-9 px-3 rounded-lg text-xs font-semibold transition-all ${selected ? 'tag-matched' : 'tag-neutral'}">${selected ? '✓ ' : ''}${val}</button>`;
       }).join('');
-
-      vibeValuesGrid.querySelectorAll('.vibe-val-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const val = btn.getAttribute('data-val');
-          if (draftValues.includes(val)) draftValues = draftValues.filter(v => v !== val);
-          else if (draftValues.length < 3) draftValues.push(val);
-          else { showToast('Select up to 3 core values'); return; }
-          renderValuePicker();
-        });
-      });
+      vibeValuesGrid.querySelectorAll('.vibe-val-chip').forEach(btn => btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-val');
+        if (draftValues.includes(val)) draftValues = draftValues.filter(v => v !== val);
+        else if (draftValues.length < 3) draftValues.push(val);
+        else { showToast('Select up to 3 core values'); return; }
+        renderValuePicker();
+      }));
     }
 
     function renderInterestPicker() {
       interestsSelectedCount.textContent = `${draftInterests.length} / 4`;
       vibeInterestsGrid.innerHTML = ALL_INTERESTS.map(val => {
         const selected = draftInterests.includes(val);
-        return `
-          <button type="button" data-int="${val}" class="vibe-int-chip h-9 px-3 rounded-lg text-xs font-semibold transition-all ${selected ? 'tag-matched' : 'tag-neutral'}">
-            ${selected ? '✓ ' : ''}${val}
-          </button>
-        `;
+        return `<button type="button" data-int="${val}" class="vibe-int-chip h-9 px-3 rounded-lg text-xs font-semibold transition-all ${selected ? 'tag-matched' : 'tag-neutral'}">${selected ? '✓ ' : ''}${val}</button>`;
       }).join('');
-
-      vibeInterestsGrid.querySelectorAll('.vibe-int-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const val = btn.getAttribute('data-int');
-          if (draftInterests.includes(val)) draftInterests = draftInterests.filter(v => v !== val);
-          else if (draftInterests.length < 4) draftInterests.push(val);
-          else { showToast('Select up to 4 interests'); return; }
-          renderInterestPicker();
-        });
-      });
+      vibeInterestsGrid.querySelectorAll('.vibe-int-chip').forEach(btn => btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-int');
+        if (draftInterests.includes(val)) draftInterests = draftInterests.filter(v => v !== val);
+        else if (draftInterests.length < 4) draftInterests.push(val);
+        else { showToast('Select up to 4 interests'); return; }
+        renderInterestPicker();
+      }));
     }
 
     vibeForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (draftValues.length === 0) {
-        showToast('Pick at least 1 core value');
-        return;
-      }
-
+      if (draftValues.length === 0) { showToast('Pick at least 1 core value'); return; }
       myProfile = {
+        ...myProfile,
         name: vibeNameInput.value.trim(),
         age: parseInt(vibeAgeInput.value, 10) || 24,
         city: vibeCityInput.value.trim(),
@@ -2565,32 +2734,24 @@
         interests: [...draftInterests]
       };
       saveState('auraloom_my_profile', myProfile);
+      renderProfileCompletion();
 
       if (isLiveMode()) {
         const basePayload = {
-          id: currentUser.id,
-          name: myProfile.name || 'Auraloom Member',
-          age: myProfile.age,
-          city: myProfile.city || 'Global Citizen',
-          region: myProfile.region,
-          languages: myProfile.languages,
-          vibe_tag: myProfile.vibeTag,
-          prompt_question: 'What quiet moment always makes you feel alive?',
+          id: currentUser.id, name: myProfile.name || 'Auraloom Member', age: myProfile.age,
+          city: myProfile.city || 'Global Citizen', region: myProfile.region, languages: myProfile.languages,
+          vibe_tag: myProfile.vibeTag, prompt_question: 'What quiet moment always makes you feel alive?',
           prompt_answer: myProfile.promptAnswer || 'Excited to meet thoughtful people worldwide.',
-          sunday_ritual: myProfile.sundayRitual || 'Slow mornings and good music.',
-          values: myProfile.values
+          sunday_ritual: myProfile.sundayRitual || 'Slow mornings and good music.', values: myProfile.values
         };
-        const extendedPayload = {
-          ...basePayload,
-          interests: myProfile.interests,
-          communication_style: myProfile.communicationStyle,
-          lifestyle: myProfile.lifestyle,
-          connection_type: myProfile.connectionType
+        const extPayload = {
+          ...basePayload, interests: myProfile.interests, communication_style: myProfile.communicationStyle,
+          lifestyle: myProfile.lifestyle, connection_type: myProfile.connectionType,
+          photo_urls: myProfile.photoUrls, is_visible: myProfile.isVisible, show_read_receipts: myProfile.showReadReceipts
         };
         try {
-          let { error } = await sbClient.from('profiles').upsert(extendedPayload);
+          let { error } = await sbClient.from('profiles').upsert(extPayload);
           if (error) {
-            // Gracefully fall back to base schema if extended columns aren't migrated yet
             const retry = await sbClient.from('profiles').upsert(basePayload);
             if (retry.error) throw retry.error;
           }
@@ -2599,33 +2760,53 @@
           showToast('Saved locally (cloud sync failed)');
         }
       } else {
-        showToast('My Vibe saved — Compatibility updated');
+        showToast('My Vibe saved — Resonance updated');
       }
-
       myVibeLabel.textContent = myProfile.name ? myProfile.name : 'My Vibe';
       switchTab('discover');
     });
 
-    // 14. SPARKS VIEW
-    function renderSparksList() {
-      sparksPageCount.textContent = `${sparks.length} saved`;
-      sparksCount.textContent = sparks.length;
+    // 15. SPARKS VIEW (MUTUAL | INCOMING | SENT)
+    document.querySelectorAll('.spark-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeSparkSubtab = btn.getAttribute('data-spark-tab');
+        renderSparksList();
+      });
+    });
 
-      if (sparks.length === 0) {
+    function renderSparksList() {
+      const total = mutualMatches.length + incomingSparks.length + sentSparks.length;
+      sparksPageCount.textContent = `${total} total`;
+
+      document.querySelectorAll('.spark-tab-btn').forEach(btn => {
+        const key = btn.getAttribute('data-spark-tab');
+        const active = key === activeSparkSubtab;
+        const count = key === 'mutual' ? mutualMatches.length : key === 'incoming' ? incomingSparks.length : sentSparks.length;
+        const label = key === 'mutual' ? 'Mutual' : key === 'incoming' ? 'Incoming' : 'Sent';
+        btn.textContent = `${label} (${count})`;
+        btn.style.cssText = active
+          ? 'background-color: var(--bg-surface); color: var(--accent-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.06);'
+          : 'background-color: transparent; color: var(--text-secondary);';
+      });
+
+      const list = activeSparkSubtab === 'mutual' ? mutualMatches : activeSparkSubtab === 'incoming' ? incomingSparks : sentSparks;
+
+      if (list.length === 0) {
+        const emptyMsg = activeSparkSubtab === 'mutual'
+          ? 'When two people send each other a Spark, your mutual connection appears here.'
+          : activeSparkSubtab === 'incoming'
+            ? 'People who send you a Spark will show up here so you can Spark back.'
+            : 'Sparks you send in Discover appear here while awaiting a mutual Spark.';
         sparksList.innerHTML = `
           <div class="surface-card rounded-2xl p-8 text-center space-y-3">
             <div class="w-11 h-11 mx-auto rounded-xl subtle-box flex items-center justify-center">
               <i data-lucide="heart" class="w-5 h-5" style="color: var(--accent-primary);"></i>
             </div>
             <div>
-              <p class="text-sm font-bold" style="color: var(--text-primary);">No Sparks yet</p>
-              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">
-                Send a Spark in Discover to save a connection and open live chat.
-              </p>
+              <p class="text-sm font-bold" style="color: var(--text-primary);">No ${activeSparkSubtab} Sparks yet</p>
+              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">${emptyMsg}</p>
             </div>
-            <button id="empty-go-discover" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-cta">
-              Explore Profiles
-            </button>
+            <button id="empty-go-discover" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-cta">Explore Profiles</button>
           </div>
         `;
         document.getElementById('empty-go-discover').addEventListener('click', () => switchTab('discover'));
@@ -2633,19 +2814,21 @@
         return;
       }
 
-      sparksList.innerHTML = sparks.map(p => {
-        const msgs = conversations[p.id] || [];
-        const preview = msgs.length > 0 ? msgs[msgs.length - 1].text : p.promptAnswer;
+      sparksList.innerHTML = list.map(p => {
         const compat = computeCompatibility(myProfile, p);
+        const actionsHtml = activeSparkSubtab === 'incoming'
+          ? `<button type="button" data-spark-back="${escapeHtml(p.id)}" class="spark-back-btn flex-1 h-10 rounded-xl text-xs font-semibold btn-cta">Spark Back</button>
+             <button type="button" data-decline-id="${escapeHtml(p.id)}" class="decline-spark-btn h-10 px-3.5 rounded-xl text-xs font-semibold btn-secondary">Decline</button>`
+          : `<button type="button" data-chat-id="${escapeHtml(p.id)}" class="open-chat-btn flex-1 h-10 rounded-xl text-xs font-semibold btn-cta">${activeSparkSubtab === 'mutual' ? 'Start Chat' : 'Message'}</button>
+             <button type="button" data-remove-id="${escapeHtml(p.id)}" class="remove-spark-btn h-10 px-3.5 rounded-xl text-xs font-semibold btn-secondary">Remove</button>`;
+
         return `
           <div class="surface-card rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0" style="background: ${p.avatarBg};">
-                  ${escapeHtml(p.initials)}
-                </div>
+                ${avatarHtml(p, 'w-11 h-11 text-sm')}
                 <div class="min-w-0">
-                  <p class="text-sm font-bold truncate" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
+                  <p class="text-sm font-bold truncate flex items-center gap-1" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)} ${verifiedBadgeHtml(p)}</p>
                   <p class="text-xs truncate" style="color: var(--text-secondary);">${escapeHtml(p.city)} · ${escapeHtml(p.vibeTag)}</p>
                 </div>
               </div>
@@ -2653,62 +2836,66 @@
                 ${compat.overall !== null ? `${compat.overall}%` : 'Info'}
               </button>
             </div>
-
-            <p class="text-xs truncate px-3 py-2 rounded-lg subtle-box" style="color: var(--text-secondary);">
-              ${escapeHtml(preview)}
-            </p>
-
-            <div class="flex items-center gap-2">
-              <button type="button" data-chat-id="${escapeHtml(p.id)}" class="open-chat-btn flex-1 h-10 rounded-xl text-xs font-semibold btn-cta">Open Chat</button>
-              <button type="button" data-remove-id="${escapeHtml(p.id)}" class="remove-spark-btn h-10 px-3.5 rounded-xl text-xs font-semibold btn-secondary">Remove</button>
-            </div>
+            <p class="text-xs truncate px-3 py-2 rounded-lg subtle-box" style="color: var(--text-secondary);">${escapeHtml(p.promptAnswer)}</p>
+            <div class="flex items-center gap-2">${actionsHtml}</div>
           </div>
         `;
       }).join('');
 
       sparksList.querySelectorAll('.spark-compat-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          const p = sparks.find(item => item.id === btn.getAttribute('data-spark-compat'));
+          const p = list.find(item => item.id === btn.getAttribute('data-spark-compat'));
           if (p) openCompatibilityModal(p);
         });
       });
 
-      sparksList.querySelectorAll('.open-chat-btn').forEach(btn => {
+      sparksList.querySelectorAll('.spark-back-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          activeChatId = btn.getAttribute('data-chat-id');
-          switchTab('chats');
+          const p = incomingSparks.find(item => item.id === btn.getAttribute('data-spark-back'));
+          if (p) sendSparkToProfile(p, '');
         });
+      });
+
+      sparksList.querySelectorAll('.decline-spark-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-decline-id');
+          incomingSparks = incomingSparks.filter(i => i.id !== id);
+          saveState('auraloom_incoming_sparks', incomingSparks);
+          renderSparksList();
+          renderNavigation();
+        });
+      });
+
+      sparksList.querySelectorAll('.open-chat-btn').forEach(btn => {
+        btn.addEventListener('click', () => { activeChatId = btn.getAttribute('data-chat-id'); switchTab('chats'); });
       });
 
       sparksList.querySelectorAll('.remove-spark-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const id = btn.getAttribute('data-remove-id');
-          const target = sparks.find(item => item.id === id);
+          const target = list.find(item => item.id === id);
           if (!target) return;
-          openConfirm(
-            `Remove ${target.name}?`,
-            'This removes the Spark from your list. You can discover them again later.',
-            'Remove Spark',
-            async () => {
-              sparks = sparks.filter(item => item.id !== id);
-              if (activeChatId === id) activeChatId = null;
-              if (isLiveMode() && target.isLive) {
-                try { await sbClient.from('sparks').delete().eq('from_user', currentUser.id).eq('to_user', id); } catch (e) {}
-              } else {
-                saveState('auraloom_sparks', sparks);
-              }
-              renderSparksList();
-              renderNavigation();
-              showToast(`Removed ${target.name}`);
+          openConfirm(`Remove ${target.name}?`, 'This removes the Spark from your list.', 'Remove', async () => {
+            sentSparks = sentSparks.filter(item => item.id !== id);
+            mutualMatches = mutualMatches.filter(item => item.id !== id);
+            if (activeChatId === id) activeChatId = null;
+            if (isLiveMode() && target.isLive) {
+              try { await sbClient.from('sparks').delete().eq('from_user', currentUser.id).eq('to_user', id); } catch (e) {}
+            } else {
+              saveState('auraloom_sparks', sentSparks);
+              saveState('auraloom_mutual_matches', mutualMatches);
             }
-          );
+            renderSparksList();
+            renderNavigation();
+            showToast(`Removed ${target.name}`);
+          });
         });
       });
 
       if (window.lucide) lucide.createIcons();
     }
 
-    // 15. CHATS VIEW
+    // 16. ADVANCED CHATS (Unread Badges, Read Receipts, Typing, Image & Voice Notes)
     function showChatsList() {
       activeChatId = null;
       chatView.classList.add('hidden');
@@ -2718,7 +2905,8 @@
     }
 
     function renderChatsList() {
-      if (sparks.length === 0) {
+      const partners = getAllChatPartners();
+      if (partners.length === 0) {
         chatsThreadList.innerHTML = `
           <div class="surface-card rounded-2xl p-8 text-center space-y-3">
             <div class="w-11 h-11 mx-auto rounded-xl subtle-box flex items-center justify-center">
@@ -2726,9 +2914,7 @@
             </div>
             <div>
               <p class="text-sm font-bold" style="color: var(--text-primary);">No conversations yet</p>
-              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">
-                Send a Spark to someone in Discover to start a private conversation.
-              </p>
+              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">Send a Spark or Spark back in Sparks to start chatting.</p>
             </div>
             <button id="chats-go-discover" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-cta">Go to Discover</button>
           </div>
@@ -2738,47 +2924,52 @@
         return;
       }
 
-      chatsThreadList.innerHTML = sparks.map(p => {
+      chatsThreadList.innerHTML = partners.map(p => {
         const msgs = conversations[p.id] || [];
         const last = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+        const unread = getUnreadCountFor(p.id);
+        const lastText = !last ? 'Tap to say hello...' : last.attachmentType === 'image' ? 'Sent a photo' : last.attachmentType === 'audio' ? 'Sent a voice note' : last.text;
         return `
           <button type="button" data-thread-id="${escapeHtml(p.id)}" class="thread-row w-full text-left surface-card rounded-2xl p-4 flex items-center gap-3.5 hover:opacity-95 transition-opacity">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0" style="background: ${p.avatarBg};">
-              ${escapeHtml(p.initials)}
-            </div>
+            ${avatarHtml(p, 'w-12 h-12 text-sm')}
             <div class="min-w-0 flex-1">
               <div class="flex items-center justify-between gap-2">
-                <p class="text-sm font-bold truncate" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</p>
+                <p class="text-sm font-bold truncate flex items-center gap-1" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)} ${verifiedBadgeHtml(p)}</p>
                 <span class="text-[11px] shrink-0" style="color: var(--text-secondary);">${last ? escapeHtml(last.time) : 'New'}</span>
               </div>
-              <p class="text-xs truncate mt-0.5" style="color: var(--text-secondary);">${last ? escapeHtml(last.text) : 'Tap to say hello...'}</p>
+              <div class="flex items-center justify-between gap-2 mt-0.5">
+                <p class="text-xs truncate" style="color: var(--text-secondary);">${escapeHtml(lastText)}</p>
+                ${unread > 0 ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white shrink-0" style="background-color: var(--accent-primary);">${unread}</span>` : ''}
+              </div>
             </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color: var(--text-secondary);"></i>
           </button>
         `;
       }).join('');
 
-      chatsThreadList.querySelectorAll('.thread-row').forEach(btn => {
-        btn.addEventListener('click', () => openChatRoom(btn.getAttribute('data-thread-id')));
-      });
+      chatsThreadList.querySelectorAll('.thread-row').forEach(btn => btn.addEventListener('click', () => openChatRoom(btn.getAttribute('data-thread-id'))));
       if (window.lucide) lucide.createIcons();
     }
 
     function openChatRoom(profileId) {
-      const partner = sparks.find(p => p.id === profileId) || profiles.find(p => p.id === profileId);
+      const partner = getAllChatPartners().find(p => p.id === profileId) || profiles.find(p => p.id === profileId);
       if (!partner) { showChatsList(); return; }
 
       activeChatId = profileId;
       chatsListPanel.classList.add('hidden');
       chatView.classList.remove('hidden');
       chatView.classList.add('flex');
+      chatTypingRow.classList.add('hidden');
 
-      chatPartnerAvatar.style.background = partner.avatarBg;
-      chatPartnerAvatar.textContent = partner.initials;
+      const photo = Array.isArray(partner.photoUrls) && partner.photoUrls[0];
+      chatPartnerAvatar.innerHTML = photo
+        ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(partner.name)}" class="w-full h-full object-cover" />`
+        : `<div class="w-full h-full flex items-center justify-center" style="background: ${partner.avatarBg};">${escapeHtml(partner.initials)}</div>`;
+
       chatPartnerName.textContent = `${partner.name}, ${partner.age}`;
       chatPartnerMeta.textContent = `${partner.city} · ${partner.timezone}`;
       chatPartnerResonance.textContent = `${computeResonance(partner)}%`;
 
+      markConversationRead(profileId);
       renderChatMessages();
       if (window.lucide) lucide.createIcons();
     }
@@ -2786,23 +2977,137 @@
     function renderChatMessages() {
       const msgs = conversations[activeChatId] || [];
       if (msgs.length === 0) {
-        chatMessages.innerHTML = `<div class="text-center py-10 text-xs" style="color: var(--text-secondary);">Say hello or tap the Deep Question icebreaker below.</div>`;
+        chatMessages.innerHTML = `<div class="text-center py-10 text-xs" style="color: var(--text-secondary);">Say hello, share a photo, or record a voice note below.</div>`;
         return;
       }
 
       chatMessages.innerHTML = msgs.map(m => {
         const isMe = m.sender === 'me';
+        const mediaHtml = m.attachmentType === 'image' && m.attachmentUrl
+          ? `<img src="${escapeHtml(m.attachmentUrl)}" alt="Shared photo" class="rounded-xl max-h-56 w-auto object-cover mb-1.5" />`
+          : m.attachmentType === 'audio' && m.attachmentUrl
+            ? `<audio controls src="${escapeHtml(m.attachmentUrl)}" class="max-w-full h-9 mb-1"></audio>`
+            : '';
+
+        const receiptHtml = isMe && myProfile.showReadReceipts !== false
+          ? `<span class="inline-flex items-center gap-0.5" style="color: ${m.read ? 'var(--success)' : 'var(--text-secondary)'};">${m.read ? '✓✓ Read' : '✓ Sent'}</span>`
+          : '';
+
         return `
           <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
             <div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe ? 'btn-cta rounded-br-md' : 'subtle-box rounded-bl-md'}" style="${isMe ? '' : 'color: var(--text-primary);'}">
-              ${escapeHtml(m.text)}
+              ${mediaHtml}
+              ${m.text ? `<p>${escapeHtml(m.text)}</p>` : ''}
             </div>
-            <span class="text-[10px] mt-1 px-1" style="color: var(--text-secondary);">${escapeHtml(m.time)}</span>
+            <div class="flex items-center gap-1.5 text-[10px] mt-1 px-1" style="color: var(--text-secondary);">
+              <span>${escapeHtml(m.time)}</span>
+              ${receiptHtml}
+            </div>
           </div>
         `;
       }).join('');
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
+
+    async function sendChatPayload({ text = '', attachmentUrl = null, attachmentType = null }) {
+      if (!activeChatId) return;
+      const partner = getAllChatPartners().find(p => p.id === activeChatId) || profiles.find(p => p.id === activeChatId);
+      if (!conversations[activeChatId]) conversations[activeChatId] = [];
+
+      const localMsg = {
+        id: `local_${Date.now()}`, sender: 'me', text, attachmentUrl, attachmentType,
+        read: false, time: nowTimeLabel()
+      };
+      conversations[activeChatId].push(localMsg);
+      renderChatMessages();
+
+      if (isLiveMode() && partner && partner.isLive) {
+        const baseMsg = { sender_id: currentUser.id, receiver_id: partner.id, body: text || (attachmentType === 'image' ? 'Photo' : 'Voice note') };
+        const extMsg = { ...baseMsg, attachment_url: attachmentUrl, attachment_type: attachmentType };
+        try {
+          let res = await sbClient.from('messages').insert(extMsg).select('id').single();
+          if (res.error) res = await sbClient.from('messages').insert(baseMsg).select('id').single();
+          if (res.data && res.data.id) localMsg.id = res.data.id;
+        } catch (err) {
+          showToast('Message failed to send');
+        }
+        return;
+      }
+
+      // Demo mode preview response (clearly not used in live Supabase production mode)
+      saveState('auraloom_conversations', conversations);
+      const currentPartnerId = activeChatId;
+      if (replyTimer) clearTimeout(replyTimer);
+      chatTypingRow.classList.remove('hidden');
+      replyTimer = setTimeout(() => {
+        chatTypingRow.classList.add('hidden');
+        localMsg.read = true;
+        if (!partner) return;
+        const replyText = attachmentType === 'image'
+          ? 'Love that photo! Thanks for sharing it.'
+          : attachmentType === 'audio'
+            ? 'Voice notes make this feel so much more real—thanks for sending that!'
+            : `That really resonates with me! Here in ${partner.city.split(',')[0]}, I was thinking about something similar.`;
+        conversations[currentPartnerId].push({ sender: 'them', text: replyText, read: activeChatId === currentPartnerId, time: nowTimeLabel() });
+        saveState('auraloom_conversations', conversations);
+        if (activeChatId === currentPartnerId) renderChatMessages();
+      }, 900);
+    }
+
+    chatInput.addEventListener('input', () => {
+      if (isLiveMode() && typingChannel && activeChatId) {
+        typingChannel.send({ type: 'broadcast', event: 'typing', payload: { from: currentUser.id, to: activeChatId } });
+      }
+    });
+
+    chatImageInput.addEventListener('change', async (e) => {
+      const file = (e.target.files || [])[0];
+      e.target.value = '';
+      if (!file) return;
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) { showToast('Use JPG, PNG, or WebP images'); return; }
+      if (file.size > MAX_IMAGE_BYTES) { showToast('Image must be under 5 MB'); return; }
+      showToast('Sending photo...');
+      try {
+        const url = await uploadFileToStorage(file, 'chat');
+        await sendChatPayload({ text: '', attachmentUrl: url, attachmentType: 'image' });
+      } catch (err) {
+        showToast('Could not attach photo');
+      }
+    });
+
+    chatVoiceBtn.addEventListener('click', async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+        showToast('Voice recording is not supported in this browser');
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (ev) => { if (ev.data.size > 0) recordedChunks.push(ev.data); };
+        mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach(t => t.stop());
+          voiceRecordingBar.classList.add('hidden');
+          const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+          const audioFile = new File([blob], `voice_${Date.now()}.webm`, { type: blob.type });
+          const url = await uploadFileToStorage(audioFile, 'voice');
+          await sendChatPayload({ text: '', attachmentUrl: url, attachmentType: 'audio' });
+        };
+        mediaRecorder.start();
+        voiceRecordingBar.classList.remove('hidden');
+      } catch (err) {
+        showToast('Microphone permission denied');
+      }
+    });
+
+    stopVoiceBtn.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+    });
+
+    chatSafetyBtn.addEventListener('click', () => {
+      const partner = getAllChatPartners().find(p => p.id === activeChatId) || profiles.find(p => p.id === activeChatId);
+      if (partner) openSafetyModal(partner);
+    });
 
     chatBackBtn.addEventListener('click', showChatsList);
     chatIcebreakerBtn.addEventListener('click', () => {
@@ -2812,80 +3117,128 @@
 
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!activeChatId) return;
       const text = chatInput.value.trim();
       if (!text) return;
-
-      const partner = sparks.find(p => p.id === activeChatId) || profiles.find(p => p.id === activeChatId);
-      if (!conversations[activeChatId]) conversations[activeChatId] = [];
-      conversations[activeChatId].push({ sender: 'me', text, time: nowTimeLabel() });
       chatInput.value = '';
-      renderChatMessages();
+      await sendChatPayload({ text });
+    });
 
-      if (isLiveMode() && partner && partner.isLive) {
-        try {
-          const { error } = await sbClient.from('messages').insert({
-            sender_id: currentUser.id,
-            receiver_id: partner.id,
-            body: text
-          });
-          if (error) throw error;
-        } catch (err) {
-          showToast('Message failed to send');
-        }
+    // 17. PRIVACY, BLOCKED USERS & ACCOUNT DELETION
+    function renderPrivacyControls() {
+      toggleVisibilityBtn.textContent = myProfile.isVisible !== false ? 'Visible' : 'Hidden';
+      toggleVisibilityBtn.className = myProfile.isVisible !== false
+        ? 'h-9 px-3.5 rounded-xl text-xs font-semibold badge-success shrink-0'
+        : 'h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary shrink-0';
+
+      toggleReceiptsBtn.textContent = myProfile.showReadReceipts !== false ? 'On' : 'Off';
+      toggleReceiptsBtn.className = myProfile.showReadReceipts !== false
+        ? 'h-9 px-3.5 rounded-xl text-xs font-semibold badge-success shrink-0'
+        : 'h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary shrink-0';
+    }
+
+    toggleVisibilityBtn.addEventListener('click', async () => {
+      myProfile.isVisible = myProfile.isVisible === false;
+      saveState('auraloom_my_profile', myProfile);
+      if (isLiveMode()) {
+        try { await sbClient.from('profiles').update({ is_visible: myProfile.isVisible }).eq('id', currentUser.id); } catch (e) {}
+      }
+      renderPrivacyControls();
+      showToast(myProfile.isVisible ? 'Profile visible in Discover' : 'Profile hidden from Discover');
+    });
+
+    toggleReceiptsBtn.addEventListener('click', async () => {
+      myProfile.showReadReceipts = myProfile.showReadReceipts === false;
+      saveState('auraloom_my_profile', myProfile);
+      if (isLiveMode()) {
+        try { await sbClient.from('profiles').update({ show_read_receipts: myProfile.showReadReceipts }).eq('id', currentUser.id); } catch (e) {}
+      }
+      renderPrivacyControls();
+      showToast(myProfile.showReadReceipts ? 'Read receipts turned on' : 'Read receipts turned off');
+    });
+
+    function renderBlockedUsersList() {
+      blockedCountLabel.textContent = `${blockedUsers.length} blocked`;
+      if (blockedUsers.length === 0) {
+        blockedUsersList.innerHTML = `<p class="text-xs" style="color: var(--text-secondary);">No blocked users.</p>`;
         return;
       }
+      blockedUsersList.innerHTML = blockedUsers.map(b => `
+        <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl subtle-box">
+          <span class="text-xs font-semibold truncate" style="color: var(--text-primary);">${escapeHtml(b.name)}</span>
+          <button type="button" data-unblock-id="${escapeHtml(b.id)}" class="unblock-btn text-xs font-semibold" style="color: var(--accent-primary);">Unblock</button>
+        </div>
+      `).join('');
 
-      saveState('auraloom_conversations', conversations);
-      const currentPartnerId = activeChatId;
-      if (replyTimer) clearTimeout(replyTimer);
-      replyTimer = setTimeout(() => {
-        if (!partner) return;
-        const replies = [
-          `That really resonates with me! Here in ${partner.city.split(',')[0]}, I was thinking about something similar.`,
-          `I love how thoughtful your answer is. What inspired that?`,
-          `This is already way better than small talk. What is your favorite part of your week usually?`
-        ];
-        const nextReply = replies[conversations[currentPartnerId].length % replies.length];
-        conversations[currentPartnerId].push({ sender: 'them', text: nextReply, time: nowTimeLabel() });
-        saveState('auraloom_conversations', conversations);
-        if (activeChatId === currentPartnerId) renderChatMessages();
-      }, 650);
+      blockedUsersList.querySelectorAll('.unblock-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-unblock-id');
+          blockedUsers = blockedUsers.filter(b => b.id !== id);
+          saveState('auraloom_blocked_users', blockedUsers);
+          if (isLiveMode()) {
+            try { await sbClient.from('blocks').delete().eq('blocker_id', currentUser.id).eq('blocked_id', id); } catch (e) {}
+          }
+          renderBlockedUsersList();
+          showToast('User unblocked');
+        });
+      });
+    }
+
+    document.getElementById('open-delete-account-btn').addEventListener('click', () => {
+      deleteConfirmInput.value = '';
+      deleteAccountModal.classList.remove('hidden');
+      deleteAccountModal.classList.add('flex');
+    });
+    document.getElementById('delete-cancel-btn').addEventListener('click', () => {
+      deleteAccountModal.classList.add('hidden');
+      deleteAccountModal.classList.remove('flex');
+    });
+    document.getElementById('delete-confirm-btn').addEventListener('click', async () => {
+      if (deleteConfirmInput.value.trim().toUpperCase() !== 'DELETE') {
+        showToast('Type DELETE to confirm');
+        return;
+      }
+      if (isLiveMode()) {
+        try {
+          const { error } = await sbClient.rpc('delete_my_account');
+          if (error) {
+            await sbClient.from('profiles').delete().eq('id', currentUser.id);
+          }
+          await sbClient.auth.signOut();
+        } catch (e) {}
+      }
+      try { localStorage.clear(); } catch (e) {}
+      currentUser = null;
+      sentSparks = [];
+      mutualMatches = [];
+      incomingSparks = [];
+      conversations = {};
+      blockedUsers = [];
+      deleteAccountModal.classList.add('hidden');
+      deleteAccountModal.classList.remove('flex');
+      updateAuthUi();
+      renderDiscoverAll();
+      renderNavigation();
+      showToast('Account data deleted');
     });
 
-    // 16. PROFILE, SETTINGS & AUTH HANDLERS
-    toggleCloudConfigBtn.addEventListener('click', () => {
-      cloudConfigForm.classList.toggle('hidden');
-    });
-
-    cloudConfigForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      await initSupabase(sbUrlInput.value, sbKeyInput.value, false);
-    });
+    // 18. AUTH & CLOUD HANDLERS
+    toggleCloudConfigBtn.addEventListener('click', () => cloudConfigForm.classList.toggle('hidden'));
+    cloudConfigForm.addEventListener('submit', async (e) => { e.preventDefault(); await initSupabase(sbUrlInput.value, sbKeyInput.value, false); });
 
     sbDisconnectBtn.addEventListener('click', () => {
-      openConfirm(
-        'Switch to Demo Mode?',
-        'You will sign out of Supabase and browse local demo profiles until you reconnect.',
-        'Use Demo Mode',
-        async () => {
-          if (sbClient && currentUser) {
-            try { await sbClient.auth.signOut(); } catch (e) {}
-          }
-          sbClient = null;
-          currentUser = null;
-          sbConfig = { url: '', key: '' };
-          saveState('auraloom_sb_config', sbConfig);
-          profiles = [...DEMO_PROFILES];
-          sparks = loadSaved('auraloom_sparks', []);
-          conversations = loadSaved('auraloom_conversations', {});
-          updateAuthUi();
-          setCloudNotice('Switched to Demo Mode.', 'info');
-          currentIndex = 0;
-          renderDiscoverAll();
-          renderNavigation();
-        }
-      );
+      openConfirm('Switch to Demo Mode?', 'You will sign out of Supabase and browse local demo profiles until you reconnect.', 'Use Demo Mode', async () => {
+        if (sbClient && currentUser) { try { await sbClient.auth.signOut(); } catch (e) {} }
+        sbClient = null;
+        currentUser = null;
+        sbConfig = { url: '', key: '' };
+        saveState('auraloom_sb_config', sbConfig);
+        profiles = [...DEMO_PROFILES];
+        updateAuthUi();
+        setCloudNotice('Switched to Demo Mode.', 'info');
+        currentIndex = 0;
+        renderDiscoverAll();
+        renderNavigation();
+      });
     });
 
     document.getElementById('reset-passed-btn').addEventListener('click', () => {
@@ -2912,8 +3265,8 @@
             currentUser = data.session.user;
             updateAuthUi();
             await loadLiveCloudData();
-            subscribeToLiveMessages();
-            setCloudNotice('Account created and signed in! Open My Vibe to publish your card.', 'success');
+            subscribeToLiveRealtime();
+            setCloudNotice('Account created and signed in! Open My Vibe to add photos and publish your card.', 'success');
           } else {
             setCloudNotice('Account created! Check your email to confirm, then log in.', 'info');
           }
@@ -2923,7 +3276,7 @@
           currentUser = data.user;
           updateAuthUi();
           await loadLiveCloudData();
-          subscribeToLiveMessages();
+          subscribeToLiveRealtime();
           setCloudNotice('Welcome back! Synced with your live Supabase database.', 'success');
         }
       } catch (err) {
@@ -2957,7 +3310,7 @@
       });
     }
 
-    // 17. BOOTSTRAP
+    // 19. BOOTSTRAP
     applyTheme(theme);
     renderNavigation();
     renderDiscoverAll();
