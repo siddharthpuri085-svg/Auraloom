@@ -544,6 +544,9 @@
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
                 <span id="chat-partner-resonance" class="px-2 py-1 rounded-lg text-xs font-semibold badge-success"></span>
+                <button id="chat-unmatch-btn" type="button" title="Unmatch" class="w-8 h-8 rounded-lg btn-secondary flex items-center justify-center">
+                  <i data-lucide="user-x" class="w-4 h-4"></i>
+                </button>
                 <button id="chat-safety-btn" type="button" aria-label="Safety options" class="w-8 h-8 rounded-lg btn-secondary flex items-center justify-center">
                   <i data-lucide="shield-alert" class="w-4 h-4"></i>
                 </button>
@@ -567,6 +570,16 @@
                 </span>
                 <span class="font-semibold shrink-0" style="color: var(--accent-primary);">Use</span>
               </button>
+
+              <div id="chat-reply-bar" class="hidden px-3 py-2 rounded-xl subtle-box flex items-center justify-between gap-2 text-xs">
+                <div class="min-w-0">
+                  <span class="font-bold" style="color: var(--accent-primary);">Replying to:</span>
+                  <span id="chat-reply-preview" class="ml-1 truncate" style="color: var(--text-secondary);"></span>
+                </div>
+                <button id="cancel-reply-btn" type="button" aria-label="Cancel reply" class="w-6 h-6 rounded-md btn-secondary flex items-center justify-center shrink-0">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
 
               <div id="voice-recording-bar" class="hidden px-3 py-2 rounded-xl tag-matched flex items-center justify-between gap-2 text-xs font-semibold">
                 <span class="flex items-center gap-2">
@@ -1124,6 +1137,8 @@
     const DEFAULT_SUPABASE_URL = 'https://kpmkxsqvktsgyqcyluac.supabase.co';
     const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_YaoQtXxzY65y9ZSVlAEshg_bBAtdFi_';
     const STORAGE_BUCKET = 'auraloom-media';
+    const PRIVATE_CHAT_BUCKET = 'auraloom-chat-private';
+    const MESSAGE_PAGE_SIZE = 30;
     const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
     const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -1768,18 +1783,26 @@
     }
 
     async function uploadFileToStorage(file, folder) {
+      const isPrivateMedia = folder === 'chat' || folder === 'voice';
       if (isLiveMode()) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const filePath = `${currentUser.id}/${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        if (isPrivateMedia) {
+          try {
+            const { error: pErr } = await sbClient.storage.from(PRIVATE_CHAT_BUCKET).upload(filePath, file, { upsert: false, contentType: file.type });
+            if (!pErr) {
+              const { data: signed } = await sbClient.storage.from(PRIVATE_CHAT_BUCKET).createSignedUrl(filePath, 3600);
+              if (signed && signed.signedUrl) return signed.signedUrl;
+            }
+          } catch (e) {}
+        }
         try {
-          const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-          const filePath = `${currentUser.id}/${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
           const { error: upErr } = await sbClient.storage.from(STORAGE_BUCKET).upload(filePath, file, { upsert: false, contentType: file.type });
           if (!upErr) {
             const { data } = sbClient.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
             if (data && data.publicUrl) return data.publicUrl;
           }
-        } catch (e) {
-          // Fall back to local compressed data URL if bucket isn't created yet
-        }
+        } catch (e) {}
       }
       if (file.type.startsWith('image/')) return await fileToCompressedDataUrl(file);
       return URL.createObjectURL(file);
@@ -2885,24 +2908,36 @@
 
       if (isLiveMode() && profile.isLive) {
         try {
-          await sbClient.from('sparks').upsert({ from_user: currentUser.id, to_user: profile.id }, { onConflict: 'from_user,to_user' });
-          if (note) {
-            await sbClient.from('messages').insert({ sender_id: currentUser.id, receiver_id: profile.id, body: note });
+          let atomicMutual = null;
+          try {
+            const rpcRes = await sbClient.rpc('send_or_accept_spark', { p_to_user: profile.id, p_note: note || null });
+            if (!rpcRes.error && rpcRes.data) {
+              const row = Array.isArray(rpcRes.data) ? rpcRes.data[0] : rpcRes.data;
+              if (row && typeof row.is_mutual === 'boolean') atomicMutual = row.is_mutual;
+            }
+          } catch (e) {}
+
+          if (atomicMutual === null) {
+            await sbClient.from('sparks').upsert({ from_user: currentUser.id, to_user: profile.id }, { onConflict: 'from_user,to_user' });
+            if (note) await sbClient.from('messages').insert({ sender_id: currentUser.id, receiver_id: profile.id, body: note });
+            const { data: rev } = await sbClient.from('sparks').select('id').eq('from_user', profile.id).eq('to_user', currentUser.id).maybeSingle();
+            atomicMutual = Boolean(rev || wasIncoming);
+            if (atomicMutual) {
+              const [userA, userB] = [currentUser.id, profile.id].sort();
+              try { await sbClient.from('matches').upsert({ user_a: userA, user_b: userB }, { onConflict: 'user_a,user_b' }); } catch (e) {}
+            }
           }
-          // Check if reverse spark exists in Supabase for true Mutual Match
-          const { data: rev } = await sbClient.from('sparks').select('id').eq('from_user', profile.id).eq('to_user', currentUser.id).maybeSingle();
-          if (rev || wasIncoming) {
+
+          if (atomicMutual) {
             incomingSparks = incomingSparks.filter(i => i.id !== profile.id);
             mutualMatches.unshift(profile);
-            const [userA, userB] = [currentUser.id, profile.id].sort();
-            try { await sbClient.from('matches').upsert({ user_a: userA, user_b: userB }, { onConflict: 'user_a,user_b' }); } catch (e) {}
             openMatchCelebration(profile);
           } else {
             sentSparks.unshift(profile);
             showToast(note ? `Spark & note sent to ${profile.name}` : `Spark sent to ${profile.name}`);
           }
         } catch (err) {
-          showToast('Could not save Spark to cloud');
+          showToast(err.message || 'Could not save Spark to cloud');
           return;
         }
       } else {
@@ -3260,14 +3295,77 @@
       if (window.lucide) lucide.createIcons();
     }
 
+    let chatVisibleCount = MESSAGE_PAGE_SIZE;
+    let activeReplyTarget = null;
+    const chatReplyBar = document.getElementById('chat-reply-bar');
+    const chatReplyPreview = document.getElementById('chat-reply-preview');
+    const cancelReplyBtn = document.getElementById('cancel-reply-btn');
+    const chatUnmatchBtn = document.getElementById('chat-unmatch-btn');
+
+    function setReplyTarget(msg) {
+      activeReplyTarget = msg;
+      if (msg) {
+        chatReplyPreview.textContent = (msg.text || (msg.attachmentType === 'image' ? 'Photo' : 'Voice note')).slice(0, 70);
+        chatReplyBar.classList.remove('hidden');
+        chatInput.focus();
+      } else {
+        chatReplyBar.classList.add('hidden');
+      }
+    }
+
+    cancelReplyBtn.addEventListener('click', () => setReplyTarget(null));
+
+    chatUnmatchBtn.addEventListener('click', () => {
+      const partner = getAllChatPartners().find(p => p.id === activeChatId);
+      if (!partner) return;
+      openConfirm(
+        `Unmatch ${partner.name}?`,
+        'This ends your mutual connection and removes this conversation from your active list.',
+        'Unmatch',
+        async () => {
+          const pid = partner.id;
+          mutualMatches = mutualMatches.filter(m => m.id !== pid);
+          sentSparks = sentSparks.filter(s => s.id !== pid);
+          if (isLiveMode() && partner.isLive) {
+            try {
+              const [uA, uB] = [currentUser.id, pid].sort();
+              await sbClient.from('matches').delete().eq('user_a', uA).eq('user_b', uB);
+              await sbClient.from('sparks').delete().eq('from_user', currentUser.id).eq('to_user', pid);
+            } catch (e) {}
+          } else {
+            saveState('auraloom_mutual_matches', mutualMatches);
+            saveState('auraloom_sparks', sentSparks);
+          }
+          activeChatId = null;
+          showChatsList();
+          renderSparksList();
+          renderNavigation();
+          showToast(`Unmatched ${partner.name}`);
+        }
+      );
+    });
+
     function renderChatMessages() {
-      const msgs = conversations[activeChatId] || [];
-      if (msgs.length === 0) {
+      const allMsgs = conversations[activeChatId] || [];
+      if (allMsgs.length === 0) {
         chatMessages.innerHTML = `<div class="text-center py-10 text-xs" style="color: var(--text-secondary);">Say hello, share a photo, or record a voice note below.</div>`;
         return;
       }
 
-      chatMessages.innerHTML = msgs.map(m => {
+      const startIdx = Math.max(0, allMsgs.length - chatVisibleCount);
+      const visibleMsgs = allMsgs.slice(startIdx);
+      const hasMore = startIdx > 0;
+
+      const loadMoreHtml = hasMore ? `
+        <div class="text-center pb-2">
+          <button id="load-earlier-msgs-btn" type="button" class="h-8 px-3 rounded-lg text-[11px] font-semibold btn-secondary">
+            Load earlier messages (${startIdx} more)
+          </button>
+        </div>
+      ` : '';
+
+      chatMessages.innerHTML = loadMoreHtml + visibleMsgs.map((m, localIdx) => {
+        const msgIndex = startIdx + localIdx;
         const isMe = m.sender === 'me';
         const mediaHtml = m.attachmentType === 'image' && m.attachmentUrl
           ? `<img src="${escapeHtml(m.attachmentUrl)}" alt="Shared photo" class="rounded-xl max-h-56 w-auto object-cover mb-1.5" />`
@@ -3275,23 +3373,67 @@
             ? `<audio controls src="${escapeHtml(m.attachmentUrl)}" class="max-w-full h-9 mb-1"></audio>`
             : '';
 
+        const replyQuoteHtml = m.replyPreview ? `
+          <div class="mb-1.5 px-2.5 py-1 rounded-lg text-[11px] border-l-2" style="background: rgba(0,0,0,0.08); border-color: var(--accent-coral);">
+            ${escapeHtml(m.replyPreview)}
+          </div>
+        ` : '';
+
+        const reactionHtml = m.reaction ? `<span class="px-1.5 py-0.5 rounded-full text-xs subtle-box">${escapeHtml(m.reaction)}</span>` : '';
+
         const receiptHtml = isMe && myProfile.showReadReceipts !== false
           ? `<span class="inline-flex items-center gap-0.5" style="color: ${m.read ? 'var(--success)' : 'var(--text-secondary)'};">${m.read ? '✓✓ Read' : '✓ Sent'}</span>`
           : '';
 
         return `
           <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-            <div class="max-w-[82%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe ? 'btn-cta rounded-br-md' : 'subtle-box rounded-bl-md'}" style="${isMe ? '' : 'color: var(--text-primary);'}">
+            <div class="max-w-[84%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe ? 'btn-cta rounded-br-md' : 'subtle-box rounded-bl-md'}" style="${isMe ? '' : 'color: var(--text-primary);'}">
+              ${replyQuoteHtml}
               ${mediaHtml}
               ${m.text ? `<p>${escapeHtml(m.text)}</p>` : ''}
             </div>
-            <div class="flex items-center gap-1.5 text-[10px] mt-1 px-1" style="color: var(--text-secondary);">
+            <div class="flex items-center gap-2 text-[10px] mt-1 px-1" style="color: var(--text-secondary);">
               <span>${escapeHtml(m.time)}</span>
               ${receiptHtml}
+              ${reactionHtml}
+              <button type="button" data-react-idx="${msgIndex}" class="msg-react-btn hover:underline" title="React">♥</button>
+              <button type="button" data-reply-idx="${msgIndex}" class="msg-reply-btn hover:underline">Reply</button>
             </div>
           </div>
         `;
       }).join('');
+
+      const loadMoreBtn = document.getElementById('load-earlier-msgs-btn');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+          chatVisibleCount += MESSAGE_PAGE_SIZE;
+          renderChatMessages();
+        });
+      }
+
+      chatMessages.querySelectorAll('.msg-react-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const idx = parseInt(btn.getAttribute('data-react-idx'), 10);
+          const msg = allMsgs[idx];
+          if (!msg) return;
+          const cycle = ['', '❤️', '✨', '😊'];
+          msg.reaction = cycle[(cycle.indexOf(msg.reaction || '') + 1) % cycle.length];
+          if (isLiveMode() && msg.id && !String(msg.id).startsWith('local_')) {
+            try { await sbClient.from('messages').update({ reaction: msg.reaction || null }).eq('id', msg.id); } catch (e) {}
+          } else {
+            saveState('auraloom_conversations', conversations);
+          }
+          renderChatMessages();
+        });
+      });
+
+      chatMessages.querySelectorAll('.msg-reply-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-reply-idx'), 10);
+          if (allMsgs[idx]) setReplyTarget(allMsgs[idx]);
+        });
+      });
+
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
@@ -3300,16 +3442,19 @@
       const partner = getAllChatPartners().find(p => p.id === activeChatId) || profiles.find(p => p.id === activeChatId);
       if (!conversations[activeChatId]) conversations[activeChatId] = [];
 
+      const replyPreview = activeReplyTarget ? (activeReplyTarget.text || (activeReplyTarget.attachmentType === 'image' ? 'Photo' : 'Voice note')).slice(0, 70) : null;
+      const replyToId = activeReplyTarget && activeReplyTarget.id && !String(activeReplyTarget.id).startsWith('local_') ? activeReplyTarget.id : null;
+      setReplyTarget(null);
       const localMsg = {
         id: `local_${Date.now()}`, sender: 'me', text, attachmentUrl, attachmentType,
-        read: false, time: nowTimeLabel()
+        replyPreview, replyToId, reaction: '', read: false, time: nowTimeLabel()
       };
       conversations[activeChatId].push(localMsg);
       renderChatMessages();
 
       if (isLiveMode() && partner && partner.isLive) {
         const baseMsg = { sender_id: currentUser.id, receiver_id: partner.id, body: text || (attachmentType === 'image' ? 'Photo' : 'Voice note') };
-        const extMsg = { ...baseMsg, attachment_url: attachmentUrl, attachment_type: attachmentType };
+        const extMsg = { ...baseMsg, attachment_url: attachmentUrl, attachment_type: attachmentType, reply_to_id: replyToId, reply_preview: replyPreview };
         try {
           let res = await sbClient.from('messages').insert(extMsg).select('id').single();
           if (res.error) res = await sbClient.from('messages').insert(baseMsg).select('id').single();
