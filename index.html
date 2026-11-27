@@ -315,6 +315,20 @@
             <div id="daily-resonance-strip" class="flex items-stretch gap-2.5 overflow-x-auto no-scrollbar pb-1"></div>
           </div>
 
+          <!-- Phase 5: Daily Vibe Question Banner -->
+          <div class="surface-card rounded-[18px] p-4 flex items-center justify-between gap-3" style="border-color: var(--border-subtle);">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="w-2 h-2 rounded-full" style="background-color: var(--accent-coral);"></span>
+                <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--text-secondary);">Daily Vibe · Optional Reflection</span>
+              </div>
+              <p id="daily-vibe-preview-q" class="text-xs sm:text-sm font-semibold truncate" style="color: var(--text-primary);"></p>
+            </div>
+            <button id="open-daily-vibe-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary shrink-0">
+              Reflect
+            </button>
+          </div>
+
           <!-- Counter + Cloud Status -->
           <div id="progress-row" class="flex items-center justify-between gap-2 text-xs px-0.5">
             <span id="profile-counter" class="font-semibold" style="color: var(--text-secondary);">Profile 1 of 8</span>
@@ -936,6 +950,65 @@
       <div class="flex items-center justify-end gap-2">
         <button id="delete-cancel-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold btn-secondary">Cancel</button>
         <button id="delete-confirm-btn" type="button" class="h-10 px-4 rounded-xl text-xs font-semibold text-white" style="background-color: #DC2626;">Permanently Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5: DAILY VIBE QUESTIONS MODAL -->
+  <div id="daily-vibe-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surface-card w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl flex flex-col max-h-[90vh] fade-in">
+      <div class="flex items-center justify-between px-5 py-4 border-b shrink-0" style="border-color: var(--border-subtle);">
+        <div>
+          <h3 class="text-base font-bold" style="color: var(--text-primary);">Daily Vibe</h3>
+          <p id="dv-date-label" class="text-xs mt-0.5" style="color: var(--text-secondary);">One thoughtful prompt each day — share only when it feels right</p>
+        </div>
+        <button id="close-daily-vibe-btn" type="button" aria-label="Close Daily Vibe" class="w-9 h-9 rounded-xl btn-secondary flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Segmented Subtabs: Today | Community | Archive -->
+      <div class="px-5 pt-3 shrink-0">
+        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl subtle-box">
+          <button type="button" data-dv-tab="today" class="dv-tab-btn h-8 rounded-lg text-xs font-semibold transition-all">Today</button>
+          <button type="button" data-dv-tab="community" class="dv-tab-btn h-8 rounded-lg text-xs font-semibold transition-all">Community</button>
+          <button type="button" data-dv-tab="archive" class="dv-tab-btn h-8 rounded-lg text-xs font-semibold transition-all">My Archive</button>
+        </div>
+      </div>
+
+      <div class="p-5 overflow-y-auto flex-1 space-y-4">
+        <!-- Tab 1: Today's Question & Answer Form -->
+        <div id="dv-panel-today" class="space-y-4">
+          <div class="p-4 rounded-2xl subtle-box space-y-1.5">
+            <span class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-primary);">Today's Question</span>
+            <p id="dv-question-text" class="text-base font-bold leading-snug font-display" style="color: var(--text-primary);"></p>
+          </div>
+
+          <form id="dv-answer-form" class="space-y-3">
+            <div>
+              <label for="dv-answer-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Your Answer (optional · editable anytime)</label>
+              <textarea id="dv-answer-input" rows="4" maxlength="300" placeholder="Write something honest and unhurried..." class="w-full rounded-xl p-3.5 text-sm input-field resize-none"></textarea>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 p-3 rounded-xl subtle-box">
+              <div>
+                <p class="text-xs font-semibold" style="color: var(--text-primary);">Answer Visibility</p>
+                <p id="dv-vis-desc" class="text-[11px]" style="color: var(--text-secondary);">Private — saved only in your personal archive</p>
+              </div>
+              <button id="dv-visibility-btn" type="button" class="h-8 px-3 rounded-lg text-xs font-semibold shrink-0"></button>
+            </div>
+
+            <button id="dv-save-btn" type="submit" class="w-full h-11 rounded-xl text-sm font-semibold btn-cta">
+              Save Answer
+            </button>
+          </form>
+        </div>
+
+        <!-- Tab 2: Public Community Answers -->
+        <div id="dv-panel-community" class="hidden space-y-3"></div>
+
+        <!-- Tab 3: Past Answer Archive -->
+        <div id="dv-panel-archive" class="hidden space-y-3"></div>
       </div>
     </div>
   </div>
@@ -3607,6 +3680,283 @@
     if (onboardVibeBtn) onboardVibeBtn.addEventListener('click', () => { dismissOnboarding(); switchTab('vibe'); });
     if (onboardAccountBtn) onboardAccountBtn.addEventListener('click', () => { dismissOnboarding(); switchTab('profile'); });
 
+
+    // =========================================================================
+    // PHASE 5: DAILY VIBE QUESTIONS (Daily Cycle, Visibility, Community, Archive)
+    // =========================================================================
+    const DAILY_QUESTION_BANK = [
+      'What is a quiet habit that gently changed your life for the better?',
+      'Which place in the world makes you feel most like yourself?',
+      'What is a small act of kindness from a stranger you still remember?',
+      'What kind of conversation leaves you feeling more energized than before?',
+      'If you had an unscheduled Sunday with no notifications, how would you spend it?',
+      'What book, song, or film feels like an old friend to you?',
+      'What does emotional safety look like to you in a connection?'
+    ];
+
+    const DEMO_COMMUNITY_ANSWERS = [
+      { id: 'da1', userId: 'p7', name: 'Elena', city: 'London', initials: 'EV', avatarBg: AVATAR_GRADIENTS[2], answer: 'Leaving my phone in another room for the first hour every morning—it gave me back my calm.', isPublic: true },
+      { id: 'da2', userId: 'p1', name: 'Aarav', city: 'Chandigarh', initials: 'AM', avatarBg: AVATAR_GRADIENTS[0], answer: 'Taking an evening walk after rain with no destination and just listening to the city slow down.', isPublic: true },
+      { id: 'da3', userId: 'p2', name: 'Hana', city: 'Kyoto', initials: 'HT', avatarBg: AVATAR_GRADIENTS[1], answer: 'Writing down one tiny good thing before bed. It trains you to notice warmth everywhere.', isPublic: true }
+    ];
+
+    function getTodayDateKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function getDailyQuestionForDate(dateKey) {
+      let hash = 0;
+      for (let i = 0; i < dateKey.length; i++) hash = (hash * 31 + dateKey.charCodeAt(i)) >>> 0;
+      return {
+        id: `dq_${dateKey}`,
+        date: dateKey,
+        prompt: DAILY_QUESTION_BANK[hash % DAILY_QUESTION_BANK.length]
+      };
+    }
+
+    let activeDailyQuestion = getDailyQuestionForDate(getTodayDateKey());
+    let activeDvTab = 'today';
+    let dvDraftPublic = false;
+    let myDailyArchive = loadSaved('auraloom_daily_archive', []);
+    let communityDailyAnswers = [...DEMO_COMMUNITY_ANSWERS];
+
+    const dailyVibeModal = document.getElementById('daily-vibe-modal');
+    const dailyVibePreviewQ = document.getElementById('daily-vibe-preview-q');
+    const dvDateLabel = document.getElementById('dv-date-label');
+    const dvQuestionText = document.getElementById('dv-question-text');
+    const dvAnswerInput = document.getElementById('dv-answer-input');
+    const dvVisibilityBtn = document.getElementById('dv-visibility-btn');
+    const dvVisDesc = document.getElementById('dv-vis-desc');
+    const dvPanelToday = document.getElementById('dv-panel-today');
+    const dvPanelCommunity = document.getElementById('dv-panel-community');
+    const dvPanelArchive = document.getElementById('dv-panel-archive');
+
+    function renderDailyVibeBanner() {
+      if (dailyVibePreviewQ) dailyVibePreviewQ.textContent = activeDailyQuestion.prompt;
+    }
+
+    function updateDvVisibilityUi() {
+      dvVisibilityBtn.textContent = dvDraftPublic ? 'Public' : 'Private';
+      dvVisibilityBtn.className = dvDraftPublic
+        ? 'h-8 px-3 rounded-lg text-xs font-semibold badge-success shrink-0'
+        : 'h-8 px-3 rounded-lg text-xs font-semibold btn-secondary shrink-0';
+      dvVisDesc.textContent = dvDraftPublic
+        ? 'Public — visible to Auraloom members (respecting blocks)'
+        : 'Private — saved only in your personal archive';
+    }
+
+    function renderDvTabs() {
+      document.querySelectorAll('.dv-tab-btn').forEach(btn => {
+        const key = btn.getAttribute('data-dv-tab');
+        const active = key === activeDvTab;
+        btn.style.cssText = active
+          ? 'background-color: var(--bg-surface); color: var(--accent-primary); box-shadow: 0 1px 2px rgba(0,0,0,0.06);'
+          : 'background-color: transparent; color: var(--text-secondary);';
+      });
+      dvPanelToday.classList.toggle('hidden', activeDvTab !== 'today');
+      dvPanelCommunity.classList.toggle('hidden', activeDvTab !== 'community');
+      dvPanelArchive.classList.toggle('hidden', activeDvTab !== 'archive');
+    }
+
+    function renderDvCommunity() {
+      const blocked = getBlockedIdSet();
+      const visible = communityDailyAnswers.filter(a => a.isPublic && !blocked.has(a.userId));
+      if (visible.length === 0) {
+        dvPanelCommunity.innerHTML = `
+          <div class="p-6 rounded-2xl subtle-box text-center space-y-1.5">
+            <p class="text-sm font-bold" style="color: var(--text-primary);">No public reflections yet today</p>
+            <p class="text-xs" style="color: var(--text-secondary);">Be the first to share a public answer, or check back later.</p>
+          </div>
+        `;
+        return;
+      }
+      dvPanelCommunity.innerHTML = visible.map(a => `
+        <div class="p-4 rounded-2xl border space-y-2.5" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0" style="background:${a.avatarBg || AVATAR_GRADIENTS[0]};">${escapeHtml(a.initials || 'AL')}</div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold truncate" style="color: var(--text-primary);">${escapeHtml(a.name)}</p>
+                <p class="text-[11px] truncate" style="color: var(--text-secondary);">${escapeHtml(a.city || 'Global')}</p>
+              </div>
+            </div>
+            ${!currentUser || a.userId !== currentUser.id ? `
+              <button type="button" data-dv-safety-id="${escapeHtml(a.userId)}" data-dv-safety-name="${escapeHtml(a.name)}" class="dv-safety-btn w-7 h-7 rounded-lg btn-secondary flex items-center justify-center shrink-0" title="Report or block">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+              </button>
+            ` : ''}
+          </div>
+          <p class="text-sm leading-relaxed" style="color: var(--text-primary);">“${escapeHtml(a.answer)}”</p>
+        </div>
+      `).join('');
+
+      dvPanelCommunity.querySelectorAll('.dv-safety-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const uid = btn.getAttribute('data-dv-safety-id');
+          const uname = btn.getAttribute('data-dv-safety-name');
+          const found = profiles.find(p => p.id === uid) || { id: uid, name: uname, isLive: isLiveMode() };
+          openSafetyModal(found);
+        });
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderDvArchive() {
+      if (myDailyArchive.length === 0) {
+        dvPanelArchive.innerHTML = `
+          <div class="p-6 rounded-2xl subtle-box text-center space-y-1.5">
+            <p class="text-sm font-bold" style="color: var(--text-primary);">Your reflection archive is empty</p>
+            <p class="text-xs" style="color: var(--text-secondary);">Answers you save—private or public—are kept here for you to revisit anytime.</p>
+          </div>
+        `;
+        return;
+      }
+      dvPanelArchive.innerHTML = myDailyArchive.map(item => `
+        <div class="p-4 rounded-2xl border space-y-2" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-bold" style="color: var(--text-secondary);">${escapeHtml(item.date)}</span>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold ${item.isPublic ? 'badge-success' : 'tag-neutral'}">${item.isPublic ? 'Public' : 'Private'}</span>
+          </div>
+          <p class="text-xs font-semibold" style="color: var(--text-secondary);">${escapeHtml(item.prompt)}</p>
+          <p class="text-sm leading-relaxed" style="color: var(--text-primary);">“${escapeHtml(item.answer)}”</p>
+        </div>
+      `).join('');
+    }
+
+    async function loadLiveDailyVibe() {
+      if (!isLiveMode()) return;
+      try {
+        const today = getTodayDateKey();
+        const { data: qRow } = await sbClient.from('daily_questions').select('*').eq('question_date', today).maybeSingle();
+        if (qRow) {
+          activeDailyQuestion = { id: qRow.id, date: qRow.question_date, prompt: qRow.prompt };
+          renderDailyVibeBanner();
+
+          // Load public answers for today (RLS enforces is_public = true & excludes blocked users)
+          const { data: pubRows } = await sbClient
+            .from('daily_answers')
+            .select('id, user_id, answer, is_public, profiles(name, city)')
+            .eq('question_id', qRow.id)
+            .eq('is_public', true)
+            .order('created_at', { ascending: false })
+            .limit(30);
+          if (pubRows) {
+            communityDailyAnswers = pubRows.map((r, idx) => {
+              const nm = (r.profiles && r.profiles.name) || 'Member';
+              return {
+                id: r.id, userId: r.user_id, name: nm,
+                city: (r.profiles && r.profiles.city) || 'Global',
+                initials: nm.slice(0, 2).toUpperCase(),
+                avatarBg: AVATAR_GRADIENTS[idx % AVATAR_GRADIENTS.length],
+                answer: r.answer, isPublic: true
+              };
+            });
+          }
+
+          // Load own archive
+          const { data: myRows } = await sbClient
+            .from('daily_answers')
+            .select('answer, is_public, created_at, daily_questions(question_date, prompt)')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false })
+            .limit(30);
+          if (myRows) {
+            myDailyArchive = myRows.map(r => ({
+              date: (r.daily_questions && r.daily_questions.question_date) || today,
+              prompt: (r.daily_questions && r.daily_questions.prompt) || activeDailyQuestion.prompt,
+              answer: r.answer,
+              isPublic: Boolean(r.is_public)
+            }));
+            saveState('auraloom_daily_archive', myDailyArchive);
+          }
+        }
+      } catch (e) {
+        // Gracefully keep local daily question if daily_questions table not migrated yet
+      }
+    }
+
+    async function openDailyVibeModal() {
+      if (isLiveMode()) await loadLiveDailyVibe();
+      dvDateLabel.textContent = `${activeDailyQuestion.date} · No pressure to post daily`;
+      dvQuestionText.textContent = activeDailyQuestion.prompt;
+
+      const existing = myDailyArchive.find(a => a.date === activeDailyQuestion.date);
+      dvAnswerInput.value = existing ? existing.answer : '';
+      dvDraftPublic = existing ? Boolean(existing.isPublic) : false;
+      updateDvVisibilityUi();
+      renderDvTabs();
+      renderDvCommunity();
+      renderDvArchive();
+
+      dailyVibeModal.classList.remove('hidden');
+      dailyVibeModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeDailyVibeModal() {
+      dailyVibeModal.classList.add('hidden');
+      dailyVibeModal.classList.remove('flex');
+    }
+
+    document.getElementById('open-daily-vibe-btn').addEventListener('click', openDailyVibeModal);
+    document.getElementById('close-daily-vibe-btn').addEventListener('click', closeDailyVibeModal);
+    dailyVibeModal.addEventListener('click', (e) => { if (e.target === dailyVibeModal) closeDailyVibeModal(); });
+
+    document.querySelectorAll('.dv-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeDvTab = btn.getAttribute('data-dv-tab');
+        renderDvTabs();
+        if (activeDvTab === 'community') renderDvCommunity();
+        if (activeDvTab === 'archive') renderDvArchive();
+      });
+    });
+
+    dvVisibilityBtn.addEventListener('click', () => {
+      dvDraftPublic = !dvDraftPublic;
+      updateDvVisibilityUi();
+    });
+
+    document.getElementById('dv-answer-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = dvAnswerInput.value.trim();
+      if (!text) { showToast('Write a short reflection first'); return; }
+
+      const entry = {
+        date: activeDailyQuestion.date,
+        prompt: activeDailyQuestion.prompt,
+        answer: text,
+        isPublic: dvDraftPublic
+      };
+      myDailyArchive = [entry, ...myDailyArchive.filter(a => a.date !== entry.date)];
+      saveState('auraloom_daily_archive', myDailyArchive);
+
+      if (dvDraftPublic) {
+        const myId = currentUser ? currentUser.id : 'me_local';
+        const nm = myProfile.name || 'You';
+        communityDailyAnswers = [
+          { id: `da_${Date.now()}`, userId: myId, name: nm, city: myProfile.city || 'Global', initials: nm.slice(0, 2).toUpperCase(), avatarBg: AVATAR_GRADIENTS[2], answer: text, isPublic: true },
+          ...communityDailyAnswers.filter(a => a.userId !== myId)
+        ];
+      }
+
+      if (isLiveMode() && !String(activeDailyQuestion.id).startsWith('dq_')) {
+        try {
+          await sbClient.from('daily_answers').upsert({
+            question_id: activeDailyQuestion.id,
+            user_id: currentUser.id,
+            answer: text,
+            is_public: dvDraftPublic,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'question_id,user_id' });
+        } catch (err) {}
+      }
+
+      renderDvCommunity();
+      renderDvArchive();
+      showToast(dvDraftPublic ? 'Reflection shared publicly' : 'Reflection saved privately');
+    });
+
+    renderDailyVibeBanner();
 
     // =========================================================================
     // PHASE 3: AURA CARDS (Preview, Customization, QR Code, PNG Export, Privacy)
