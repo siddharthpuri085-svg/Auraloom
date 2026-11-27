@@ -10,6 +10,15 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <title>Auraloom — Connect Beyond the Surface</title>
+  <meta name="description" content="Connect beyond the surface through shared values, quiet rituals, and genuine global resonance on Auraloom." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Auraloom — Connect Beyond the Surface" />
+  <meta property="og:description" content="View my Auraloom Aura Card and discover personality-first global connections." />
+  <meta property="og:url" content="https://siddharthpuri085-svg.github.io/Auraloom/" />
+  <meta property="og:image" content="https://siddharthpuri085-svg.github.io/Auraloom/icon-512.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Auraloom — Connect Beyond the Surface" />
+  <meta name="twitter:description" content="Personality-first global social discovery." />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
@@ -344,12 +353,19 @@
 
         <!-- VIEW 2: MY VIBE (with Profile Completion & Photo Manager) -->
         <section id="view-vibe" class="hidden space-y-4 fade-in">
-          <div>
-            <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">My Vibe</h2>
-            <p class="text-xs mt-1" style="color: var(--text-secondary);">
-              Upload photos and complete your profile to unlock stronger compatibility matches.
-            </p>
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">My Vibe</h2>
+              <p class="text-xs mt-1" style="color: var(--text-secondary);">
+                Complete your profile to improve compatibility accuracy. Fields marked <strong>Public</strong> appear on Discover.
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span id="vibe-autosave-status" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold subtle-box" style="color: var(--text-secondary);">Saved</span>
+              <button id="preview-my-profile-btn" type="button" class="h-8 px-2.5 rounded-lg text-[11px] font-semibold btn-secondary">Preview</button>
+            </div>
           </div>
+          <div id="vibe-validation-msg" class="hidden px-3.5 py-2.5 rounded-xl text-xs font-medium" style="background: rgba(220,38,38,0.10); color: #DC2626; border: 1px solid rgba(220,38,38,0.25);"></div>
 
           <!-- Profile Completion Indicator -->
           <div class="surface-card rounded-2xl p-4 space-y-3">
@@ -396,18 +412,18 @@
           <form id="vibe-form" class="surface-card rounded-2xl p-5 space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div class="sm:col-span-2">
-                <label for="vibe-name-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Name</label>
+                <label for="vibe-name-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Name <span class="text-[10px] font-normal opacity-70">(Public · Required)</span></label>
                 <input id="vibe-name-input" type="text" maxlength="30" placeholder="Your first name" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
               <div>
-                <label for="vibe-age-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Age</label>
+                <label for="vibe-age-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Age <span class="text-[10px] font-normal opacity-70">(18+ · Public)</span></label>
                 <input id="vibe-age-input" type="number" min="18" max="99" placeholder="25" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="vibe-city-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">City & Country</label>
+                <label for="vibe-city-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">City & Country <span class="text-[10px] font-normal opacity-70">(Public)</span></label>
                 <input id="vibe-city-input" type="text" maxlength="40" placeholder="e.g., Ludhiana, India" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
               <div>
@@ -424,7 +440,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="vibe-languages-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Languages</label>
+                <label for="vibe-languages-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Languages <span class="text-[10px] font-normal opacity-70">(Public)</span></label>
                 <input id="vibe-languages-input" type="text" maxlength="60" placeholder="e.g., English, Hindi, Punjabi" class="w-full h-11 rounded-xl px-3.5 text-sm input-field" />
               </div>
               <div>
@@ -435,7 +451,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label for="vibe-comm-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Communication Style</label>
+                <label for="vibe-comm-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Communication <span class="text-[10px] font-normal opacity-70">(Private · Matching)</span></label>
                 <select id="vibe-comm-input" class="w-full h-11 rounded-xl px-3 text-xs input-field">
                   <option value="Deep Texts">Deep Texts</option>
                   <option value="Voice Notes">Voice Notes</option>
@@ -444,7 +460,7 @@
                 </select>
               </div>
               <div>
-                <label for="vibe-lifestyle-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Lifestyle Rhythm</label>
+                <label for="vibe-lifestyle-input" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">Lifestyle <span class="text-[10px] font-normal opacity-70">(Private · Matching)</span></label>
                 <select id="vibe-lifestyle-input" class="w-full h-11 rounded-xl px-3 text-xs input-field">
                   <option value="Slow Mornings">Slow Mornings</option>
                   <option value="Night Owl">Night Owl</option>
@@ -1073,15 +1089,25 @@
           <input id="aura-statement-input" type="text" maxlength="110" placeholder="A short line that captures your energy..." class="w-full h-10 rounded-xl px-3 text-xs input-field" />
         </div>
 
+        <!-- Field Visibility Controls on Public Aura Card -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-[11px] font-semibold" style="color: var(--text-secondary);">Show on card:</span>
+          <button id="aura-vis-vibe" type="button" class="h-7 px-2.5 rounded-lg text-[11px] font-semibold tag-matched">✓ Vibe Tag</button>
+          <button id="aura-vis-interests" type="button" class="h-7 px-2.5 rounded-lg text-[11px] font-semibold tag-matched">✓ Interests</button>
+          <button id="aura-vis-statement" type="button" class="h-7 px-2.5 rounded-lg text-[11px] font-semibold tag-matched">✓ Statement</button>
+        </div>
+
         <!-- Public Share Link + QR Code -->
         <div id="aura-share-box" class="p-4 rounded-2xl subtle-box flex flex-col sm:flex-row items-center gap-4">
           <div id="aura-qr-box" class="w-24 h-24 rounded-xl bg-white p-2 flex items-center justify-center shrink-0 border" style="border-color: var(--border-subtle);"></div>
           <div class="min-w-0 flex-1 space-y-2 w-full">
             <p class="text-xs font-bold" style="color: var(--text-primary);">Shareable Public Link</p>
             <p id="aura-share-url" class="text-[11px] font-mono break-all px-2.5 py-1.5 rounded-lg" style="background-color: var(--bg-surface); color: var(--text-secondary);"></p>
-            <div class="flex gap-2">
-              <button id="aura-copy-link-btn" type="button" class="flex-1 h-9 rounded-xl text-xs font-semibold btn-secondary">Copy Link</button>
-              <button id="aura-preview-public-btn" type="button" class="h-9 px-3 rounded-xl text-xs font-semibold btn-secondary">Preview</button>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button id="aura-copy-link-btn" type="button" class="h-9 rounded-xl text-xs font-semibold btn-secondary">Copy Link</button>
+              <button id="aura-native-share-btn" type="button" class="h-9 rounded-xl text-xs font-semibold btn-secondary">Share</button>
+              <button id="aura-whatsapp-btn" type="button" class="h-9 rounded-xl text-xs font-semibold badge-success">WhatsApp</button>
+              <button id="aura-preview-public-btn" type="button" class="h-9 rounded-xl text-xs font-semibold btn-secondary">Preview</button>
             </div>
           </div>
         </div>
@@ -1355,6 +1381,7 @@
     let typingChannel = null;
     let authMode = 'signup';
     let isLoadingCloud = false;
+    let cloudLoadError = '';
 
     let profiles = [...DEMO_PROFILES];
     let myProfile = {
@@ -1370,6 +1397,9 @@
       auraStatement: '',
       auraTheme: 'ivory',
       auraPublic: true,
+      auraShowVibe: true,
+      auraShowInterests: true,
+      auraShowStatement: true,
       ...loadSaved('auraloom_my_profile', {})
     };
     if (!Array.isArray(myProfile.photoUrls)) myProfile.photoUrls = [];
@@ -1762,17 +1792,22 @@
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
-            const maxDim = 960;
-            let { width, height } = img;
-            if (width > maxDim || height > maxDim) {
-              const ratio = Math.min(maxDim / width, maxDim / height);
-              width = Math.round(width * ratio);
-              height = Math.round(height * ratio);
+            // Center-crop to clean 4:5 portrait ratio & compress for fast mobile loading
+            const targetW = 720, targetH = 900;
+            const targetRatio = targetW / targetH;
+            const imgRatio = img.width / img.height;
+            let sx = 0, sy = 0, sw = img.width, sh = img.height;
+            if (imgRatio > targetRatio) {
+              sw = Math.round(img.height * targetRatio);
+              sx = Math.round((img.width - sw) / 2);
+            } else {
+              sh = Math.round(img.width / targetRatio);
+              sy = Math.round((img.height - sh) / 2);
             }
             const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            canvas.width = targetW;
+            canvas.height = targetH;
+            canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
             resolve(canvas.toDataURL('image/jpeg', 0.82));
           };
           img.onerror = () => reject(new Error('Invalid image file'));
@@ -1930,14 +1965,22 @@
     }
 
     function renderProfileCompletion() {
+      const liveName = (vibeNameInput && activeTab === 'vibe' ? vibeNameInput.value : myProfile.name || '').trim();
+      const liveAge = parseInt(vibeAgeInput && activeTab === 'vibe' ? vibeAgeInput.value : myProfile.age, 10);
+      const liveCity = (vibeCityInput && activeTab === 'vibe' ? vibeCityInput.value : myProfile.city || '').trim();
+      const liveLangs = parseLanguages(vibeLanguagesInput && activeTab === 'vibe' ? vibeLanguagesInput.value : myProfile.languages);
+      const livePrompt = (vibeAnswerInput && activeTab === 'vibe' ? vibeAnswerInput.value : myProfile.promptAnswer || '').trim();
+      const liveVals = activeTab === 'vibe' ? draftValues : (myProfile.values || []);
+      const liveInts = activeTab === 'vibe' ? draftInterests : (myProfile.interests || []);
       const checks = [
-        { label: 'Photos', done: myProfile.photoUrls.length > 0 },
-        { label: 'Prompt', done: Boolean((myProfile.promptAnswer || '').trim()) },
-        { label: 'Languages', done: parseLanguages(myProfile.languages).length > 0 },
-        { label: 'Interests', done: (myProfile.interests || []).length > 0 },
-        { label: 'Core Values', done: (myProfile.values || []).length > 0 },
-        { label: 'Chat Style', done: Boolean(myProfile.communicationStyle) },
-        { label: 'Lifestyle', done: Boolean(myProfile.lifestyle) }
+        { label: 'Photo', done: (myProfile.photoUrls || []).length > 0 },
+        { label: 'Name', done: liveName.length >= 2 },
+        { label: 'Age 18+', done: Number.isFinite(liveAge) && liveAge >= 18 && liveAge <= 99 },
+        { label: 'City', done: liveCity.length >= 2 },
+        { label: 'Languages', done: liveLangs.length > 0 },
+        { label: 'Prompt', done: livePrompt.length >= 8 },
+        { label: 'Core Values', done: liveVals.length > 0 },
+        { label: 'Interests', done: liveInts.length > 0 }
       ];
       const doneCount = checks.filter(c => c.done).length;
       const pct = Math.round((doneCount / checks.length) * 100);
@@ -1994,16 +2037,8 @@
     }
 
     function getDailyResonanceRecommendations() {
-      const excluded = new Set([
-        ...sentSparks.map(s => s.id),
-        ...mutualMatches.map(m => m.id),
-        ...passedIds,
-        ...likedIds,
-        ...blockedUsers.map(b => b.id)
-      ]);
-      return profiles
-        .filter(p => !excluded.has(p.id) && p.isVisible !== false)
-        .filter(p => matchesFilters(p, filters))
+      // Strictly derived from the exact same eligible feed pool as Discover for 100% consistency
+      return getFilteredProfiles()
         .map(p => ({ profile: p, compat: computeCompatibility(myProfile, p) }))
         .sort((a, b) => (b.compat.overall || 0) - (a.compat.overall || 0))
         .slice(0, 5);
@@ -2404,6 +2439,7 @@
     async function loadLiveCloudData() {
       if (!isLiveMode()) return;
       isLoadingCloud = true;
+      cloudLoadError = '';
       if (activeTab === 'discover') renderCurrentCard();
       try {
         // Load blocks (graceful if blocks table not yet migrated)
@@ -2520,6 +2556,7 @@
         currentIndex = 0;
         currentGalleryIdx = 0;
       } catch (err) {
+        cloudLoadError = err.message || 'Could not load live profiles from Supabase.';
         showToast('Could not sync cloud data');
       } finally {
         isLoadingCloud = false;
@@ -2714,6 +2751,24 @@
       myVibeLabel.textContent = myProfile.name ? myProfile.name : 'My Vibe';
       updateCloudIndicators();
       if (isLoadingCloud) { renderSkeletonCard(); return; }
+      if (cloudLoadError) {
+        profileCounter.textContent = 'Connection error';
+        cardContainer.innerHTML = `
+          <div class="surface-card rounded-2xl p-8 text-center fade-in space-y-4">
+            <div class="w-12 h-12 mx-auto rounded-2xl subtle-box flex items-center justify-center">
+              <i data-lucide="wifi-off" class="w-6 h-6" style="color: var(--accent-primary);"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold" style="color: var(--text-primary);">Could not load profiles</h2>
+              <p class="text-xs mt-1 max-w-xs mx-auto" style="color: var(--text-secondary);">${escapeHtml(cloudLoadError)}</p>
+            </div>
+            <button id="retry-cloud-btn" type="button" class="h-10 px-5 rounded-xl text-xs font-semibold btn-cta">Retry</button>
+          </div>
+        `;
+        document.getElementById('retry-cloud-btn').addEventListener('click', () => loadLiveCloudData());
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
 
       const list = getFilteredProfiles();
       if (list.length === 0 || currentIndex >= list.length) {
@@ -2815,6 +2870,7 @@
                   <div class="flex items-center gap-1.5 flex-wrap">
                     <h2 class="text-xl font-bold tracking-tight leading-tight" style="color: var(--text-primary);">${escapeHtml(p.name)}, ${escapeHtml(p.age)}</h2>
                     ${verifiedBadgeHtml(p)}
+                    ${!p.isLive ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold" style="background:var(--lavender-soft); color:var(--text-primary);">Demo Preview</span>` : ''}
                     ${p.connectionType ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold subtle-box" style="color: var(--text-secondary);">${escapeHtml(p.connectionType)}</span>` : ''}
                   </div>
                   <p class="text-xs font-medium flex items-center gap-1 mt-1 truncate" style="color: var(--text-secondary);">
@@ -2832,6 +2888,15 @@
 
           <!-- Personality, Values, Interests & Actions -->
           <div class="p-5 space-y-4">
+            <!-- Inline "Why this resonates" explanation -->
+            <button id="why-resonates-banner" type="button" class="w-full text-left px-3.5 py-2.5 rounded-xl flex items-center justify-between gap-2 transition-opacity hover:opacity-90" style="background-color: var(--lavender-soft);">
+              <div class="min-w-0">
+                <p class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--accent-primary);">Why this resonates</p>
+                <p class="text-xs font-medium truncate mt-0.5" style="color: var(--text-primary);">${escapeHtml(compat.topReason)}</p>
+              </div>
+              <span class="text-[11px] font-semibold shrink-0" style="color: var(--accent-primary);">Details →</span>
+            </button>
+
             <div class="subtle-box rounded-xl p-4">
               <p class="text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--text-secondary);">${escapeHtml(p.promptQuestion)}</p>
               <p class="text-[15px] leading-relaxed font-medium" style="color: var(--text-primary);">“${escapeHtml(p.promptAnswer)}”</p>
@@ -2861,6 +2926,8 @@
       `;
 
       document.getElementById('open-compat-btn').addEventListener('click', () => openCompatibilityModal(p));
+      const whyBanner = document.getElementById('why-resonates-banner');
+      if (whyBanner) whyBanner.addEventListener('click', () => openCompatibilityModal(p));
       document.getElementById('card-safety-btn').addEventListener('click', () => openSafetyModal(p));
       document.getElementById('gal-prev-btn').addEventListener('click', () => { currentGalleryIdx = (currentGalleryIdx - 1 + gallery.length) % gallery.length; renderCurrentCard(); });
       document.getElementById('gal-next-btn').addEventListener('click', () => { currentGalleryIdx = (currentGalleryIdx + 1) % gallery.length; renderCurrentCard(); });
@@ -4137,10 +4204,10 @@
         initials,
         avatarUrl: Array.isArray(sourceProfile.photoUrls) && sourceProfile.photoUrls[0] ? sourceProfile.photoUrls[0] : null,
         handle: sanitizeHandle(sourceProfile.auraHandle || sourceProfile.name),
-        vibeTag: sourceProfile.vibeTag || 'Connect Beyond the Surface',
+        vibeTag: sourceProfile.auraShowVibe !== false ? (sourceProfile.vibeTag || 'Connect Beyond the Surface') : '',
         traits: (Array.isArray(sourceProfile.values) ? sourceProfile.values : []).slice(0, 3),
-        interests: (Array.isArray(sourceProfile.interests) ? sourceProfile.interests : []).slice(0, 4),
-        statement: (sourceProfile.auraStatement || sourceProfile.promptAnswer || 'Here for thoughtful conversation and real resonance.').trim().slice(0, 110),
+        interests: sourceProfile.auraShowInterests !== false ? (Array.isArray(sourceProfile.interests) ? sourceProfile.interests : []).slice(0, 4) : [],
+        statement: sourceProfile.auraShowStatement !== false ? (sourceProfile.auraStatement || sourceProfile.promptAnswer || 'Here for thoughtful conversation and real resonance.').trim().slice(0, 110) : '',
         theme: sourceProfile.auraTheme || 'ivory',
         isPublic: sourceProfile.auraPublic !== false
       };
@@ -4513,6 +4580,133 @@
       const h = decodeURIComponent(window.location.hash.slice(6));
       if (h) setTimeout(() => openPublicCardByHandle(h), 350);
     }
+
+
+    // Aura Card field visibility toggles + WhatsApp & Native Share
+    const auraVisVibe = document.getElementById('aura-vis-vibe');
+    const auraVisInterests = document.getElementById('aura-vis-interests');
+    const auraVisStatement = document.getElementById('aura-vis-statement');
+
+    function syncAuraVisButtons() {
+      if (auraVisVibe) {
+        const on = myProfile.auraShowVibe !== false;
+        auraVisVibe.textContent = `${on ? '✓ ' : ''}Vibe Tag`;
+        auraVisVibe.className = `h-7 px-2.5 rounded-lg text-[11px] font-semibold ${on ? 'tag-matched' : 'tag-neutral'}`;
+      }
+      if (auraVisInterests) {
+        const on = myProfile.auraShowInterests !== false;
+        auraVisInterests.textContent = `${on ? '✓ ' : ''}Interests`;
+        auraVisInterests.className = `h-7 px-2.5 rounded-lg text-[11px] font-semibold ${on ? 'tag-matched' : 'tag-neutral'}`;
+      }
+      if (auraVisStatement) {
+        const on = myProfile.auraShowStatement !== false;
+        auraVisStatement.textContent = `${on ? '✓ ' : ''}Statement`;
+        auraVisStatement.className = `h-7 px-2.5 rounded-lg text-[11px] font-semibold ${on ? 'tag-matched' : 'tag-neutral'}`;
+      }
+    }
+
+    if (auraVisVibe) auraVisVibe.addEventListener('click', () => { myProfile.auraShowVibe = myProfile.auraShowVibe === false; syncAuraVisButtons(); renderAuraCardStudio(); saveAuraCardSettings(true); });
+    if (auraVisInterests) auraVisInterests.addEventListener('click', () => { myProfile.auraShowInterests = myProfile.auraShowInterests === false; syncAuraVisButtons(); renderAuraCardStudio(); saveAuraCardSettings(true); });
+    if (auraVisStatement) auraVisStatement.addEventListener('click', () => { myProfile.auraShowStatement = myProfile.auraShowStatement === false; syncAuraVisButtons(); renderAuraCardStudio(); saveAuraCardSettings(true); });
+
+    const auraWhatsappBtn = document.getElementById('aura-whatsapp-btn');
+    if (auraWhatsappBtn) {
+      auraWhatsappBtn.addEventListener('click', () => {
+        if (myProfile.auraPublic === false) { showToast('Turn on Public Sharing first'); return; }
+        const url = getAuraShareUrl(sanitizeHandle(auraHandleInput.value || myProfile.auraHandle));
+        const text = `Check out my Auraloom Aura Card — Connect Beyond the Surface: ${url}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+      });
+    }
+
+    const auraNativeShareBtn = document.getElementById('aura-native-share-btn');
+    if (auraNativeShareBtn) {
+      auraNativeShareBtn.addEventListener('click', async () => {
+        if (myProfile.auraPublic === false) { showToast('Turn on Public Sharing first'); return; }
+        const url = getAuraShareUrl(sanitizeHandle(auraHandleInput.value || myProfile.auraHandle));
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: `${myProfile.name || 'My'} Auraloom Aura Card`, text: 'Connect Beyond the Surface on Auraloom', url });
+            return;
+          } catch (e) {}
+        }
+        document.getElementById('aura-copy-link-btn').click();
+      });
+    }
+
+    // My Vibe: Live Autosave, Field Validation & Profile Preview
+    const vibeAutosaveStatus = document.getElementById('vibe-autosave-status');
+    const vibeValidationMsg = document.getElementById('vibe-validation-msg');
+    const previewMyProfileBtn = document.getElementById('preview-my-profile-btn');
+    let vibeAutosaveTimer = null;
+
+    function validateVibeFields() {
+      const nm = vibeNameInput.value.trim();
+      const ag = parseInt(vibeAgeInput.value, 10);
+      if (nm.length > 0 && nm.length < 2) return 'Name should be at least 2 characters.';
+      if (vibeAgeInput.value && (Number.isNaN(ag) || ag < 18 || ag > 99)) return 'You must be 18 or older to use Auraloom.';
+      if (draftValues.length === 0) return 'Pick at least 1 core value.';
+      return '';
+    }
+
+    function scheduleVibeAutosave() {
+      renderProfileCompletion();
+      const err = validateVibeFields();
+      if (err) {
+        if (vibeValidationMsg) { vibeValidationMsg.textContent = err; vibeValidationMsg.classList.remove('hidden'); }
+        if (vibeAutosaveStatus) vibeAutosaveStatus.textContent = 'Check fields';
+        return;
+      }
+      if (vibeValidationMsg) vibeValidationMsg.classList.add('hidden');
+      if (vibeAutosaveStatus) vibeAutosaveStatus.textContent = 'Saving...';
+      if (vibeAutosaveTimer) clearTimeout(vibeAutosaveTimer);
+      vibeAutosaveTimer = setTimeout(async () => {
+        myProfile = {
+          ...myProfile,
+          name: vibeNameInput.value.trim(),
+          age: parseInt(vibeAgeInput.value, 10) || 24,
+          city: vibeCityInput.value.trim(),
+          region: vibeRegionInput.value || 'Asia',
+          languages: vibeLanguagesInput.value.trim() || 'English',
+          vibeTag: vibeTagInput.value.trim() || 'Live Aura',
+          communicationStyle: vibeCommInput.value,
+          lifestyle: vibeLifestyleInput.value,
+          connectionType: vibeConnInput.value,
+          promptAnswer: vibeAnswerInput.value.trim(),
+          sundayRitual: vibeRitualInput.value.trim(),
+          values: [...draftValues],
+          interests: [...draftInterests]
+        };
+        saveState('auraloom_my_profile', myProfile);
+        if (isLiveMode()) {
+          try {
+            const { error } = await sbClient.from('profiles').upsert({
+              id: currentUser.id, name: myProfile.name || 'Auraloom Member', age: Math.max(18, myProfile.age),
+              city: myProfile.city || 'Global Citizen', region: myProfile.region, languages: myProfile.languages,
+              vibe_tag: myProfile.vibeTag, prompt_answer: myProfile.promptAnswer, sunday_ritual: myProfile.sundayRitual,
+              values: myProfile.values, interests: myProfile.interests, communication_style: myProfile.communicationStyle,
+              lifestyle: myProfile.lifestyle, connection_type: myProfile.connectionType, photo_urls: myProfile.photoUrls
+            });
+            if (vibeAutosaveStatus) vibeAutosaveStatus.textContent = error ? 'Saved locally' : 'Saved';
+          } catch (e) {
+            if (vibeAutosaveStatus) vibeAutosaveStatus.textContent = 'Error saving';
+          }
+        } else {
+          if (vibeAutosaveStatus) vibeAutosaveStatus.textContent = 'Saved';
+        }
+      }, 900);
+    }
+
+    [vibeNameInput, vibeAgeInput, vibeCityInput, vibeRegionInput, vibeLanguagesInput, vibeTagInput, vibeCommInput, vibeLifestyleInput, vibeConnInput, vibeAnswerInput, vibeRitualInput]
+      .forEach(el => { if (el) el.addEventListener('input', scheduleVibeAutosave); });
+
+    if (previewMyProfileBtn) {
+      previewMyProfileBtn.addEventListener('click', () => {
+        openPublicCardByHandle(sanitizeHandle(myProfile.auraHandle || vibeNameInput.value || 'member'));
+      });
+    }
+
+    syncAuraVisButtons();
 
     // Register PWA Service Worker
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
