@@ -3,55 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#E94776" />
+  <meta name="theme-color" content="#F7F5F0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Auraloom" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
-  <title>Auraloom — Smart Global Social Discovery</title>
+  <title>Auraloom — Connect Beyond the Surface</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
 
     :root {
-      --bg-canvas: #F8F7F5;
+      --bg-canvas: #F7F5F0;
       --bg-surface: #FFFFFF;
-      --bg-subtle: #F2F1EE;
-      --bg-hover: #ECEAE5;
-      --text-primary: #20232D;
-      --text-secondary: #737783;
-      --accent-primary: #E94776;
-      --accent-secondary: #A64AE5;
-      --border-subtle: #EAE9ED;
-      --success: #16866A;
-      --success-bg: rgba(22, 134, 106, 0.10);
-      --accent-soft: rgba(233, 71, 118, 0.09);
-      --accent-soft-border: rgba(233, 71, 118, 0.24);
-      --shadow-card: 0 1px 2px rgba(32, 35, 45, 0.04), 0 10px 30px -12px rgba(32, 35, 45, 0.08);
-      --shadow-nav: 0 -4px 20px rgba(32, 35, 45, 0.04);
-      --nav-bg: rgba(255, 255, 255, 0.92);
+      --bg-subtle: #F0EDE6;
+      --bg-hover: #E7E3DA;
+      --text-primary: #28262E;
+      --text-secondary: #6E6A78;
+      --accent-primary: #D46574;
+      --accent-coral: #E98591;
+      --accent-secondary: #9F87C4;
+      --accent-lavender: #C7B4E2;
+      --border-subtle: #E6E2DA;
+      --success: #2A7D67;
+      --success-bg: rgba(42, 125, 103, 0.10);
+      --accent-soft: rgba(233, 133, 145, 0.14);
+      --accent-soft-border: rgba(233, 133, 145, 0.36);
+      --lavender-soft: rgba(199, 180, 226, 0.22);
+      --shadow-card: 0 1px 2px rgba(40, 38, 46, 0.04), 0 12px 28px -14px rgba(40, 38, 46, 0.09);
+      --shadow-nav: 0 -2px 16px rgba(40, 38, 46, 0.04);
+      --nav-bg: rgba(247, 245, 240, 0.92);
     }
 
     [data-theme="dark"] {
-      --bg-canvas: #0F1117;
-      --bg-surface: #171A23;
-      --bg-subtle: #1F2330;
-      --bg-hover: #272C3B;
-      --text-primary: #F3F4F7;
-      --text-secondary: #9499A8;
-      --accent-primary: #F05A86;
-      --accent-secondary: #B462EE;
-      --border-subtle: #262A38;
-      --success: #24AD8A;
-      --success-bg: rgba(36, 173, 138, 0.14);
-      --accent-soft: rgba(240, 90, 134, 0.14);
-      --accent-soft-border: rgba(240, 90, 134, 0.32);
-      --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.25), 0 12px 32px -12px rgba(0, 0, 0, 0.45);
-      --shadow-nav: 0 -4px 20px rgba(0, 0, 0, 0.35);
-      --nav-bg: rgba(23, 26, 35, 0.92);
+      --bg-canvas: #19181E;
+      --bg-surface: #222029;
+      --bg-subtle: #2B2934;
+      --bg-hover: #353240;
+      --text-primary: #F4F2EE;
+      --text-secondary: #A39FAE;
+      --accent-primary: #E98591;
+      --accent-coral: #E98591;
+      --accent-secondary: #C7B4E2;
+      --accent-lavender: #C7B4E2;
+      --border-subtle: #33303E;
+      --success: #58B89D;
+      --success-bg: rgba(88, 184, 157, 0.14);
+      --accent-soft: rgba(233, 133, 145, 0.16);
+      --accent-soft-border: rgba(233, 133, 145, 0.36);
+      --lavender-soft: rgba(199, 180, 226, 0.15);
+      --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.28), 0 14px 32px -14px rgba(0, 0, 0, 0.48);
+      --shadow-nav: 0 -2px 18px rgba(0, 0, 0, 0.35);
+      --nav-bg: rgba(25, 24, 30, 0.92);
     }
 
     * { box-sizing: border-box; }
@@ -61,10 +68,12 @@
       padding: 0;
       background-color: var(--bg-canvas);
       color: var(--text-primary);
-      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
+
+    h1, h2, h3, .font-display { font-family: 'Manrope', 'Inter', sans-serif; letter-spacing: -0.02em; }
 
     .surface-card {
       background-color: var(--bg-surface);
@@ -78,13 +87,17 @@
     }
 
     .btn-cta {
-      background: linear-gradient(135deg, #E94776 0%, #A64AE5 100%);
-      color: #FFFFFF;
+      background: linear-gradient(135deg, #28262E 0%, #3D384A 100%);
+      color: #F7F5F0;
       transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
     }
+    [data-theme="dark"] .btn-cta {
+      background: linear-gradient(135deg, #E98591 0%, #C7B4E2 100%);
+      color: #19181E;
+    }
     .btn-cta:hover {
-      opacity: 0.94;
-      box-shadow: 0 6px 20px -6px rgba(233, 71, 118, 0.5);
+      opacity: 0.93;
+      box-shadow: 0 6px 18px -6px rgba(40, 38, 46, 0.32);
     }
     .btn-cta:active { transform: scale(0.985); }
 
@@ -167,7 +180,7 @@
       border-bottom: 1px solid var(--border-subtle);
     }
 
-    input[type="range"] { accent-color: #E94776; }
+    input[type="range"] { accent-color: #D46574; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -177,13 +190,12 @@
     <!-- DESKTOP LEFT SIDEBAR (md+) -->
     <aside class="hidden md:flex md:flex-col md:w-64 md:shrink-0 md:sticky md:top-0 md:h-screen px-4 py-6 border-r" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
       <div class="flex items-center gap-3 px-2 mb-7">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background: #231130;">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm" style="background: #28262E;">
           <svg viewBox="0 0 36 36" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
               <linearGradient id="alGradD" x1="4" y1="6" x2="32" y2="30" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#F2637E"/>
-                <stop offset="55%" stop-color="#E94776"/>
-                <stop offset="100%" stop-color="#A64AE5"/>
+                <stop offset="0%" stop-color="#E98591"/>
+                <stop offset="100%" stop-color="#C7B4E2"/>
               </linearGradient>
             </defs>
             <path d="M18 30.5C18 30.5 6.5 22.8 6.5 14.2C6.5 9.8 9.9 6.8 13.8 6.8C16.2 6.8 18 8.2 18 8.2C18 8.2 19.8 6.8 22.2 6.8C26.1 6.8 29.5 9.8 29.5 14.2C29.5 22.8 18 30.5 18 30.5Z" stroke="url(#alGradD)" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -192,7 +204,7 @@
         </div>
         <div class="min-w-0">
           <p class="text-base font-bold tracking-tight leading-none" style="color: var(--text-primary);">Auraloom</p>
-          <p class="text-xs mt-1 truncate" style="color: var(--text-secondary);">Global social discovery</p>
+          <p class="text-[11px] mt-1 truncate" style="color: var(--text-secondary);">Connect Beyond the Surface</p>
         </div>
       </div>
 
@@ -223,13 +235,12 @@
       <!-- MOBILE TOP HEADER (< md) -->
       <header class="md:hidden sticky top-0 z-30 header-glass px-3.5 h-14 flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 shrink-0">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm" style="background: #231130;">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm" style="background: #28262E;">
             <svg viewBox="0 0 36 36" class="w-5 h-5" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <defs>
                 <linearGradient id="alGradM" x1="4" y1="6" x2="32" y2="30" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#F2637E"/>
-                  <stop offset="55%" stop-color="#E94776"/>
-                  <stop offset="100%" stop-color="#A64AE5"/>
+                  <stop offset="0%" stop-color="#E98591"/>
+                  <stop offset="100%" stop-color="#C7B4E2"/>
                 </linearGradient>
               </defs>
               <path d="M18 30.5C18 30.5 6.5 22.8 6.5 14.2C6.5 9.8 9.9 6.8 13.8 6.8C16.2 6.8 18 8.2 18 8.2C18 8.2 19.8 6.8 22.2 6.8C26.1 6.8 29.5 9.8 29.5 14.2C29.5 22.8 18 30.5 18 30.5Z" stroke="url(#alGradM)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -262,6 +273,25 @@
 
         <!-- VIEW 1: DISCOVER -->
         <section id="view-discover" class="space-y-4">
+          <!-- Calm First-Time Onboarding Card -->
+          <div id="onboarding-card" class="hidden surface-card rounded-[20px] p-5 space-y-3.5 fade-in" style="border-color: var(--accent-soft-border);">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-1.5" style="background-color: var(--lavender-soft); color: var(--text-primary);">Welcome to Auraloom</span>
+                <h2 class="text-lg font-bold tracking-tight" style="color: var(--text-primary);">Connect Beyond the Surface</h2>
+                <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">
+                  Discover people worldwide through shared values, quiet rituals, and honest conversation—without endless swiping.
+                </p>
+              </div>
+              <button id="dismiss-onboarding-btn" type="button" aria-label="Dismiss welcome" class="w-8 h-8 rounded-xl btn-secondary flex items-center justify-center shrink-0">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="onboard-vibe-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-cta">Set Up My Vibe</button>
+              <button id="onboard-account-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary">Sign In / Join</button>
+            </div>
+          </div>
           <div class="flex items-center gap-2">
             <nav aria-label="Global discovery filters" class="flex-1 min-w-0">
               <div id="region-filter-bar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5"></div>
@@ -314,9 +344,20 @@
               <span id="completion-pct" class="text-xs font-bold badge-success px-2 py-0.5 rounded-md">0%</span>
             </div>
             <div class="w-full h-2 rounded-full overflow-hidden" style="background-color: var(--bg-subtle);">
-              <div id="completion-bar" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, #E94776, #A64AE5);"></div>
+              <div id="completion-bar" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(90deg, #E98591, #C7B4E2);"></div>
             </div>
             <div id="completion-checklist" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <!-- Aura Card Quick Launcher -->
+          <div class="surface-card rounded-2xl p-4 flex items-center justify-between gap-3" style="border-color: var(--accent-soft-border);">
+            <div class="min-w-0">
+              <p class="text-sm font-bold" style="color: var(--text-primary);">Your Shareable Aura Card</p>
+              <p class="text-xs mt-0.5 truncate" style="color: var(--text-secondary);">Preview, customize, copy link, QR code & export PNG</p>
+            </div>
+            <button id="open-aura-card-btn" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold btn-cta shrink-0">
+              Open Aura Card
+            </button>
           </div>
 
           <!-- Profile Photos Manager -->
@@ -828,7 +869,7 @@
     <div class="surface-card w-full max-w-sm rounded-3xl p-6 text-center space-y-5 pop-in">
       <div class="flex items-center justify-center gap-3">
         <div id="match-my-avatar" class="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold text-white overflow-hidden shadow-md"></div>
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: #231130;">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: #28262E;">
           <i data-lucide="heart-handshake" class="w-5 h-5" style="color: #E94776;"></i>
         </div>
         <div id="match-their-avatar" class="w-16 h-16 rounded-2xl flex items-center justify-center text-lg font-bold text-white overflow-hidden shadow-md"></div>
@@ -899,6 +940,91 @@
     </div>
   </div>
 
+  <!-- AURA CARD STUDIO MODAL -->
+  <div id="aura-card-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surface-card w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl flex flex-col max-h-[90vh] fade-in">
+      <div class="flex items-center justify-between px-5 py-4 border-b shrink-0" style="border-color: var(--border-subtle);">
+        <div>
+          <h3 class="text-base font-bold" style="color: var(--text-primary);">Your Aura Card</h3>
+          <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Only approved public traits appear — email & private data are never shared</p>
+        </div>
+        <button id="close-aura-card-btn" type="button" aria-label="Close Aura Card" class="w-9 h-9 rounded-xl btn-secondary flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 overflow-y-auto flex-1">
+        <!-- Live Visual Card Preview -->
+        <div id="aura-card-preview" class="rounded-[20px] p-5 border space-y-4 transition-all"></div>
+
+        <!-- Theme Customization -->
+        <div>
+          <p class="text-xs font-semibold mb-2" style="color: var(--text-primary);">Card Style</p>
+          <div class="grid grid-cols-3 gap-2" id="aura-theme-picker">
+            <button type="button" data-card-theme="ivory" class="aura-theme-btn h-9 rounded-xl text-xs font-semibold btn-secondary">Warm Ivory</button>
+            <button type="button" data-card-theme="charcoal" class="aura-theme-btn h-9 rounded-xl text-xs font-semibold btn-secondary">Charcoal</button>
+            <button type="button" data-card-theme="dusk" class="aura-theme-btn h-9 rounded-xl text-xs font-semibold btn-secondary">Coral Dusk</button>
+          </div>
+        </div>
+
+        <!-- Handle & Personal Statement Customization -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="aura-handle-input" class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Auraloom ID</label>
+            <input id="aura-handle-input" type="text" maxlength="24" placeholder="e.g., siddharth_aura" class="w-full h-10 rounded-xl px-3 text-xs input-field" />
+          </div>
+          <div class="flex items-end justify-between gap-2 pb-0.5">
+            <div>
+              <p class="text-xs font-semibold" style="color: var(--text-primary);">Public Sharing</p>
+              <p class="text-[11px]" style="color: var(--text-secondary);">Allow link & QR viewing</p>
+            </div>
+            <button id="aura-public-toggle" type="button" class="h-9 px-3.5 rounded-xl text-xs font-semibold shrink-0"></button>
+          </div>
+        </div>
+
+        <div>
+          <label for="aura-statement-input" class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Approved Personal Statement</label>
+          <input id="aura-statement-input" type="text" maxlength="110" placeholder="A short line that captures your energy..." class="w-full h-10 rounded-xl px-3 text-xs input-field" />
+        </div>
+
+        <!-- Public Share Link + QR Code -->
+        <div id="aura-share-box" class="p-4 rounded-2xl subtle-box flex flex-col sm:flex-row items-center gap-4">
+          <div id="aura-qr-box" class="w-24 h-24 rounded-xl bg-white p-2 flex items-center justify-center shrink-0 border" style="border-color: var(--border-subtle);"></div>
+          <div class="min-w-0 flex-1 space-y-2 w-full">
+            <p class="text-xs font-bold" style="color: var(--text-primary);">Shareable Public Link</p>
+            <p id="aura-share-url" class="text-[11px] font-mono break-all px-2.5 py-1.5 rounded-lg" style="background-color: var(--bg-surface); color: var(--text-secondary);"></p>
+            <div class="flex gap-2">
+              <button id="aura-copy-link-btn" type="button" class="flex-1 h-9 rounded-xl text-xs font-semibold btn-secondary">Copy Link</button>
+              <button id="aura-preview-public-btn" type="button" class="h-9 px-3 rounded-xl text-xs font-semibold btn-secondary">Preview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border-t flex items-center gap-2.5 shrink-0" style="border-color: var(--border-subtle);">
+        <button id="aura-save-btn" type="button" class="h-11 px-4 rounded-xl text-xs font-semibold btn-secondary">Save Card</button>
+        <button id="aura-export-png-btn" type="button" class="flex-1 h-11 rounded-xl text-sm font-semibold btn-cta flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Export PNG Image</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLIC AURA CARD VIEWER MODAL (for #card=<id> links) -->
+  <div id="public-card-modal" class="fixed inset-0 bg-black/55 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="surface-card w-full max-w-sm rounded-[22px] p-5 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-secondary);">Public Aura Card</span>
+        <button id="close-public-card-btn" type="button" aria-label="Close public card" class="w-8 h-8 rounded-xl btn-secondary flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="public-card-body"></div>
+      <button id="public-card-join-btn" type="button" class="w-full h-11 rounded-xl text-sm font-semibold btn-cta">Explore Auraloom</button>
+    </div>
+  </div>
+
   <!-- IN-PAGE CONFIRMATION MODAL -->
   <div id="confirm-modal" class="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="surface-card w-full max-w-sm rounded-2xl p-5 space-y-4 fade-in">
@@ -915,7 +1041,7 @@
 
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 transition-all duration-200 z-50">
-    <div id="toast-text" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-lg whitespace-nowrap" style="background-color: #20232D;"></div>
+    <div id="toast-text" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-lg whitespace-nowrap" style="background-color: #28262E;"></div>
   </div>
 
   <script>
@@ -1152,6 +1278,10 @@
       photoUrls: [],
       isVisible: true,
       showReadReceipts: true,
+      auraHandle: '',
+      auraStatement: '',
+      auraTheme: 'ivory',
+      auraPublic: true,
       ...loadSaved('auraloom_my_profile', {})
     };
     if (!Array.isArray(myProfile.photoUrls)) myProfile.photoUrls = [];
@@ -1606,7 +1736,7 @@
       myPhotosGrid.innerHTML = myProfile.photoUrls.map((url, idx) => `
         <div class="relative rounded-xl overflow-hidden border group" style="border-color: var(--border-subtle); aspect-ratio: 4/5;">
           <img src="${escapeHtml(url)}" alt="Profile photo ${idx + 1}" class="w-full h-full object-cover" />
-          ${idx === 0 ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold text-white" style="background: linear-gradient(135deg,#E94776,#A64AE5);">Primary</span>` : ''}
+          ${idx === 0 ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold text-white" style="background: linear-gradient(135deg,#28262E,#3D384A);">Primary</span>` : ''}
           <div class="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/75 to-transparent flex items-center justify-between gap-1">
             <div class="flex items-center gap-1">
               ${idx > 0 ? `<button type="button" data-photo-primary="${idx}" title="Set as primary" class="photo-primary-btn px-1.5 py-1 rounded-md text-[10px] font-bold bg-white/90 text-slate-900">Primary</button>` : ''}
@@ -1892,7 +2022,7 @@
                   <span class="text-xs font-bold" style="color: ${hasScore ? 'var(--success)' : 'var(--text-secondary)'};">${hasScore ? `${d.score}%` : 'Missing data'}</span>
                 </div>
                 <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--bg-subtle);">
-                  <div class="h-full rounded-full" style="width: ${hasScore ? d.score : 0}%; background: linear-gradient(90deg, #E94776, #A64AE5);"></div>
+                  <div class="h-full rounded-full" style="width: ${hasScore ? d.score : 0}%; background: linear-gradient(90deg, #E98591, #C7B4E2);"></div>
                 </div>
                 <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">${escapeHtml(d.detail)}</p>
                 ${d.shared.length > 0 ? `<div class="flex flex-wrap gap-1.5 pt-0.5">${d.shared.map(t => `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold tag-matched">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
@@ -3399,6 +3529,434 @@
     document.getElementById('mobile-theme-btn').addEventListener('click', toggleTheme);
     document.getElementById('desktop-theme-btn').addEventListener('click', toggleTheme);
     document.getElementById('settings-theme-btn').addEventListener('click', toggleTheme);
+
+    // Onboarding welcome card (shown once to first-time visitors)
+    const onboardingCard = document.getElementById('onboarding-card');
+    if (onboardingCard && !loadSaved('auraloom_onboarded', false)) {
+      onboardingCard.classList.remove('hidden');
+    }
+    const dismissOnboarding = () => {
+      saveState('auraloom_onboarded', true);
+      if (onboardingCard) onboardingCard.classList.add('hidden');
+    };
+    const dismissOnboardBtn = document.getElementById('dismiss-onboarding-btn');
+    const onboardVibeBtn = document.getElementById('onboard-vibe-btn');
+    const onboardAccountBtn = document.getElementById('onboard-account-btn');
+    if (dismissOnboardBtn) dismissOnboardBtn.addEventListener('click', dismissOnboarding);
+    if (onboardVibeBtn) onboardVibeBtn.addEventListener('click', () => { dismissOnboarding(); switchTab('vibe'); });
+    if (onboardAccountBtn) onboardAccountBtn.addEventListener('click', () => { dismissOnboarding(); switchTab('profile'); });
+
+
+    // =========================================================================
+    // PHASE 3: AURA CARDS (Preview, Customization, QR Code, PNG Export, Privacy)
+    // =========================================================================
+    const auraCardModal = document.getElementById('aura-card-modal');
+    const auraCardPreview = document.getElementById('aura-card-preview');
+    const auraHandleInput = document.getElementById('aura-handle-input');
+    const auraStatementInput = document.getElementById('aura-statement-input');
+    const auraPublicToggle = document.getElementById('aura-public-toggle');
+    const auraShareBox = document.getElementById('aura-share-box');
+    const auraQrBox = document.getElementById('aura-qr-box');
+    const auraShareUrlEl = document.getElementById('aura-share-url');
+    const publicCardModal = document.getElementById('public-card-modal');
+    const publicCardBody = document.getElementById('public-card-body');
+
+    function sanitizeHandle(raw) {
+      const cleaned = String(raw || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '')
+        .slice(0, 22);
+      if (cleaned) return cleaned;
+      const base = (myProfile.name || 'member').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12) || 'member';
+      return `${base}_aura`;
+    }
+
+    function getSafePublicAuraCardData(sourceProfile) {
+      // Strictly whitelist ONLY public identity fields — never email, DOB, or private data
+      const name = (sourceProfile.name || 'Auraloom Member').trim();
+      const parts = name.split(/\s+/);
+      const initials = (parts[0][0] + (parts[1] ? parts[1][0] : (parts[0][1] || ''))).toUpperCase();
+      return {
+        displayName: name,
+        initials,
+        avatarUrl: Array.isArray(sourceProfile.photoUrls) && sourceProfile.photoUrls[0] ? sourceProfile.photoUrls[0] : null,
+        handle: sanitizeHandle(sourceProfile.auraHandle || sourceProfile.name),
+        vibeTag: sourceProfile.vibeTag || 'Connect Beyond the Surface',
+        traits: (Array.isArray(sourceProfile.values) ? sourceProfile.values : []).slice(0, 3),
+        interests: (Array.isArray(sourceProfile.interests) ? sourceProfile.interests : []).slice(0, 4),
+        statement: (sourceProfile.auraStatement || sourceProfile.promptAnswer || 'Here for thoughtful conversation and real resonance.').trim().slice(0, 110),
+        theme: sourceProfile.auraTheme || 'ivory',
+        isPublic: sourceProfile.auraPublic !== false
+      };
+    }
+
+    function getAuraShareUrl(handle) {
+      const base = window.location.protocol.startsWith('http')
+        ? `${window.location.origin}${window.location.pathname}`
+        : 'https://siddharthpuri085-svg.github.io/Auraloom/';
+      return `${base}#card=${encodeURIComponent(handle)}`;
+    }
+
+    function getCardThemeStyles(cardTheme) {
+      if (cardTheme === 'charcoal') {
+        return {
+          bg: '#28262E', text: '#F7F5F0', muted: '#B8B3C4', border: '#3E3A4A',
+          chipBg: 'rgba(233,133,145,0.16)', chipText: '#F4A9B3',
+          intBg: 'rgba(199,180,226,0.14)', intText: '#DFD4F0',
+          accent: '#E98591'
+        };
+      }
+      if (cardTheme === 'dusk') {
+        return {
+          bg: 'linear-gradient(145deg, #F6E6E8 0%, #EFE9F7 100%)', text: '#28262E', muted: '#605A6E', border: '#E4D5DF',
+          chipBg: 'rgba(255,255,255,0.78)', chipText: '#9D3E4D',
+          intBg: 'rgba(255,255,255,0.62)', intText: '#28262E',
+          accent: '#D46574'
+        };
+      }
+      return {
+        bg: '#F7F5F0', text: '#28262E', muted: '#6E6A78', border: '#E6E2DA',
+        chipBg: 'rgba(233,133,145,0.15)', chipText: '#9E3D4B',
+        intBg: 'rgba(199,180,226,0.24)', intText: '#28262E',
+        accent: '#D46574'
+      };
+    }
+
+    function buildAuraCardMarkup(card) {
+      const st = getCardThemeStyles(card.theme);
+      const avatarNode = card.avatarUrl
+        ? `<img src="${escapeHtml(card.avatarUrl)}" alt="${escapeHtml(card.displayName)}" class="w-14 h-14 rounded-2xl object-cover shrink-0 border" style="border-color:${st.border};" />`
+        : `<div class="w-14 h-14 rounded-2xl flex items-center justify-center text-base font-bold text-white shrink-0" style="background: linear-gradient(135deg, #E98591, #C7B4E2);">${escapeHtml(card.initials)}</div>`;
+
+      return `
+        <div class="rounded-[18px] p-5 space-y-4 border" style="background:${st.bg}; color:${st.text}; border-color:${st.border};">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-bold tracking-wider uppercase" style="color:${st.muted};">Auraloom · Aura Card</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold" style="background:${st.chipBg}; color:${st.chipText};">${escapeHtml(card.vibeTag)}</span>
+          </div>
+
+          <div class="flex items-center gap-3.5">
+            ${avatarNode}
+            <div class="min-w-0">
+              <p class="text-lg font-extrabold leading-tight truncate font-display">${escapeHtml(card.displayName)}</p>
+              <p class="text-xs font-medium mt-0.5 truncate" style="color:${st.muted};">@${escapeHtml(card.handle)}</p>
+            </div>
+          </div>
+
+          <p class="text-sm leading-relaxed font-medium" style="color:${st.text};">“${escapeHtml(card.statement)}”</p>
+
+          ${card.traits.length > 0 ? `
+            <div class="space-y-1.5">
+              <p class="text-[10px] font-bold uppercase tracking-wider" style="color:${st.muted};">Personality Traits</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${card.traits.map(t => `<span class="px-2.5 py-1 rounded-lg text-xs font-semibold" style="background:${st.chipBg}; color:${st.chipText};">${escapeHtml(t)}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${card.interests.length > 0 ? `
+            <div class="space-y-1.5">
+              <p class="text-[10px] font-bold uppercase tracking-wider" style="color:${st.muted};">Interests</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${card.interests.map(i => `<span class="px-2.5 py-1 rounded-lg text-[11px] font-medium" style="background:${st.intBg}; color:${st.intText};">${escapeHtml(i)}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="pt-2 border-t flex items-center justify-between text-[10px] font-semibold" style="border-color:${st.border}; color:${st.muted};">
+            <span>Connect Beyond the Surface</span>
+            <span>auraloom</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQrSvg(urlText) {
+      if (typeof window.qrcode !== 'function') {
+        return '<span class="text-[10px] text-center text-slate-500">QR Ready</span>';
+      }
+      try {
+        const qr = window.qrcode(0, 'M');
+        qr.addData(urlText);
+        qr.make();
+        return qr.createSvgTag({ scalable: true, margin: 0 });
+      } catch (e) {
+        return '<span class="text-[10px] text-center text-slate-500">QR Ready</span>';
+      }
+    }
+
+    function renderAuraCardStudio() {
+      const card = getSafePublicAuraCardData({
+        ...myProfile,
+        auraHandle: auraHandleInput.value || myProfile.auraHandle,
+        auraStatement: auraStatementInput.value || myProfile.auraStatement
+      });
+
+      auraCardPreview.innerHTML = buildAuraCardMarkup(card);
+      auraCardPreview.style.borderColor = 'transparent';
+      auraCardPreview.style.padding = '0';
+
+      document.querySelectorAll('.aura-theme-btn').forEach(btn => {
+        const active = btn.getAttribute('data-card-theme') === card.theme;
+        btn.className = `aura-theme-btn h-9 rounded-xl text-xs font-semibold transition-all ${active ? 'tag-matched' : 'btn-secondary'}`;
+      });
+
+      auraPublicToggle.textContent = card.isPublic ? 'Public On' : 'Private';
+      auraPublicToggle.className = card.isPublic
+        ? 'h-9 px-3.5 rounded-xl text-xs font-semibold badge-success shrink-0'
+        : 'h-9 px-3.5 rounded-xl text-xs font-semibold btn-secondary shrink-0';
+
+      const shareUrl = getAuraShareUrl(card.handle);
+      auraShareUrlEl.textContent = card.isPublic ? shareUrl : 'Public sharing is turned off';
+      auraQrBox.innerHTML = card.isPublic ? renderQrSvg(shareUrl) : '<span class="text-[10px] text-center" style="color:var(--text-secondary);">Private</span>';
+      auraShareBox.style.opacity = card.isPublic ? '1' : '0.65';
+    }
+
+    function openAuraCardStudio() {
+      if (!myProfile.auraHandle) myProfile.auraHandle = sanitizeHandle(myProfile.name);
+      auraHandleInput.value = myProfile.auraHandle;
+      auraStatementInput.value = myProfile.auraStatement || myProfile.promptAnswer || '';
+      renderAuraCardStudio();
+      auraCardModal.classList.remove('hidden');
+      auraCardModal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAuraCardStudio() {
+      auraCardModal.classList.add('hidden');
+      auraCardModal.classList.remove('flex');
+    }
+
+    async function saveAuraCardSettings(silent = false) {
+      myProfile.auraHandle = sanitizeHandle(auraHandleInput.value);
+      myProfile.auraStatement = auraStatementInput.value.trim();
+      saveState('auraloom_my_profile', myProfile);
+      if (isLiveMode()) {
+        try {
+          await sbClient.from('profiles').update({
+            aura_handle: myProfile.auraHandle,
+            aura_statement: myProfile.auraStatement,
+            aura_theme: myProfile.auraTheme,
+            aura_card_public: myProfile.auraPublic
+          }).eq('id', currentUser.id);
+        } catch (e) {}
+      }
+      if (!silent) showToast('Aura Card saved');
+    }
+
+    function exportAuraCardPng() {
+      const card = getSafePublicAuraCardData({
+        ...myProfile,
+        auraHandle: auraHandleInput.value || myProfile.auraHandle,
+        auraStatement: auraStatementInput.value || myProfile.auraStatement
+      });
+      const st = getCardThemeStyles(card.theme);
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      if (card.theme === 'dusk') {
+        const g = ctx.createLinearGradient(0, 0, 1080, 1350);
+        g.addColorStop(0, '#F6E6E8');
+        g.addColorStop(1, '#EFE9F7');
+        ctx.fillStyle = g;
+      } else {
+        ctx.fillStyle = st.bg;
+      }
+      ctx.fillRect(0, 0, 1080, 1350);
+
+      // Subtle inner card frame
+      ctx.strokeStyle = st.border;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(48, 48, 984, 1254);
+
+      // Header
+      ctx.fillStyle = st.muted;
+      ctx.font = '700 28px Inter, sans-serif';
+      ctx.fillText('AURALOOM · AURA CARD', 96, 132);
+
+      // Vibe tag pill
+      ctx.fillStyle = st.accent;
+      ctx.font = '700 30px Inter, sans-serif';
+      ctx.fillText(card.vibeTag, 96, 186);
+
+      // Monogram badge
+      const gAv = ctx.createLinearGradient(96, 240, 236, 380);
+      gAv.addColorStop(0, '#E98591');
+      gAv.addColorStop(1, '#C7B4E2');
+      ctx.fillStyle = gAv;
+      ctx.beginPath();
+      ctx.roundRect(96, 240, 140, 140, 28);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 54px Manrope, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(card.initials, 166, 328);
+      ctx.textAlign = 'left';
+
+      // Display Name & Handle
+      ctx.fillStyle = st.text;
+      ctx.font = '800 58px Manrope, sans-serif';
+      ctx.fillText(card.displayName, 268, 305);
+      ctx.fillStyle = st.muted;
+      ctx.font = '600 32px Inter, sans-serif';
+      ctx.fillText(`@${card.handle}`, 268, 355);
+
+      // Statement (word-wrapped)
+      ctx.fillStyle = st.text;
+      ctx.font = '500 40px Inter, sans-serif';
+      const words = `“${card.statement}”`.split(' ');
+      let line = '';
+      let y = 480;
+      for (const word of words) {
+        const test = line ? `${line} ${word}` : word;
+        if (ctx.measureText(test).width > 880) {
+          ctx.fillText(line, 96, y);
+          line = word;
+          y += 56;
+        } else {
+          line = test;
+        }
+      }
+      if (line) ctx.fillText(line, 96, y);
+
+      // Traits
+      y += 90;
+      ctx.fillStyle = st.muted;
+      ctx.font = '700 24px Inter, sans-serif';
+      ctx.fillText('PERSONALITY TRAITS', 96, y);
+      y += 48;
+      ctx.fillStyle = st.accent;
+      ctx.font = '700 34px Inter, sans-serif';
+      ctx.fillText(card.traits.join('  ·  ') || 'Curiosity  ·  Warmth', 96, y);
+
+      // Interests
+      y += 88;
+      ctx.fillStyle = st.muted;
+      ctx.font = '700 24px Inter, sans-serif';
+      ctx.fillText('INTERESTS', 96, y);
+      y += 48;
+      ctx.fillStyle = st.text;
+      ctx.font = '600 32px Inter, sans-serif';
+      ctx.fillText(card.interests.join('  ·  ') || 'Deep Conversation', 96, y);
+
+      // Footer
+      ctx.fillStyle = st.muted;
+      ctx.font = '600 26px Inter, sans-serif';
+      ctx.fillText('Connect Beyond the Surface  ·  Auraloom', 96, 1230);
+
+      const link = document.createElement('a');
+      link.download = `auraloom-${card.handle}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Aura Card PNG exported');
+    }
+
+    async function openPublicCardByHandle(handle) {
+      const cleanHandle = sanitizeHandle(handle);
+      publicCardBody.innerHTML = `<div class="p-6 text-center text-xs" style="color:var(--text-secondary);">Loading Aura Card...</div>`;
+      publicCardModal.classList.remove('hidden');
+      publicCardModal.classList.add('flex');
+
+      // Check own card first
+      if (sanitizeHandle(myProfile.auraHandle || myProfile.name) === cleanHandle) {
+        const own = getSafePublicAuraCardData(myProfile);
+        publicCardBody.innerHTML = own.isPublic
+          ? buildAuraCardMarkup(own)
+          : `<div class="p-6 rounded-2xl subtle-box text-center text-xs" style="color:var(--text-secondary);">This Aura Card is currently set to private.</div>`;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      // Check Supabase public RPC if connected
+      if (sbClient) {
+        try {
+          const { data, error } = await sbClient.rpc('get_public_aura_card', { p_handle: cleanHandle });
+          if (!error && data && data.length > 0) {
+            const r = data[0];
+            publicCardBody.innerHTML = buildAuraCardMarkup(getSafePublicAuraCardData({
+              name: r.name,
+              photoUrls: r.photo_urls || [],
+              auraHandle: r.aura_handle,
+              vibeTag: r.vibe_tag,
+              values: r.values || [],
+              interests: r.interests || [],
+              auraStatement: r.aura_statement || r.prompt_answer,
+              auraTheme: r.aura_theme || 'ivory',
+              auraPublic: true
+            }));
+            if (window.lucide) lucide.createIcons();
+            return;
+          }
+        } catch (e) {}
+      }
+
+      publicCardBody.innerHTML = `<div class="p-6 rounded-2xl subtle-box text-center text-xs" style="color:var(--text-secondary);">This Aura Card is private or unavailable.</div>`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    document.getElementById('open-aura-card-btn').addEventListener('click', openAuraCardStudio);
+    document.getElementById('close-aura-card-btn').addEventListener('click', closeAuraCardStudio);
+    auraCardModal.addEventListener('click', (e) => { if (e.target === auraCardModal) closeAuraCardStudio(); });
+
+    document.querySelectorAll('.aura-theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        myProfile.auraTheme = btn.getAttribute('data-card-theme');
+        renderAuraCardStudio();
+      });
+    });
+
+    auraHandleInput.addEventListener('input', renderAuraCardStudio);
+    auraStatementInput.addEventListener('input', renderAuraCardStudio);
+
+    auraPublicToggle.addEventListener('click', () => {
+      myProfile.auraPublic = myProfile.auraPublic === false;
+      saveAuraCardSettings(true);
+      renderAuraCardStudio();
+      showToast(myProfile.auraPublic ? 'Public sharing enabled' : 'Public sharing disabled');
+    });
+
+    document.getElementById('aura-save-btn').addEventListener('click', () => saveAuraCardSettings(false));
+    document.getElementById('aura-export-png-btn').addEventListener('click', exportAuraCardPng);
+
+    document.getElementById('aura-copy-link-btn').addEventListener('click', async () => {
+      if (myProfile.auraPublic === false) { showToast('Turn on Public Sharing first'); return; }
+      const url = getAuraShareUrl(sanitizeHandle(auraHandleInput.value || myProfile.auraHandle));
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showToast('Aura Card link copied');
+    });
+
+    document.getElementById('aura-preview-public-btn').addEventListener('click', () => {
+      saveAuraCardSettings(true);
+      openPublicCardByHandle(sanitizeHandle(auraHandleInput.value || myProfile.auraHandle));
+    });
+
+    document.getElementById('close-public-card-btn').addEventListener('click', () => {
+      publicCardModal.classList.add('hidden');
+      publicCardModal.classList.remove('flex');
+    });
+    document.getElementById('public-card-join-btn').addEventListener('click', () => {
+      publicCardModal.classList.add('hidden');
+      publicCardModal.classList.remove('flex');
+      switchTab('discover');
+    });
+
+    // Check URL hash for #card=<handle> on load
+    if (window.location.hash && window.location.hash.startsWith('#card=')) {
+      const h = decodeURIComponent(window.location.hash.slice(6));
+      if (h) setTimeout(() => openPublicCardByHandle(h), 350);
+    }
 
     // Register PWA Service Worker
     if ('serviceWorker' in navigator && location.protocol === 'https:') {

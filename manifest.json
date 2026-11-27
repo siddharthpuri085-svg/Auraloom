@@ -1,13 +1,13 @@
 {
-  "name": "Auraloom \u2014 Global Social Discovery",
+  "name": "Auraloom \u2014 Connect Beyond the Surface",
   "short_name": "Auraloom",
-  "description": "Global social discovery built around vibe, resonance, and genuine conversation.",
+  "description": "Global personality-first social discovery.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F8F7F5",
-  "theme_color": "#E94776",
+  "background_color": "#F7F5F0",
+  "theme_color": "#28262E",
   "icons": [
     {
       "src": "./icon-192.png",
