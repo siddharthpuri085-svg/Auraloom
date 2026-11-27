@@ -1551,69 +1551,96 @@
       return String(str).split(/[·,|/]/).map(s => s.trim()).filter(Boolean);
     }
 
+    // Configurable deterministic Resonance weights (Phase 4)
+    const RESONANCE_WEIGHTS = Object.freeze({
+      values: 35,
+      interests: 30,
+      communication: 20,
+      lifestyle: 15
+    });
+
     function computeCompatibility(user, profile) {
       const dimensions = [];
+
+      // 1. Shared Core Values (35%)
       const uVals = Array.isArray(user.values) ? user.values : [];
       const pVals = Array.isArray(profile.values) ? profile.values : [];
       if (uVals.length > 0 && pVals.length > 0) {
         const shared = pVals.filter(v => uVals.includes(v));
         const score = Math.round((shared.length / Math.min(uVals.length, pVals.length)) * 100);
-        dimensions.push({ key: 'values', label: 'Shared Core Values', weight: 30, score, shared,
-          detail: shared.length > 0 ? `You both prioritize ${shared.join(', ')}.` : 'Different top values — complementary perspectives.' });
+        dimensions.push({
+          key: 'values', label: 'Shared Core Values', weight: RESONANCE_WEIGHTS.values, score, shared,
+          detail: shared.length > 0 ? `You both prioritize ${shared.join(', ')}.` : 'Different top values — complementary perspectives.'
+        });
       } else {
-        dimensions.push({ key: 'values', label: 'Shared Core Values', weight: 30, score: null, shared: [], detail: 'Missing core values on one or both profiles.' });
+        dimensions.push({
+          key: 'values', label: 'Shared Core Values', weight: RESONANCE_WEIGHTS.values, score: null, shared: [],
+          detail: 'Core values are missing on one or both profiles.'
+        });
       }
 
+      // 2. Shared Interests (30%)
       const uInts = Array.isArray(user.interests) ? user.interests : [];
       const pInts = Array.isArray(profile.interests) ? profile.interests : [];
       if (uInts.length > 0 && pInts.length > 0) {
         const shared = pInts.filter(i => uInts.includes(i));
         const score = Math.round((shared.length / Math.min(uInts.length, pInts.length)) * 100);
-        dimensions.push({ key: 'interests', label: 'Common Interests', weight: 25, score, shared,
-          detail: shared.length > 0 ? `Shared interests in ${shared.join(', ')}.` : 'Different hobbies — plenty of new things to share.' });
+        dimensions.push({
+          key: 'interests', label: 'Shared Interests', weight: RESONANCE_WEIGHTS.interests, score, shared,
+          detail: shared.length > 0 ? `Common interests in ${shared.join(', ')}.` : 'Different hobbies — room to introduce each other to new things.'
+        });
       } else {
-        dimensions.push({ key: 'interests', label: 'Common Interests', weight: 25, score: null, shared: [], detail: 'Interests not yet specified on one of the profiles.' });
+        dimensions.push({
+          key: 'interests', label: 'Shared Interests', weight: RESONANCE_WEIGHTS.interests, score: null, shared: [],
+          detail: 'Interests are not yet filled in on one of the profiles.'
+        });
       }
 
+      // 3. Communication Compatibility (20%)
       if (user.communicationStyle && profile.communicationStyle) {
         const exact = user.communicationStyle === profile.communicationStyle;
         const close = [['Deep Texts', 'Slow & Thoughtful'], ['Voice Notes', 'Video Calls'], ['Deep Texts', 'Voice Notes']]
           .some(pair => pair.includes(user.communicationStyle) && pair.includes(profile.communicationStyle));
         const score = exact ? 100 : close ? 70 : 40;
-        dimensions.push({ key: 'communication', label: 'Communication Style', weight: 15, score, shared: exact ? [profile.communicationStyle] : [],
-          detail: exact ? `Both prefer ${profile.communicationStyle}.` : `You prefer ${user.communicationStyle}; ${profile.name} prefers ${profile.communicationStyle}.` });
+        dimensions.push({
+          key: 'communication', label: 'Communication Compatibility', weight: RESONANCE_WEIGHTS.communication, score,
+          shared: exact ? [profile.communicationStyle] : [],
+          detail: exact ? `Both prefer ${profile.communicationStyle}.` : `You prefer ${user.communicationStyle}; ${profile.name} prefers ${profile.communicationStyle}.`
+        });
       } else {
-        dimensions.push({ key: 'communication', label: 'Communication Style', weight: 15, score: null, shared: [], detail: 'Communication preference not set yet.' });
+        dimensions.push({
+          key: 'communication', label: 'Communication Compatibility', weight: RESONANCE_WEIGHTS.communication, score: null, shared: [],
+          detail: 'Communication style is not set yet.'
+        });
       }
 
+      // 4. Lifestyle Compatibility (15%)
       if (user.lifestyle && profile.lifestyle) {
         const sameLife = user.lifestyle === profile.lifestyle;
         const sameConn = user.connectionType && profile.connectionType && user.connectionType === profile.connectionType;
-        const score = (sameLife ? 55 : 25) + (sameConn ? 45 : 20);
+        const score = sameLife && sameConn ? 100 : sameLife ? 80 : sameConn ? 65 : 35;
         const matched = [];
         if (sameLife) matched.push(profile.lifestyle);
         if (sameConn) matched.push(profile.connectionType);
-        dimensions.push({ key: 'lifestyle', label: 'Lifestyle & Intent', weight: 15, score, shared: matched,
-          detail: matched.length > 0 ? `Aligned on ${matched.join(' & ')}.` : `${profile.name} leans ${profile.lifestyle} (${profile.connectionType || 'Open'}).` });
+        dimensions.push({
+          key: 'lifestyle', label: 'Lifestyle Compatibility', weight: RESONANCE_WEIGHTS.lifestyle, score, shared: matched,
+          detail: matched.length > 0 ? `Aligned on ${matched.join(' & ')}.` : `${profile.name} leans ${profile.lifestyle} (${profile.connectionType || 'Open'}).`
+        });
       } else {
-        dimensions.push({ key: 'lifestyle', label: 'Lifestyle & Intent', weight: 15, score: null, shared: [], detail: 'Lifestyle rhythm not specified yet.' });
-      }
-
-      const uLangs = parseLanguages(user.languages);
-      const pLangs = parseLanguages(profile.languages);
-      if (uLangs.length > 0 && pLangs.length > 0) {
-        const uLower = uLangs.map(l => l.toLowerCase());
-        const shared = pLangs.filter(l => uLower.includes(l.toLowerCase()));
-        const score = shared.length >= 2 ? 100 : shared.length === 1 ? 85 : 20;
-        dimensions.push({ key: 'languages', label: 'Language Compatibility', weight: 15, score, shared,
-          detail: shared.length > 0 ? `You can converse comfortably in ${shared.join(', ')}.` : 'No shared languages listed yet.' });
-      } else {
-        dimensions.push({ key: 'languages', label: 'Language Compatibility', weight: 15, score: null, shared: [], detail: 'Languages not listed on one of the profiles.' });
+        dimensions.push({
+          key: 'lifestyle', label: 'Lifestyle Compatibility', weight: RESONANCE_WEIGHTS.lifestyle, score: null, shared: [],
+          detail: 'Lifestyle rhythm is not specified yet.'
+        });
       }
 
       const scored = dimensions.filter(d => d.score !== null);
+      const isLimitedData = scored.length < dimensions.length;
+
+      // Prefer server-computed score when returned by Supabase RPC; otherwise deterministic weighted average
       let overall = null;
-      if (scored.length > 0) {
+      if (typeof profile.serverResonance === 'number' && !Number.isNaN(profile.serverResonance)) {
+        overall = Math.max(0, Math.min(100, Math.round(profile.serverResonance)));
+      } else if (scored.length > 0) {
         const totalWeight = scored.reduce((acc, d) => acc + d.weight, 0);
         overall = Math.round(scored.reduce((acc, d) => acc + d.score * d.weight, 0) / totalWeight);
       }
@@ -1621,10 +1648,17 @@
       const reasons = [];
       if (dimensions[0].shared.length > 0) reasons.push(`Shares ${dimensions[0].shared.slice(0, 2).join(' & ')}`);
       if (dimensions[1].shared.length > 0) reasons.push(`${dimensions[1].shared.length} shared interest${dimensions[1].shared.length > 1 ? 's' : ''}`);
-      if (dimensions[2].score === 100) reasons.push('Same chat style');
+      if (dimensions[2].score === 100) reasons.push('Same communication style');
       if (reasons.length === 0) reasons.push(`Matches your ${profile.region} preferences`);
 
-      return { overall, scoredCount: scored.length, totalDimensions: dimensions.length, dimensions, topReason: reasons.slice(0, 2).join(' · ') };
+      return {
+        overall,
+        scoredCount: scored.length,
+        totalDimensions: dimensions.length,
+        isLimitedData,
+        dimensions,
+        topReason: reasons.slice(0, 2).join(' · ')
+      };
     }
 
     function computeResonance(profile) {
@@ -1832,8 +1866,8 @@
     }
 
     function matchesFilters(profile, f) {
-      const age = Number(profile.age) || 25;
-      if (age < f.minAge || age > f.maxAge) return false;
+      const age = Number(profile.age);
+      if (!age || age < 18 || age < f.minAge || age > f.maxAge) return false;
       if (f.region && f.region !== 'All Global' && profile.region !== f.region) return false;
       if (f.country) {
         const hay = `${profile.country || ''} ${profile.city || ''}`.toLowerCase();
@@ -1997,28 +2031,36 @@
     // 9. COMPATIBILITY & FILTERS MODALS
     function openCompatibilityModal(profile) {
       const compat = computeCompatibility(myProfile, profile);
-      compatTitle.textContent = `You & ${profile.name}`;
+      compatTitle.textContent = `Why This Match · ${profile.name}`;
       compatSubtitle.textContent = compat.overall !== null
-        ? `${compat.overall}% Resonance · Based on ${compat.scoredCount} of ${compat.totalDimensions} available dimensions`
-        : 'Not enough shared profile fields yet';
+        ? `${compat.overall}% Resonance · Scored across ${compat.scoredCount} of ${compat.totalDimensions} categories`
+        : 'Not enough profile fields filled in yet to calculate a score';
 
       compatBody.innerHTML = `
         <div class="p-4 rounded-2xl subtle-box flex items-center justify-between gap-3">
           <div>
-            <p class="text-xs font-semibold" style="color: var(--text-secondary);">Overall Compatibility</p>
-            <p class="text-xs mt-0.5" style="color: var(--text-primary);">${escapeHtml(compat.topReason)}</p>
+            <p class="text-xs font-semibold" style="color: var(--text-secondary);">Resonance Summary</p>
+            <p class="text-xs mt-0.5 font-medium" style="color: var(--text-primary);">${escapeHtml(compat.topReason)}</p>
           </div>
           <div class="px-3.5 py-2 rounded-xl text-lg font-extrabold badge-success shrink-0">
             ${compat.overall !== null ? `${compat.overall}%` : 'N/A'}
           </div>
         </div>
+
+        ${compat.isLimitedData ? `
+          <div class="px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2" style="background-color: var(--lavender-soft); color: var(--text-primary);">
+            <i data-lucide="info" class="w-4 h-4 shrink-0" style="color: var(--accent-primary);"></i>
+            <span><strong>Limited Data:</strong> ${compat.scoredCount} of ${compat.totalDimensions} categories had saved profile fields. Complete more of My Vibe for fuller accuracy.</span>
+          </div>
+        ` : ''}
+
         <div class="space-y-3">
           ${compat.dimensions.map(d => {
             const hasScore = d.score !== null;
             return `
               <div class="p-3.5 rounded-xl border space-y-2" style="border-color: var(--border-subtle); background-color: var(--bg-surface);">
                 <div class="flex items-center justify-between gap-2">
-                  <span class="text-xs font-bold" style="color: var(--text-primary);">${escapeHtml(d.label)}</span>
+                  <span class="text-xs font-bold" style="color: var(--text-primary);">${escapeHtml(d.label)} <span class="font-medium opacity-70">(${d.weight}%)</span></span>
                   <span class="text-xs font-bold" style="color: ${hasScore ? 'var(--success)' : 'var(--text-secondary)'};">${hasScore ? `${d.score}%` : 'Missing data'}</span>
                 </div>
                 <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--bg-subtle);">
@@ -2030,6 +2072,10 @@
             `;
           }).join('')}
         </div>
+
+        <p class="text-[11px] leading-relaxed px-1" style="color: var(--text-secondary);">
+          Resonance reflects shared values, interests, communication, and lifestyle preferences from saved profile data—it is not a probability or prediction of relationship success.
+        </p>
       `;
       compatModal.classList.remove('hidden');
       compatModal.classList.add('flex');
@@ -2189,6 +2235,7 @@
         promptAnswer: row.prompt_answer || 'Looking for genuine conversations across the world.',
         sundayRitual: row.sunday_ritual || 'Slow mornings, good music, and meaningful talks.',
         values: Array.isArray(row.values) && row.values.length ? row.values : [],
+        serverResonance: typeof row.resonance_score === 'number' ? row.resonance_score : null,
         isLive: true
       };
     }
@@ -2272,14 +2319,28 @@
           }
         } catch (e) {}
 
-        let query = sbClient.from('profiles').select('*').order('created_at', { ascending: false });
-        if (filters.minAge > 18) query = query.gte('age', filters.minAge);
-        if (filters.maxAge < 60) query = query.lte('age', filters.maxAge);
-        if (filters.region && filters.region !== 'All Global') query = query.eq('region', filters.region);
-        if (filters.country) query = query.ilike('city', `%${filters.country}%`);
+        let rows = null;
+        try {
+          const rpcRes = await sbClient.rpc('get_resonant_profiles', {
+            p_min_age: filters.minAge,
+            p_max_age: filters.maxAge,
+            p_region: filters.region === 'All Global' ? null : filters.region,
+            p_country: filters.country || null,
+            p_connection_type: filters.connectionType === 'Any' ? null : filters.connectionType
+          });
+          if (!rpcRes.error && Array.isArray(rpcRes.data)) {
+            rows = rpcRes.data;
+          }
+        } catch (e) {}
 
-        const { data: rows, error: pErr } = await query;
-        if (pErr) throw pErr;
+        if (!rows) {
+          let query = sbClient.from('profiles').select('*').gte('age', Math.max(18, filters.minAge)).lte('age', filters.maxAge).order('created_at', { ascending: false });
+          if (filters.region && filters.region !== 'All Global') query = query.eq('region', filters.region);
+          if (filters.country) query = query.ilike('city', `%${filters.country}%`);
+          const { data: qRows, error: pErr } = await query;
+          if (pErr) throw pErr;
+          rows = qRows || [];
+        }
 
         const { data: ownRow } = await sbClient.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
         if (ownRow) {
@@ -2643,7 +2704,7 @@
               </span>
               <button id="open-compat-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-sm hover:opacity-95 transition-opacity">
                 <i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i>
-                <span>${compat.overall !== null ? `${compat.overall}% Resonance` : 'Match Info'}</span>
+                <span>${compat.overall !== null ? `${compat.overall}% Resonance${compat.isLimitedData ? ' · Limited' : ''}` : 'Limited Data'}</span>
                 <i data-lucide="info" class="w-3 h-3 opacity-70"></i>
               </button>
             </div>
